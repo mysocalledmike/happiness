@@ -1,0 +1,97 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+<div class="homepage">
+    <div class="hero-section">
+        <h1 class="hero-title">Bring a smile to 1 billion faces</h1>
+        <p class="hero-subtitle">Create personalized goodbye messages for anyone you'll miss when leaving a company, school, or organization.</p>
+        
+        <div class="smile-counter">
+            <div class="smile-number">{{ smile_count|number_format }}</div>
+            <div class="smile-label">smiles created so far</div>
+        </div>
+    </div>
+    
+    <div class="features-section">
+        <div class="feature">
+            <div class="feature-icon">💝</div>
+            <h3>Personalized Messages</h3>
+            <p>Create custom goodbye messages for each person you want to remember</p>
+        </div>
+        
+        <div class="feature">
+            <div class="feature-icon">🎨</div>
+            <h3>Beautiful Themes</h3>
+            <p>Choose from 8 unique themes to match your personality and style</p>
+        </div>
+        
+        <div class="feature">
+            <div class="feature-icon">📱</div>
+            <h3>Share Easily</h3>
+            <p>Send your custom goodbye page link to friends, family, and colleagues</p>
+        </div>
+    </div>
+    
+    <div class="waitlist-section">
+        <h2>Ready to spread some happiness?</h2>
+        <p>Join the waitlist to create your own goodbye page</p>
+        
+        <form id="waitlistForm" class="waitlist-form">
+            <input type="email" id="waitlistEmail" placeholder="Enter your email address" required>
+            <button type="submit">Join Waitlist</button>
+        </form>
+        
+        <div id="waitlistMessage" class="form-message hidden"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('waitlistForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('waitlistEmail').value.trim();
+    const messageDiv = document.getElementById('waitlistMessage');
+    const button = this.querySelector('button');
+    
+    if (!email) {
+        showMessage('Please enter your email address', 'error');
+        return;
+    }
+    
+    button.disabled = true;
+    button.textContent = 'Adding...';
+    
+    fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showMessage('🎉 Added to waitlist! You\'ll receive an email when you can create your page.', 'success');
+            document.getElementById('waitlistEmail').value = '';
+        } else {
+            showMessage(data.message || 'An error occurred', 'error');
+        }
+    })
+    .catch(error => {
+        showMessage('An error occurred. Please try again.', 'error');
+    })
+    .finally(() => {
+        button.disabled = false;
+        button.textContent = 'Join Waitlist';
+    });
+    
+    function showMessage(text, type) {
+        messageDiv.textContent = text;
+        messageDiv.className = 'form-message ' + type;
+        messageDiv.classList.remove('hidden');
+    }
+});
+</script>
+{% endblock %}

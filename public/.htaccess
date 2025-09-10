@@ -1,0 +1,6 @@
+RewriteEngine On
+
+# Handle Angular, React, Vue Router, etc. - forward all requests to index.php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]

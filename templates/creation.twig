@@ -1,0 +1,790 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+<style>
+/* Complete override for natural page scrolling */
+html, body {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    display: block !important;
+    align-items: unset !important;
+    justify-content: unset !important;
+    flex-direction: unset !important;
+}
+
+.container {
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    display: block !important;
+}
+
+/* Ensure all child elements allow natural flow */
+.creation-page, .messages-container, .messages-table {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+.creation-page {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.header-content h1 {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.auto-save-indicator {
+    color: #666;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.messages-intro {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.messages-intro p {
+    color: #666;
+    font-size: 16px;
+    margin: 0;
+}
+
+.messages-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.messages-table-header {
+    display: grid;
+    grid-template-columns: 220px 320px 2fr 160px;
+    gap: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.messages-table {
+    /* Removed max-height and overflow - let the page scroll naturally */
+}
+
+.message-row {
+    display: grid;
+    grid-template-columns: 220px 320px 2fr 160px;
+    gap: 1.5rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    align-items: start;
+}
+
+.message-row:hover {
+    background: #f8f9fa;
+}
+
+.message-row input,
+.message-row textarea,
+.message-row select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e1e5e9;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.message-row input:focus,
+.message-row textarea:focus,
+.message-row select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.message-input {
+    resize: vertical;
+    min-height: 60px;
+    max-height: 120px;
+}
+
+.table-actions {
+    padding: 1rem;
+    text-align: center;
+    background: #f8f9fa;
+    border-top: 1px solid #e1e5e9;
+}
+
+.dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.dialog-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.dialog {
+    background: white;
+    border-radius: 8px;
+    max-width: 800px;
+    width: calc(100vw - 2rem);
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.dialog-overlay.show .dialog {
+    transform: scale(1);
+}
+
+.dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.dialog-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.dialog-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.dialog-close:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.dialog-body {
+    padding: 1.5rem;
+}
+
+.dialog-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #e1e5e9;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.form-group {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: start;
+}
+
+.form-group label {
+    margin-bottom: 0;
+    color: #333;
+    font-weight: 500;
+    padding-top: 0.5rem;
+}
+
+.form-group.full-width {
+    grid-template-columns: 1fr;
+}
+
+.form-group.full-width label {
+    display: block;
+    margin-bottom: 0.5rem;
+    padding-top: 0;
+}
+
+.form-field-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-field-container small {
+    margin-top: 0.25rem !important;
+}
+
+.url-preview {
+    display: flex;
+    align-items: center;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 0.5rem;
+    transition: border-color 0.3s ease;
+}
+
+.url-preview:focus-within {
+    border-color: #667eea;
+}
+
+.url-base {
+    color: #666;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.url-preview input {
+    border: none;
+    padding: 0.5rem;
+    font-size: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.url-preview input:focus {
+    outline: none;
+}
+
+.form-group small {
+    color: #666;
+    font-size: 12px;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.form-group textarea {
+    width: 100%;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+    resize: vertical;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.themes-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.theme-option {
+    border: 2px solid #e1e5e9;
+    border-radius: 6px;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.theme-option:hover {
+    border-color: #667eea;
+}
+
+.theme-option.selected {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.theme-preview {
+    height: 45px;
+    border-radius: 4px;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.theme-character {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-character img {
+    height: 30px;
+    width: auto;
+    max-width: 30px;
+}
+
+.theme-info strong {
+    display: block;
+    color: #333;
+    margin-bottom: 0.15rem;
+    font-size: 11px;
+}
+
+.theme-info span {
+    color: #666;
+    font-size: 10px;
+}
+
+@media (max-width: 1600px) {
+    .messages-table-header,
+    .message-row {
+        grid-template-columns: 200px 280px 2fr 140px;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 1200px) {
+    .messages-table-header,
+    .message-row {
+        grid-template-columns: 180px 250px 1fr 130px;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .creation-page {
+        padding: 1rem;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .header-actions {
+        justify-content: center;
+    }
+    
+    .messages-table-header,
+    .message-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .messages-table-header {
+        display: none;
+    }
+    
+    .message-row {
+        border: 1px solid #e1e5e9;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        padding: 1rem;
+    }
+    
+    .message-row input,
+    .message-row textarea,
+    .message-row select {
+        margin-bottom: 0.5rem;
+    }
+    
+    .themes-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .dialog {
+        margin: 1rem;
+        width: calc(100vw - 2rem);
+    }
+    
+    .form-group {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .form-group label {
+        padding-top: 0;
+        margin-bottom: 0.25rem;
+    }
+}
+</style>
+<div class="creation-page">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>Create Your Goodbye Messages</h1>
+            <div class="auto-save-indicator">Changes saved automatically</div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="openSettingsDialog()">Settings</button>
+            {% if sender.slug and sender.status == 'active' %}
+                <a href="/{{ sender.slug }}" target="_blank" class="btn btn-primary">View Goodbye Page</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="messages-section">
+        <div class="messages-intro">
+            <p>Add personalized messages for the people you'll miss. They'll be able to find their message using their email address.</p>
+        </div>
+        
+        <div class="messages-container">
+            <div class="messages-table-header">
+                <div class="col-name">Name</div>
+                <div class="col-email">Email Address</div>
+                <div class="col-message">Personal Message</div>
+                <div class="col-emotion">Feeling</div>
+            </div>
+            
+            <div class="messages-table" id="messagesTable">
+                <!-- Messages will be populated here -->
+            </div>
+            
+            <div class="table-actions">
+                <button class="btn btn-secondary" onclick="addMoreRows()" id="addRowsBtn">Add 10 More Rows</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Dialog -->
+<div id="settingsDialog" class="dialog-overlay {{ sender.slug ? '' : 'show' }}">
+    <div class="dialog">
+        <div class="dialog-header">
+            <h2>Page Settings</h2>
+            <button class="dialog-close" onclick="closeSettingsDialog()">&times;</button>
+        </div>
+        <div class="dialog-body">
+            <form id="settingsForm" class="settings-form">
+                <div class="form-group">
+                    <label for="slug">Page URL</label>
+                    <div class="form-field-container">
+                        <div class="url-preview">
+                            <span class="url-base">{{ domain }}/</span>
+                            <input type="text" id="slug" name="slug" value="{{ sender.slug ?? '' }}" 
+                                   placeholder="your-name-goodbye" pattern="[a-zA-Z0-9-]+" required>
+                        </div>
+                        <small>Only letters, numbers, and hyphens allowed</small>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="overall_message">Main Message</label>
+                    <div class="form-field-container">
+                        <input type="text" id="overall_message" name="overall_message" 
+                               value="{{ sender.overall_message ?? '' }}" 
+                               placeholder="I'll miss you!" required>
+                        <small>This appears at the top of your goodbye page</small>
+                    </div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label>Choose Theme</label>
+                    <div class="themes-grid">
+                        {% for theme in themes %}
+                        <div class="theme-option" data-theme="{{ theme.id }}">
+                            <div class="theme-preview" style="background: {{ theme.background_color }}">
+                                <div class="theme-character">
+                                    <img src="/assets/themes/characters/{{ theme.character_image }}" alt="{{ theme.name }}" />
+                                </div>
+                            </div>
+                            <div class="theme-info">
+                                <strong>{{ theme.name }}</strong>
+                                <span>{{ theme.description }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" id="theme" name="theme" value="{{ sender.theme ?? 'rosie' }}">
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="not_found_message">Email Not Found Message</label>
+                    <div class="form-field-container">
+                        <textarea id="not_found_message" name="not_found_message" rows="3" 
+                                  placeholder="Sorry, I don't think we've worked together, but thanks for checking!">{{ sender.not_found_message ?? '' }}</textarea>
+                        <small>Shown when someone enters an email not in your list</small>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="dialog-footer">
+            <button class="btn btn-secondary" onclick="closeSettingsDialog()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const CREATION_URL = '{{ sender.creation_url }}';
+const SENDER_DATA = {{ sender|json_encode|raw }};
+let rowCount = 10;
+let isFirstSettingsSave = {{ sender.slug ? 'false' : 'true' }};
+
+// Emotion options
+const emotions = [
+    { id: 'happy', emoji: '😊', label: 'Happy' },
+    { id: 'grateful', emoji: '🙏', label: 'Grateful' },
+    { id: 'love', emoji: '❤️', label: 'Love' },
+    { id: 'excited', emoji: '🤩', label: 'Excited' },
+    { id: 'sad', emoji: '😢', label: 'Sad' }
+];
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    setupThemeSelection();
+    setupAutoSave();
+    populateMessages();
+    
+    // If no slug exists, keep dialog open by default
+    if (!SENDER_DATA.slug) {
+        document.getElementById('settingsDialog').classList.add('show');
+    }
+});
+
+// Dialog functions
+function openSettingsDialog() {
+    document.getElementById('settingsDialog').classList.add('show');
+}
+
+function closeSettingsDialog() {
+    // Only allow closing if slug exists (settings have been saved at least once)
+    if (SENDER_DATA.slug) {
+        document.getElementById('settingsDialog').classList.remove('show');
+    }
+}
+
+function saveSettings() {
+    const form = document.getElementById('settingsForm');
+    const formData = new FormData(form);
+    
+    // Validate required fields
+    const slug = formData.get('slug');
+    const overallMessage = formData.get('overall_message');
+    
+    if (!slug || !overallMessage) {
+        alert('Please fill in all required fields');
+        return;
+    }
+    
+    const settingsData = {
+        settings: {
+            slug: slug,
+            overall_message: overallMessage,
+            theme: formData.get('theme'),
+            not_found_message: formData.get('not_found_message')
+        }
+    };
+    
+    const saveButton = document.querySelector('.dialog-footer .btn-primary');
+    saveButton.disabled = true;
+    saveButton.textContent = 'Saving...';
+    
+    fetch(`/api/create/${CREATION_URL}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(settingsData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update local sender data
+            SENDER_DATA.slug = slug;
+            SENDER_DATA.overall_message = overallMessage;
+            SENDER_DATA.theme = formData.get('theme');
+            SENDER_DATA.not_found_message = formData.get('not_found_message');
+            
+            // If this was the first save, reload to show "View Goodbye Page" button
+            if (isFirstSettingsSave) {
+                isFirstSettingsSave = false;
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+            }
+            
+            closeSettingsDialog();
+        } else {
+            alert('Error saving settings: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('An error occurred while saving');
+    })
+    .finally(() => {
+        saveButton.disabled = false;
+        saveButton.textContent = 'Save Settings';
+    });
+}
+
+// Theme selection
+function setupThemeSelection() {
+    const selectedTheme = SENDER_DATA.theme || 'rosie';
+    
+    document.querySelectorAll('.theme-option').forEach(option => {
+        option.classList.remove('selected');
+        if (option.dataset.theme === selectedTheme) {
+            option.classList.add('selected');
+        }
+        
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            document.getElementById('theme').value = this.dataset.theme;
+        });
+    });
+}
+
+// Auto-save setup
+function setupAutoSave() {
+    const messagesTable = document.getElementById('messagesTable');
+    
+    messagesTable.addEventListener('input', debounce(function() {
+        saveMessages();
+    }, 1000));
+}
+
+// Save messages
+function saveMessages() {
+    const messages = [];
+    const rows = document.querySelectorAll('.message-row');
+    
+    rows.forEach(row => {
+        const email = row.querySelector('.email-input').value.trim();
+        const name = row.querySelector('.name-input').value.trim();
+        const message = row.querySelector('.message-input').value.trim();
+        const emotion = row.querySelector('.emotion-select').value;
+        
+        if (email && message) {
+            messages.push({
+                recipient_email: email,
+                recipient_name: name,
+                message: message,
+                emotion: emotion
+            });
+        }
+    });
+    
+    const data = { messages: messages };
+    
+    fetch(`/api/create/${CREATION_URL}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .catch(error => {
+        console.error('Save error:', error);
+    });
+}
+
+// Populate messages table
+function populateMessages() {
+    const table = document.getElementById('messagesTable');
+    const existingMessages = SENDER_DATA.messages || [];
+    
+    // Clear existing rows
+    table.innerHTML = '';
+    
+    // Create rows - always show at least rowCount, but also 5 extra beyond existing messages
+    const totalRows = Math.max(rowCount, existingMessages.length + 5);
+    for (let i = 0; i < totalRows; i++) {
+        const message = existingMessages[i] || {};
+        table.appendChild(createMessageRow(message, i));
+    }
+}
+
+function createMessageRow(message, index) {
+    const row = document.createElement('div');
+    row.className = 'message-row';
+    row.innerHTML = `
+        <div class="col-name">
+            <input type="text" class="name-input" placeholder="John Doe" value="${message.recipient_name || ''}">
+        </div>
+        <div class="col-email">
+            <input type="email" class="email-input" placeholder="john@example.com" value="${message.recipient_email || ''}">
+        </div>
+        <div class="col-message">
+            <textarea class="message-input" placeholder="I'll really miss working with you...">${message.message || ''}</textarea>
+        </div>
+        <div class="col-emotion">
+            <select class="emotion-select">
+                ${emotions.map(e => 
+                    `<option value="${e.id}" ${message.emotion === e.id ? 'selected' : ''}>${e.emoji} ${e.label}</option>`
+                ).join('')}
+            </select>
+        </div>
+    `;
+    return row;
+}
+
+function addMoreRows() {
+    rowCount += 10;
+    populateMessages();
+}
+
+// Utility function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+</script>
+{% endblock %}

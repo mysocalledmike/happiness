@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica', sans-serif;
+            background: {{ sender.theme_color ?? '#667eea' }};
+            background: linear-gradient(135deg, {{ sender.theme_color ?? '#667eea' }} 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 800px;
+            width: calc(100vw - 2rem);
+            margin: 1rem;
+            box-sizing: border-box;
+        }
+        
+        .character {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 2rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .character img {
+            width: 100%;
+            height: auto;
+            max-width: 200px;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1));
+            transition: transform 0.3s ease;
+        }
+        
+        .character img:hover {
+            transform: scale(1.05);
+        }
+        
+        .main-message {
+            color: #333;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .lookup-form {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        
+        input[type="email"] {
+            width: 80%;
+            max-width: 300px;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="email"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 80%;
+            max-width: 300px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #333;
+            transition: all 0.5s ease;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .result:empty {
+            opacity: 0;
+            transform: translateY(-10px);
+            min-height: 0;
+            padding: 0;
+        }
+        
+        .result.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .result.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .name-highlight {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .emotion {
+            font-size: 2rem;
+            margin-left: 1rem;
+        }
+        
+        .waitlist-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+        
+        .waitlist-section h3 {
+            color: #333;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        .waitlist-section p {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .waitlist-form {
+            max-width: 350px;
+            margin: 0 auto;
+        }
+        
+        .form-message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .form-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .form-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .form-message.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Character image -->
+        <div class="character">
+            {% if sender.theme == 'rosie' %}
+                <img src="/assets/themes/characters/1.png" alt="Rosie the Unicorn" />
+            {% elseif sender.theme == 'hooty' %}
+                <img src="/assets/themes/characters/2.png" alt="Hooty the Owl" />
+            {% elseif sender.theme == 'bruno' %}
+                <img src="/assets/themes/characters/3.png" alt="Bruno the Bear" />
+            {% elseif sender.theme == 'whiskers' %}
+                <img src="/assets/themes/characters/4.png" alt="Whiskers the Seal" />
+            {% elseif sender.theme == 'penny' %}
+                <img src="/assets/themes/characters/5.png" alt="Penny the Pig" />
+            {% elseif sender.theme == 'lily' %}
+                <img src="/assets/themes/characters/6.png" alt="Lily the Frog" />
+            {% elseif sender.theme == 'buzzy' %}
+                <img src="/assets/themes/characters/7.png" alt="Buzzy the Bee" />
+            {% elseif sender.theme == 'panda' %}
+                <img src="/assets/themes/characters/8.png" alt="Panda the Panda" />
+            {% else %}
+                <img src="/assets/themes/characters/1.png" alt="Rosie the Unicorn" />
+            {% endif %}
+        </div>
+        
+        <!-- Main message -->
+        <h1 id="mainMessage" class="main-message">{{ sender.overall_message ?? "I'LL MISS YOU!" }}</h1>
+        
+        <!-- Lookup form -->
+        <form id="lookupForm" class="lookup-form">
+            <input type="email" id="lookupEmail" placeholder="Enter your email address..." required autocomplete="off">
+            <button type="submit">Reveal surprise!</button>
+        </form>
+        
+        <!-- Result display -->
+        <div id="result" class="result"></div>
+    </div>
+    
+    <!-- Waitlist signup section (outside main container) -->
+    <div class="waitlist-section">
+        <h3>Want to create your own goodbye page?</h3>
+        <p>Join thousands of people who are spreading smiles and happiness when leaving their company, school, or organization.</p>
+        
+        <form id="waitlistForm" class="waitlist-form">
+            <input type="email" id="waitlistEmail" placeholder="Enter your email to join waitlist" required>
+            <button type="submit">Join Waitlist</button>
+        </form>
+        
+        <div id="waitlistMessage" class="form-message hidden"></div>
+    </div>
+    
+    <script>
+    // Lookup form functionality
+    document.getElementById('lookupForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('lookupEmail').value.trim();
+        const resultDiv = document.getElementById('result');
+        const button = this.querySelector('button');
+        
+        if (!email) {
+            showResult('Please enter your email address', 'error');
+            return;
+        }
+        
+        button.disabled = true;
+        button.textContent = 'Searching...';
+        
+        fetch('/api/{{ sender.slug }}/lookup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.message) {
+                // Success - show personalized message
+                const mainMessage = document.getElementById('mainMessage');
+                mainMessage.innerHTML = "I'll miss you, <span class='name-highlight'>" + (data.name || 'friend') + "!</span>";
+                
+                showResult(data.message + (data.emotion ? '<span class="emotion">' + getEmotionEmoji(data.emotion) + '</span>' : ''), 'success');
+            } else {
+                // Not found - show custom message
+                const notFoundMsg = data.not_found_message || "Sorry, no message found for that email address.";
+                showResult(notFoundMsg, 'error');
+            }
+        })
+        .catch(error => {
+            showResult('An error occurred while searching.', 'error');
+        })
+        .finally(() => {
+            button.disabled = false;
+            button.textContent = 'Reveal surprise!';
+        });
+    });
+    
+    // Waitlist form functionality
+    document.getElementById('waitlistForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('waitlistEmail').value.trim();
+        const messageDiv = document.getElementById('waitlistMessage');
+        const button = this.querySelector('button');
+        
+        if (!email) {
+            showWaitlistMessage('Please enter your email address', 'error');
+            return;
+        }
+        
+        button.disabled = true;
+        button.textContent = 'Adding...';
+        
+        fetch('/api/waitlist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showWaitlistMessage('🎉 Added to waitlist! You\'ll receive an email when you can create your page.', 'success');
+                document.getElementById('waitlistEmail').value = '';
+            } else {
+                showWaitlistMessage(data.message || 'An error occurred', 'error');
+            }
+        })
+        .catch(error => {
+            showWaitlistMessage('An error occurred. Please try again.', 'error');
+        })
+        .finally(() => {
+            button.disabled = false;
+            button.textContent = 'Join Waitlist';
+        });
+    });
+    
+    function showResult(html, type) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = html;
+        resultDiv.className = 'result ' + type;
+    }
+    
+    function showWaitlistMessage(text, type) {
+        const messageDiv = document.getElementById('waitlistMessage');
+        messageDiv.textContent = text;
+        messageDiv.className = 'form-message ' + type;
+        messageDiv.classList.remove('hidden');
+    }
+    
+    function getEmotionEmoji(emotion) {
+        const emotions = {
+            'happy': '😊',
+            'sad': '😢',
+            'excited': '🤩',
+            'grateful': '🙏',
+            'love': '❤️'
+        };
+        return emotions[emotion] || '😊';
+    }
+    </script>
+</body>
+</html>

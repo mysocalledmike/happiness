@@ -1,0 +1,49 @@
+# Composer dependencies
+/vendor/
+
+# Development files
+development_emails.log
+debug_admin_actions.php
+create_test_*.php
+
+# Database files (you may want to include schema.sql but exclude actual data)
+database/happiness.db
+*.db
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+
+# Environment files (if you add them later)
+.env
+.env.local
+.env.production
+
+# Cache files
+cache/
+tmp/
+
+# Backup files
+*.bak
+*-old.*
+original/
+templates/creation-old.twig

@@ -1,0 +1,324 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="admin-header">
+        <h1>Admin Dashboard</h1>
+        <p>Manage users and waitlist</p>
+    </div>
+    
+    <div class="filters">
+        <button class="filter-btn active" data-filter="all">All Users</button>
+        <button class="filter-btn" data-filter="waitlist">On Waitlist</button>
+        <button class="filter-btn" data-filter="inactive">Not Yet Active</button>
+        <button class="filter-btn" data-filter="active">Active</button>
+    </div>
+    
+    <div class="users-table-container">
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Slug</th>
+                    <th>Creation URL</th>
+                    <th>Time in State</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr data-status="{{ user.status }}">
+                    <td class="email-cell">{{ user.email }}</td>
+                    <td class="status-cell">
+                        <span class="status-badge status-{{ user.status }}">
+                            {% if user.status == 'waitlist' %}On Waitlist{% endif %}
+                            {% if user.status == 'inactive' %}Not Yet Active{% endif %}
+                            {% if user.status == 'active' %}Active{% endif %}
+                        </span>
+                    </td>
+                    <td class="slug-cell">
+                        {% if user.status == 'active' and user.slug %}
+                            <a href="/{{ user.slug }}" target="_blank" class="slug-link">{{ user.slug }}</a>
+                        {% else %}
+                            <span class="slug-empty">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="creation-url-cell">
+                        {% if user.creation_url %}
+                            <a href="/create/{{ user.creation_url }}" target="_blank" class="creation-url-link">
+                                {{ user.creation_url|slice(0, 20) }}...
+                            </a>
+                        {% else %}
+                            <span class="creation-url-empty">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="time-cell">{{ user.time_in_state }}</td>
+                    <td class="actions-cell">
+                        <div class="actions-container">
+                            {% if user.status == 'waitlist' %}
+                                <button class="btn btn-primary" onclick="allowUser('{{ user.email }}')">
+                                    Allow on Site
+                                </button>
+                            {% elseif user.status == 'inactive' %}
+                                <button class="btn btn-secondary" onclick="sendReminder('{{ user.email }}')">
+                                    Send Reminder Email
+                                </button>
+                            {% endif %}
+                            
+                            <div class="dropdown">
+                                <button class="btn btn-dots" onclick="toggleDropdown(this)">⋮</button>
+                                <div class="dropdown-menu">
+                                    {% if user.status != 'waitlist' %}
+                                        <button onclick="resetCreationPage('{{ user.email }}')">Reset Creation URL</button>
+                                    {% endif %}
+                                    <button onclick="deleteUser('{{ user.email }}')" class="danger">Delete User</button>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="adminMessage" class="admin-message hidden"></div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirmModal" class="modal hidden">
+    <div class="modal-content">
+        <h3 id="confirmTitle">Confirm Action</h3>
+        <p id="confirmMessage">Are you sure?</p>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-danger" id="confirmBtn">Confirm</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Filter functionality
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        const filter = this.dataset.filter;
+        const rows = document.querySelectorAll('.users-table tbody tr');
+        
+        rows.forEach(row => {
+            if (filter === 'all' || row.dataset.status === filter) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+});
+
+// Dropdown functionality
+function toggleDropdown(button) {
+    const dropdown = button.parentElement;
+    const menu = dropdown.querySelector('.dropdown-menu');
+    
+    // Close all other dropdowns
+    document.querySelectorAll('.dropdown-menu').forEach(m => {
+        if (m !== menu) m.classList.remove('show');
+    });
+    
+    // Check if there's enough space below, otherwise position above
+    const rect = dropdown.getBoundingClientRect();
+    const menuHeight = 100; // Approximate menu height
+    const spaceBelow = window.innerHeight - rect.bottom;
+    
+    if (spaceBelow < menuHeight && rect.top > menuHeight) {
+        // Position above
+        menu.style.top = 'auto';
+        menu.style.bottom = '100%';
+    } else {
+        // Position below (default)
+        menu.style.top = '100%';
+        menu.style.bottom = 'auto';
+    }
+    
+    menu.classList.toggle('show');
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+    }
+});
+
+// Admin actions
+function allowUser(email) {
+    adminAction('allow-user', { email }, `Allow ${email} on site?`, 'This will send them a creation link.');
+}
+
+function sendReminder(email) {
+    adminAction('send-reminder', { email }, `Send reminder to ${email}?`, 'This will send them their creation link again.');
+}
+
+function resetCreationPage(email) {
+    adminAction('reset-creation', { email }, `Reset creation page for ${email}?`, 'This will generate a new creation URL and invalidate the old one.');
+}
+
+function deleteUser(email) {
+    adminAction('delete-user', { email }, `Delete ${email}?`, 'This will permanently delete their account and all data. This action cannot be undone!');
+}
+
+function adminAction(action, data, title, message) {
+    showModal(title, message, () => {
+        const button = document.getElementById('confirmBtn');
+        setLoadingState(button, true);
+        
+        request(`/api/admin/${action}`, {
+            method: 'POST',
+            body: data
+        })
+        .then(response => {
+            if (response.success) {
+                showAdminMessage('Action completed successfully!', 'success');
+                
+                // Update the UI based on the action instead of reloading
+                if (action === 'allow-user') {
+                    updateUserRow(data.email, 'inactive', 'Not Yet Active', 'For 0 minute');
+                } else if (action === 'delete-user') {
+                    removeUserRow(data.email);
+                } else {
+                    // For other actions, just reload after a short delay
+                    setTimeout(() => location.reload(), 1000);
+                }
+            } else {
+                showAdminMessage('Error: ' + response.message, 'error');
+            }
+        })
+        .catch(error => {
+            showAdminMessage('An error occurred', 'error');
+        })
+        .finally(() => {
+            setLoadingState(button, false);
+            closeModal();
+        });
+    });
+}
+
+function showModal(title, message, onConfirm) {
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmMessage').textContent = message;
+    document.getElementById('confirmModal').classList.remove('hidden');
+    
+    document.getElementById('confirmBtn').onclick = onConfirm;
+}
+
+function closeModal() {
+    document.getElementById('confirmModal').classList.add('hidden');
+}
+
+function showAdminMessage(text, type) {
+    const messageEl = document.getElementById('adminMessage');
+    messageEl.textContent = text;
+    messageEl.className = 'admin-message ' + type;
+    messageEl.classList.remove('hidden');
+    
+    setTimeout(() => {
+        messageEl.classList.add('hidden');
+    }, 5000);
+}
+
+function updateUserRow(email, newStatus, statusText, timeText) {
+    const rows = document.querySelectorAll('.users-table tbody tr');
+    
+    rows.forEach(row => {
+        const emailCell = row.querySelector('.email-cell');
+        if (emailCell && emailCell.textContent.trim() === email) {
+            // Update status
+            row.setAttribute('data-status', newStatus);
+            
+            // Update status badge
+            const statusBadge = row.querySelector('.status-badge');
+            statusBadge.className = `status-badge status-${newStatus}`;
+            statusBadge.textContent = statusText;
+            
+            // Update slug column
+            const slugCell = row.querySelector('.slug-cell');
+            if (newStatus === 'active') {
+                // We don't know the slug yet, so show a placeholder
+                slugCell.innerHTML = '<span class="slug-empty">Creating...</span>';
+            } else {
+                slugCell.innerHTML = '<span class="slug-empty">—</span>';
+            }
+            
+            // Update creation URL column
+            const creationUrlCell = row.querySelector('.creation-url-cell');
+            if (newStatus === 'inactive' || newStatus === 'active') {
+                // Show "Available" for users with creation URLs
+                creationUrlCell.innerHTML = '<span class="creation-url-link">Available</span>';
+            } else {
+                creationUrlCell.innerHTML = '<span class="creation-url-empty">—</span>';
+            }
+            
+            // Update time
+            const timeCell = row.querySelector('.time-cell');
+            timeCell.textContent = timeText;
+            
+            // Update action buttons
+            const actionsCell = row.querySelector('.actions-cell .actions-container');
+            updateActionButtons(actionsCell, email, newStatus);
+            
+            // Add visual feedback
+            row.style.backgroundColor = '#d4edda';
+            setTimeout(() => {
+                row.style.backgroundColor = '';
+            }, 2000);
+        }
+    });
+}
+
+function removeUserRow(email) {
+    const rows = document.querySelectorAll('.users-table tbody tr');
+    
+    rows.forEach(row => {
+        const emailCell = row.querySelector('.email-cell');
+        if (emailCell && emailCell.textContent.trim() === email) {
+            row.style.transition = 'opacity 0.5s ease';
+            row.style.opacity = '0';
+            setTimeout(() => {
+                row.remove();
+            }, 500);
+        }
+    });
+}
+
+function updateActionButtons(container, email, status) {
+    // Clear existing buttons except dropdown
+    const dropdown = container.querySelector('.dropdown');
+    container.innerHTML = '';
+    
+    // Add appropriate action button based on status
+    if (status === 'waitlist') {
+        const allowButton = document.createElement('button');
+        allowButton.className = 'btn btn-primary';
+        allowButton.textContent = 'Allow on Site';
+        allowButton.onclick = () => allowUser(email);
+        container.appendChild(allowButton);
+    } else if (status === 'inactive') {
+        const reminderButton = document.createElement('button');
+        reminderButton.className = 'btn btn-secondary';
+        reminderButton.textContent = 'Send Reminder Email';
+        reminderButton.onclick = () => sendReminder(email);
+        container.appendChild(reminderButton);
+    }
+    
+    // Re-add dropdown
+    if (dropdown) {
+        container.appendChild(dropdown);
+    }
+}
+</script>
+{% endblock %}
