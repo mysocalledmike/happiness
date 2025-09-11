@@ -4,7 +4,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 // Only allow this in development
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-$isDevelopment = strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false;
+$isDevelopment = strpos($host, 'localhost') !== false || 
+                 strpos($host, '127.0.0.1') !== false ||
+                 strpos($host, 'dreamhost') !== false ||
+                 strpos($host, 'happiness.mikesorvillo.com') !== false;
 
 if (!$isDevelopment) {
     http_response_code(404);
