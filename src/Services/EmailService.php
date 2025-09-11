@@ -28,7 +28,12 @@ class EmailService
         
         $headers = 'From: ' . $from . "\r\n" .
                    'Reply-To: ' . $from . "\r\n" .
-                   'X-Mailer: PHP/' . phpversion();
+                   'Return-Path: ' . $from . "\r\n" .
+                   'MIME-Version: 1.0' . "\r\n" .
+                   'Content-Type: text/plain; charset=UTF-8' . "\r\n" .
+                   'Content-Transfer-Encoding: 8bit' . "\r\n" .
+                   'X-Mailer: Happiness Platform' . "\r\n" .
+                   'X-Priority: 3' . "\r\n";
         
         if (self::isDevelopment()) {
             // In development, log the email instead of sending
