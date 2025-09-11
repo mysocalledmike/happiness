@@ -104,7 +104,12 @@ $app->post('/api/admin/{action}', function ($request, $response, $args) {
 $app->get('/dev/emails', function ($request, $response, $args) {
     // Only allow in development
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    if (strpos($host, 'localhost') === false && strpos($host, '127.0.0.1') === false) {
+    $isDevelopment = strpos($host, 'localhost') !== false || 
+                     strpos($host, '127.0.0.1') !== false ||
+                     strpos($host, 'dreamhost') !== false ||
+                     strpos($host, 'happiness.mikesorvillo.com') !== false;
+    
+    if (!$isDevelopment) {
         return $response->withStatus(404);
     }
     

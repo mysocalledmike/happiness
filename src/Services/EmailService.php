@@ -10,7 +10,10 @@ class EmailService
     {
         if (self::$isDevelopment === null) {
             $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-            self::$isDevelopment = strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false;
+            self::$isDevelopment = strpos($host, 'localhost') !== false || 
+                                 strpos($host, '127.0.0.1') !== false ||
+                                 strpos($host, 'dreamhost') !== false ||
+                                 strpos($host, 'happiness.mikesorvillo.com') !== false;
         }
         return self::$isDevelopment;
     }
