@@ -4,7 +4,7 @@
 <div class="homepage">
     <div class="hero-section">
         <h1 class="hero-title">Bring a smile to 1 billion faces</h1>
-        <p class="hero-subtitle">Create personalized goodbye messages for anyone you'll miss when leaving a company, school, or organization.</p>
+        <p class="hero-subtitle">Create personalized happiness messages for colleagues, classmates, and friends to spread joy and positivity.</p>
         
         <div class="smile-counter">
             <div class="smile-number">{{ smile_count|number_format }}</div>
@@ -16,7 +16,7 @@
         <div class="feature">
             <div class="feature-icon">💝</div>
             <h3>Personalized Messages</h3>
-            <p>Create custom goodbye messages for each person you want to remember</p>
+            <p>Create custom happiness messages for each person you want to uplift</p>
         </div>
         
         <div class="feature">
@@ -28,19 +28,53 @@
         <div class="feature">
             <div class="feature-icon">📱</div>
             <h3>Share Easily</h3>
-            <p>Send your custom goodbye page link to friends, family, and colleagues</p>
+            <p>Send your custom happiness page link to friends, family, and colleagues</p>
         </div>
     </div>
-    
+
+    <div class="leaderboard-section">
+        <h2>Happiness Leaderboard</h2>
+        <p>See who's spreading the most smiles!</p>
+
+        <div class="leaderboard-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Creator</th>
+                        <th>Smiles Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leader in leaderboard %}
+                    <tr>
+                        <td class="creator-cell">
+                            {% if leader.slug %}
+                                <a href="/{{ leader.slug }}" class="creator-link">{{ leader.email }}</a>
+                            {% else %}
+                                {{ leader.email }}
+                            {% endif %}
+                        </td>
+                        <td class="smiles-cell">{{ leader.smile_count|number_format }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="2" class="no-data">No happiness creators yet. Be the first!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <div class="waitlist-section">
         <h2>Ready to spread some happiness?</h2>
-        <p>Join the waitlist to create your own goodbye page</p>
-        
+        <p>Join the waitlist to create your own happiness page</p>
+
         <form id="waitlistForm" class="waitlist-form">
             <input type="email" id="waitlistEmail" placeholder="Enter your email address" required>
             <button type="submit">Join Waitlist</button>
         </form>
-        
+
         <div id="waitlistMessage" class="form-message hidden"></div>
     </div>
 </div>

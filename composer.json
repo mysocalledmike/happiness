@@ -1,6 +1,6 @@
 {
     "name": "happiness/goodbye-site",
-    "description": "Multi-user goodbye message website",
+    "description": "Multi-user happiness message website",
     "type": "project",
     "require": {
         "php": ">=7.4",

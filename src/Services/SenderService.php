@@ -15,14 +15,16 @@ class SenderService
             throw new \Exception('Invalid creation URL');
         }
         
-        // Get existing messages
+        // Get existing messages with sent status
         $messages = $db->fetchAll('
-            SELECT recipient_email, recipient_name, message, emotion 
-            FROM messages 
-            WHERE sender_id = ? 
-            ORDER BY id ASC
+            SELECT m.recipient_email, m.recipient_name, m.message, m.emotion,
+                   CASE WHEN en.id IS NOT NULL THEN 1 ELSE 0 END as is_sent
+            FROM messages m
+            LEFT JOIN email_notifications en ON en.sender_id = m.sender_id AND en.recipient_email = m.recipient_email
+            WHERE m.sender_id = ?
+            ORDER BY m.id ASC
         ', [$sender['id']]);
-        
+
         $sender['messages'] = $messages;
         return $sender;
     }
@@ -33,7 +35,7 @@ class SenderService
         $sender = $db->fetchOne('SELECT * FROM senders WHERE slug = ?', [$slug]);
         
         if (!$sender || $sender['status'] !== 'active') {
-            throw new \Exception('Goodbye page not found');
+            throw new \Exception('Happiness page not found');
         }
         
         // Add theme color if theme is set
@@ -130,5 +132,84 @@ class SenderService
                 }
             }
         }
+    }
+
+    public static function publishPage(string $creationUrl): array
+    {
+        $db = Database::getInstance();
+        $sender = $db->fetchOne('SELECT * FROM senders WHERE creation_url = ?', [$creationUrl]);
+
+        if (!$sender || $sender['status'] !== 'active') {
+            throw new \Exception('Page not ready for publishing');
+        }
+
+        // Get all messages that haven't been sent yet
+        $messages = $db->fetchAll('
+            SELECT m.recipient_email, m.recipient_name
+            FROM messages m
+            LEFT JOIN email_notifications en ON en.sender_id = m.sender_id AND en.recipient_email = m.recipient_email
+            WHERE m.sender_id = ? AND en.id IS NULL AND m.message IS NOT NULL AND m.message != ""
+        ', [$sender['id']]);
+
+        $emailsSent = 0;
+        $maxEmails = 20; // Recipient limit
+
+        if (count($messages) > $maxEmails) {
+            throw new \Exception("Too many recipients. Maximum {$maxEmails} emails allowed.");
+        }
+
+        foreach ($messages as $message) {
+            try {
+                self::sendHappinessEmail($sender, $message['recipient_email'], $message['recipient_name']);
+
+                // Mark as sent
+                $db->insert('email_notifications', [
+                    'sender_id' => $sender['id'],
+                    'recipient_email' => $message['recipient_email']
+                ]);
+
+                $emailsSent++;
+            } catch (\Exception $e) {
+                // Continue sending other emails even if one fails
+                error_log("Failed to send email to {$message['recipient_email']}: " . $e->getMessage());
+            }
+        }
+
+        return ['emails_sent' => $emailsSent];
+    }
+
+    private static function sendHappinessEmail(array $sender, string $recipientEmail, string $recipientName): void
+    {
+        $subject = $sender['overall_message'] ? "You have a happiness message! - {$sender['overall_message']}" : "You have a happiness message!";
+
+        // Use the current host for the URL
+        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
+        $pageUrl = "{$protocol}://{$host}/{$sender['slug']}?email=" . urlencode($recipientEmail) . "&first=1";
+
+        $message = "
+Hi " . ($recipientName ?: 'there') . "!
+
+You just received a happiness message! Someone wants to spread a little joy and positivity your way.
+
+Click here to see your personalized message:
+{$pageUrl}
+
+This message was created just for you. Take a moment to smile! 😊
+
+Want to create your own happiness page? Visit our homepage to get started.
+        ";
+
+        $result = \App\Services\EmailService::sendEmail($recipientEmail, $subject, $message);
+
+        if (!$result) {
+            throw new \Exception('Failed to send email to ' . $recipientEmail);
+        }
+    }
+
+    public static function incrementPageSmileCount(int $senderId): void
+    {
+        $db = Database::getInstance();
+        $db->query('UPDATE senders SET smile_count = smile_count + 1 WHERE id = ?', [$senderId]);
     }
 }

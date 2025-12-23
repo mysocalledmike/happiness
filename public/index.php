@@ -28,7 +28,8 @@ $app->get('/', function ($request, $response, $args) {
     $view = Twig::fromRequest($request);
     return $view->render($response, 'homepage.twig', [
         'title' => \App\Config::getAppName() . ' - ' . \App\Config::getAppDescription(),
-        'smile_count' => \App\Services\StatsService::getSmileCount()
+        'smile_count' => \App\Services\StatsService::getSmileCount(),
+        'leaderboard' => \App\Services\StatsService::getLeaderboard()
     ]);
 });
 
@@ -148,7 +149,7 @@ $app->get('/create/{creation_url}', function ($request, $response, $args) {
         $sender = \App\Services\SenderService::getSenderByCreationUrl($creationUrl);
         $view = Twig::fromRequest($request);
         return $view->render($response, 'creation.twig', [
-            'title' => 'Create Your Goodbye Page',
+            'title' => 'Create Your Happiness Page',
             'sender' => $sender,
             'themes' => \App\Services\ThemeService::getAllThemes(),
             'domain' => \App\Config::getDomain()
@@ -189,15 +190,15 @@ $app->post('/api/create/{creation_url}/save', function ($request, $response, $ar
     }
 });
 
-// Goodbye page
+// Happiness page
 $app->get('/{slug}', function ($request, $response, $args) {
     $slug = $args['slug'];
     
     try {
         $sender = \App\Services\SenderService::getSenderBySlug($slug);
         $view = Twig::fromRequest($request);
-        return $view->render($response, 'goodbye.twig', [
-            'title' => $sender['overall_message'] ?? 'Goodbye!',
+        return $view->render($response, 'happiness.twig', [
+            'title' => $sender['overall_message'] ?? 'Happiness!',
             'sender' => $sender
         ]);
     } catch (\Exception $e) {
@@ -205,7 +206,7 @@ $app->get('/{slug}', function ($request, $response, $args) {
     }
 });
 
-// Goodbye page lookup (AJAX)
+// Happiness page lookup (AJAX)
 $app->post('/api/{slug}/lookup', function ($request, $response, $args) {
     $slug = $args['slug'];
     $data = $request->getParsedBody();
@@ -220,9 +221,13 @@ $app->post('/api/{slug}/lookup', function ($request, $response, $args) {
         $result = \App\Services\MessageService::lookupMessage($slug, $email);
         
         if ($result) {
-            // Increment smile count
+            // Increment global smile count
             \App\Services\StatsService::incrementSmileCount();
-            
+
+            // Increment per-page smile count
+            $sender = \App\Services\SenderService::getSenderBySlug($slug);
+            \App\Services\SenderService::incrementPageSmileCount($sender['id']);
+
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'name' => $result['recipient_name'],
@@ -244,6 +249,31 @@ $app->post('/api/{slug}/lookup', function ($request, $response, $args) {
         $response->getBody()->write(json_encode(['success' => false, 'message' => $e->getMessage()]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
+});
+
+// Publish happiness page (send emails)
+$app->post('/api/publish/{creation_url}', function ($request, $response, $args) {
+    $creationUrl = $args['creation_url'];
+
+    try {
+        $result = \App\Services\SenderService::publishPage($creationUrl);
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'emails_sent' => $result['emails_sent']
+        ]));
+        return $response->withHeader('Content-Type', 'application/json');
+    } catch (\Exception $e) {
+        $response->getBody()->write(json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
+
+// Redirect to waitlist signup for CTA clicks
+$app->get('/api/waitlist-redirect', function ($request, $response, $args) {
+    return $response->withHeader('Location', '/')->withStatus(302);
 });
 
 $app->run();

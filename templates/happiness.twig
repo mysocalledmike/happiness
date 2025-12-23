@@ -245,15 +245,22 @@
             <input type="email" id="lookupEmail" placeholder="Enter your email address..." required autocomplete="off">
             <button type="submit">Reveal surprise!</button>
         </form>
-        
+
         <!-- Result display -->
         <div id="result" class="result"></div>
+
+        <!-- Per-page smile counter -->
+        <div class="page-smile-counter" style="margin-top: 2rem; text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">😊</div>
+            <div style="font-size: 1.2rem; font-weight: bold; color: #667eea;">{{ sender.smile_count ?? 0 }}</div>
+            <div style="font-size: 0.9rem; color: #666;">smiles created by this page</div>
+        </div>
     </div>
     
     <!-- Waitlist signup section (outside main container) -->
     <div class="waitlist-section">
-        <h3>Want to create your own goodbye page?</h3>
-        <p>Join thousands of people who are spreading smiles and happiness when leaving their company, school, or organization.</p>
+        <h3>Want to create your own happiness page?</h3>
+        <p>Join thousands of people who are spreading smiles and happiness to their colleagues, classmates, and friends.</p>
         
         <form id="waitlistForm" class="waitlist-form">
             <input type="email" id="waitlistEmail" placeholder="Enter your email to join waitlist" required>
@@ -264,22 +271,39 @@
     </div>
     
     <script>
+    // Check for first-time use parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const firstUse = urlParams.get('first');
+    const prefilledEmail = urlParams.get('email');
+    let hasShownFirstUseMessage = false;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-fill email if provided
+        if (prefilledEmail) {
+            document.getElementById('lookupEmail').value = prefilledEmail;
+            // Auto-submit for first-time users
+            if (firstUse === '1') {
+                document.getElementById('lookupForm').dispatchEvent(new Event('submit'));
+            }
+        }
+    });
+
     // Lookup form functionality
     document.getElementById('lookupForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         const email = document.getElementById('lookupEmail').value.trim();
         const resultDiv = document.getElementById('result');
         const button = this.querySelector('button');
-        
+
         if (!email) {
             showResult('Please enter your email address', 'error');
             return;
         }
-        
+
         button.disabled = true;
         button.textContent = 'Searching...';
-        
+
         fetch('/api/{{ sender.slug }}/lookup', {
             method: 'POST',
             headers: {
@@ -292,9 +316,20 @@
             if (data.success && data.message) {
                 // Success - show personalized message
                 const mainMessage = document.getElementById('mainMessage');
-                mainMessage.innerHTML = "I'll miss you, <span class='name-highlight'>" + (data.name || 'friend') + "!</span>";
-                
-                showResult(data.message + (data.emotion ? '<span class="emotion">' + getEmotionEmoji(data.emotion) + '</span>' : ''), 'success');
+                mainMessage.innerHTML = "I hope this brings you happiness, <span class='name-highlight'>" + (data.name || 'friend') + "!</span>";
+
+                let resultHTML = data.message + (data.emotion ? '<span class="emotion">' + getEmotionEmoji(data.emotion) + '</span>' : '');
+
+                // Add first-use CTA for new visitors or first-time users
+                const isFirstLookup = firstUse === '1' || !hasShownFirstUseMessage;
+                if (isFirstLookup) {
+                    hasShownFirstUseMessage = true;
+                    resultHTML += '<div style="margin-top: 2rem; padding: 1rem; background: rgba(102, 126, 234, 0.1); border-radius: 8px; text-align: center;">';
+                    resultHTML += '<p style="margin: 0 0 0.5rem 0; font-size: 14px; color: #666;">Want to try looking up another email address or <a href="/api/waitlist-redirect" style="color: #667eea; text-decoration: none; font-weight: bold;">create your own happiness page</a>?</p>';
+                    resultHTML += '</div>';
+                }
+
+                showResult(resultHTML, 'success');
             } else {
                 // Not found - show custom message
                 const notFoundMsg = data.not_found_message || "Sorry, no message found for that email address.";

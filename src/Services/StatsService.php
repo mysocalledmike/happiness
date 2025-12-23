@@ -18,4 +18,16 @@ class StatsService
         $db = Database::getInstance();
         $db->query('UPDATE stats SET smile_count = smile_count + 1, last_updated = CURRENT_TIMESTAMP WHERE id = 1');
     }
+
+    public static function getLeaderboard(int $limit = 10): array
+    {
+        $db = Database::getInstance();
+        return $db->fetchAll('
+            SELECT email, slug, smile_count
+            FROM senders
+            WHERE status = "active" AND smile_count > 0
+            ORDER BY smile_count DESC, email ASC
+            LIMIT ?
+        ', [$limit]);
+    }
 }

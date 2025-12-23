@@ -115,7 +115,7 @@ class AdminService
 
     private static function sendCreationEmail(string $email, string $creationUrl): void
     {
-        $subject = 'Create Your Goodbye Page - You\'re off the waitlist!';
+        $subject = 'Create Your Happiness Page - You\'re off the waitlist!';
         
         // Use the current host for the URL (works in both dev and production)
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
@@ -123,12 +123,12 @@ class AdminService
         $createUrl = "{$protocol}://{$host}/create/{$creationUrl}";
         
         $message = "
-Great news! You've been removed from the waitlist and can now create your goodbye page.
+Great news! You've been removed from the waitlist and can now create your happiness page.
 
 Click here to get started:
 {$createUrl}
 
-Remember, this is your chance to bring smiles and happiness to people you'll miss!
+Remember, this is your chance to bring smiles and happiness to your colleagues, classmates, and friends!
 
 This link is private and unique to you - don't share it with others.
 
@@ -144,7 +144,7 @@ Happy creating!
 
     private static function sendReminderEmail(string $email, string $creationUrl): void
     {
-        $subject = 'Don\'t forget to create your goodbye page!';
+        $subject = 'Don\'t forget to create your happiness page!';
         
         // Use the current host for the URL (works in both dev and production)
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
@@ -154,7 +154,7 @@ Happy creating!
         $message = "
 Hi there!
 
-Just a friendly reminder that you can create your goodbye page to bring smiles and happiness to people you'll miss.
+Just a friendly reminder that you can create your happiness page to bring smiles and happiness to your colleagues, classmates, and friends.
 
 Your creation link is still active:
 {$createUrl}
@@ -186,7 +186,7 @@ Hi there!
 Your creation URL has been reset. Here is your new creation link:
 {$createUrl}
 
-You can use this link to continue editing your goodbye page.
+You can use this link to continue editing your happiness page.
 
 This link is private and unique to you - don't share it with others.
 

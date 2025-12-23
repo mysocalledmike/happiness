@@ -94,7 +94,7 @@ html, body {
 
 .messages-table-header {
     display: grid;
-    grid-template-columns: 220px 320px 2fr 160px;
+    grid-template-columns: 220px 320px 2fr 160px 80px;
     gap: 1.5rem;
     padding: 1rem;
     background: #f8f9fa;
@@ -109,7 +109,7 @@ html, body {
 
 .message-row {
     display: grid;
-    grid-template-columns: 220px 320px 2fr 160px;
+    grid-template-columns: 220px 320px 2fr 160px 80px;
     gap: 1.5rem;
     padding: 1rem;
     border-bottom: 1px solid #f0f0f0;
@@ -118,6 +118,16 @@ html, body {
 
 .message-row:hover {
     background: #f8f9fa;
+}
+.col-sent {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sent-status {
+    font-size: 1.2rem;
+    cursor: help;
 }
 
 .message-row input,
@@ -384,7 +394,7 @@ html, body {
 @media (max-width: 1600px) {
     .messages-table-header,
     .message-row {
-        grid-template-columns: 200px 280px 2fr 140px;
+        grid-template-columns: 200px 280px 2fr 140px 70px;
         gap: 1rem;
     }
 }
@@ -392,7 +402,7 @@ html, body {
 @media (max-width: 1200px) {
     .messages-table-header,
     .message-row {
-        grid-template-columns: 180px 250px 1fr 130px;
+        grid-template-columns: 180px 250px 1fr 130px 60px;
         gap: 1rem;
     }
 }
@@ -458,13 +468,14 @@ html, body {
 <div class="creation-page">
     <div class="page-header">
         <div class="header-content">
-            <h1>Create Your Goodbye Messages</h1>
+            <h1>Create Your Happiness Messages</h1>
             <div class="auto-save-indicator">Changes saved automatically</div>
         </div>
         <div class="header-actions">
             <button class="btn btn-secondary" onclick="openSettingsDialog()">Settings</button>
             {% if sender.slug and sender.status == 'active' %}
-                <a href="/{{ sender.slug }}" target="_blank" class="btn btn-primary">View Goodbye Page</a>
+                <button type="button" id="previewBtn" class="btn btn-secondary">Preview Happiness Page</button>
+                <button type="button" id="publishBtn" class="btn btn-primary">Send New Messages</button>
             {% endif %}
         </div>
     </div>
@@ -480,6 +491,7 @@ html, body {
                 <div class="col-email">Email Address</div>
                 <div class="col-message">Personal Message</div>
                 <div class="col-emotion">Feeling</div>
+                <div class="col-sent">Sent?</div>
             </div>
             
             <div class="messages-table" id="messagesTable">
@@ -508,7 +520,7 @@ html, body {
                         <div class="url-preview">
                             <span class="url-base">{{ domain }}/</span>
                             <input type="text" id="slug" name="slug" value="{{ sender.slug ?? '' }}" 
-                                   placeholder="your-name-goodbye" pattern="[a-zA-Z0-9-]+" required>
+                                   placeholder="your-name-happiness" pattern="[a-zA-Z0-9-]+" required>
                         </div>
                         <small>Only letters, numbers, and hyphens allowed</small>
                     </div>
@@ -520,7 +532,7 @@ html, body {
                         <input type="text" id="overall_message" name="overall_message" 
                                value="{{ sender.overall_message ?? '' }}" 
                                placeholder="I'll miss you!" required>
-                        <small>This appears at the top of your goodbye page</small>
+                        <small>This appears at the top of your happiness page</small>
                     </div>
                 </div>
                 
@@ -560,6 +572,39 @@ html, body {
         </div>
     </div>
 </div>
+
+<!-- Publish Confirmation Modal -->
+<div id="publishModal" class="dialog-overlay" style="display: none;">
+    <div class="dialog">
+        <div class="dialog-header">
+            <h2>Send New Messages</h2>
+        </div>
+        <div class="dialog-body">
+            <p>Are you ready to send happiness messages to all the people on this page? This will send individual emails to everyone with updated messages.</p>
+            <p><strong>Note:</strong> This action cannot be undone and recipients will receive email notifications.</p>
+        </div>
+        <div class="dialog-footer">
+            <button class="btn btn-secondary" onclick="closePublishModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="confirmPublish()">Send Messages</button>
+        </div>
+    </div>
+</div>
+
+<!-- No New Messages Modal -->
+<div id="noNewMessagesModal" class="dialog-overlay" style="display: none;">
+    <div class="dialog">
+        <div class="dialog-header">
+            <h2>No New Messages</h2>
+        </div>
+        <div class="dialog-body">
+            <p>There are no new messages or users to notify.</p>
+            <p>All messages marked with ✅ have already been sent. Add new messages or modify existing ones to send more notifications.</p>
+        </div>
+        <div class="dialog-footer">
+            <button class="btn btn-primary" onclick="closeNoNewMessagesModal()">OK</button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -583,7 +628,8 @@ document.addEventListener('DOMContentLoaded', function() {
     setupThemeSelection();
     setupAutoSave();
     populateMessages();
-    
+    setupButtons();
+
     // If no slug exists, keep dialog open by default
     if (!SENDER_DATA.slug) {
         document.getElementById('settingsDialog').classList.add('show');
@@ -644,7 +690,7 @@ function saveSettings() {
             SENDER_DATA.theme = formData.get('theme');
             SENDER_DATA.not_found_message = formData.get('not_found_message');
             
-            // If this was the first save, reload to show "View Goodbye Page" button
+            // If this was the first save, reload to show Preview/Publish buttons
             if (isFirstSettingsSave) {
                 isFirstSettingsSave = false;
                 setTimeout(() => {
@@ -682,6 +728,56 @@ function setupThemeSelection() {
             document.getElementById('theme').value = this.dataset.theme;
         });
     });
+}
+
+function showPublishModal() {
+    // Check if there are new messages to send
+    const newMessages = getNewMessages();
+    if (newMessages.length === 0) {
+        showNoNewMessagesModal();
+        return;
+    }
+
+    document.getElementById('publishModal').style.display = 'flex';
+}
+
+function getNewMessages() {
+    const messages = [];
+    const rows = document.querySelectorAll('.message-row');
+
+    rows.forEach(row => {
+        const email = row.querySelector('.email-input').value.trim();
+        const message = row.querySelector('.message-input').value.trim();
+        const sentStatus = row.querySelector('.sent-status');
+        const isSent = sentStatus && sentStatus.textContent.includes('✅');
+
+        // Include messages that have email, message content, and haven't been sent yet
+        if (email && message && !isSent) {
+            messages.push({
+                email: email,
+                message: message
+            });
+        }
+    });
+
+    return messages;
+}
+
+function closePublishModal() {
+    document.getElementById('publishModal').style.display = 'none';
+}
+
+function confirmPublish() {
+    closePublishModal();
+    publishPage();
+}
+
+function showNoNewMessagesModal() {
+    document.getElementById('noNewMessagesModal').style.display = 'flex';
+}
+
+function closeNoNewMessagesModal() {
+    document.getElementById('noNewMessagesModal').style.display = 'none';
 }
 
 // Auto-save setup
@@ -748,6 +844,17 @@ function populateMessages() {
 function createMessageRow(message, index) {
     const row = document.createElement('div');
     row.className = 'message-row';
+
+    // Determine sent status emoji
+    let sentEmoji = '';
+    if (message.recipient_email && message.message) {
+        if (message.is_sent) {
+            sentEmoji = '✅';
+        } else {
+            sentEmoji = '🚧';
+        }
+    }
+
     row.innerHTML = `
         <div class="col-name">
             <input type="text" class="name-input" placeholder="John Doe" value="${message.recipient_name || ''}">
@@ -760,10 +867,13 @@ function createMessageRow(message, index) {
         </div>
         <div class="col-emotion">
             <select class="emotion-select">
-                ${emotions.map(e => 
+                ${emotions.map(e =>
                     `<option value="${e.id}" ${message.emotion === e.id ? 'selected' : ''}>${e.emoji} ${e.label}</option>`
                 ).join('')}
             </select>
+        </div>
+        <div class="col-sent">
+            <span class="sent-status" title="${message.is_sent ? 'Message sent' : (sentEmoji ? 'Not sent yet' : '')}">${sentEmoji}</span>
         </div>
     `;
     return row;
@@ -785,6 +895,75 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+// Setup button handlers
+function setupButtons() {
+    const previewBtn = document.getElementById('previewBtn');
+    const publishBtn = document.getElementById('publishBtn');
+
+    if (previewBtn) {
+        previewBtn.addEventListener('click', function() {
+            window.open('/' + SENDER_DATA.slug, '_blank');
+        });
+    }
+
+    if (publishBtn) {
+        publishBtn.addEventListener('click', function() {
+            showPublishModal();
+        });
+    }
+}
+
+function publishPage() {
+    const publishBtn = document.getElementById('publishBtn');
+    if (publishBtn) {
+        publishBtn.disabled = true;
+        publishBtn.textContent = 'Sending...';
+    }
+
+    fetch(`/api/publish/${CREATION_URL}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('🎉 Messages sent successfully! ' + (data.emails_sent || 0) + ' emails were sent.');
+
+            // Update the sent status for messages that were just sent
+            updateSentStatusIndicators();
+        } else {
+            alert('Error sending messages: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('An error occurred while sending messages');
+    })
+    .finally(() => {
+        if (publishBtn) {
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'Send New Messages';
+        }
+    });
+}
+
+function updateSentStatusIndicators() {
+    const rows = document.querySelectorAll('.message-row');
+
+    rows.forEach(row => {
+        const email = row.querySelector('.email-input').value.trim();
+        const message = row.querySelector('.message-input').value.trim();
+        const sentStatusSpan = row.querySelector('.sent-status');
+
+        // If the row has email and message, mark it as sent
+        if (email && message && sentStatusSpan) {
+            sentStatusSpan.textContent = '✅';
+            sentStatusSpan.title = 'Message sent';
+        }
+    });
 }
 </script>
 {% endblock %}

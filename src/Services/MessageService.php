@@ -14,7 +14,7 @@ class MessageService
         $sender = $db->fetchOne('SELECT id FROM senders WHERE slug = ? AND status = "active"', [$slug]);
         
         if (!$sender) {
-            throw new \Exception('Goodbye page not found');
+            throw new \Exception('Happiness page not found');
         }
         
         // Look up the message
