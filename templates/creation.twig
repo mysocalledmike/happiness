@@ -130,6 +130,218 @@ html, body {
     cursor: help;
 }
 
+/* Page Preview Header */
+.page-preview-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.preview-character {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.character-display {
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 10px;
+}
+
+.character-display img {
+    width: 90px;
+    height: auto;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+.theme-picker-wrapper {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+}
+
+.edit-icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.edit-icon-btn:hover {
+    transform: scale(1.1);
+}
+
+.edit-icon {
+    font-size: 14px;
+}
+
+.theme-picker-popup {
+    position: absolute;
+    bottom: 40px;
+    right: 0;
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    padding: 1rem;
+    z-index: 1000;
+    min-width: 200px;
+}
+
+.theme-picker-header {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #333;
+    text-align: center;
+}
+
+.theme-options-compact {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+.theme-option-mini {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    border: 2px solid transparent;
+    padding: 4px;
+}
+
+.theme-option-mini:hover {
+    transform: scale(1.1);
+}
+
+.theme-option-mini.selected {
+    border-color: #667eea;
+}
+
+.theme-option-mini img {
+    width: 28px;
+    height: auto;
+    border-radius: 50%;
+}
+
+.main-message-section {
+    flex: 1;
+}
+
+.main-message-display {
+    font-size: 1.8rem;
+    color: #333;
+    margin: 0;
+    cursor: text;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.main-message-display:hover {
+    background-color: #f5f5f5;
+}
+
+.main-message-editing {
+    background: white;
+    border: 2px solid #667eea;
+    outline: none;
+}
+
+/* Settings Dropdown */
+.settings-dropdown-wrapper {
+    position: relative;
+}
+
+.settings-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    min-width: 450px;
+    max-width: 500px;
+    z-index: 1000;
+    margin-top: 8px;
+}
+
+.dropdown-content {
+    padding: 2rem;
+}
+
+.dropdown-content .form-group {
+    margin-bottom: 1rem;
+}
+
+.dropdown-content .form-group:last-child {
+    margin-bottom: 0;
+}
+
+.dropdown-content label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.dropdown-content input,
+.dropdown-content textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.dropdown-content .url-preview {
+    display: flex;
+    align-items: center;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.dropdown-content .url-base {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #666;
+    white-space: nowrap;
+}
+
+.dropdown-content .url-preview input {
+    border: none;
+    flex: 1;
+    margin: 0;
+}
+
+
 .message-row input,
 .message-row textarea,
 .message-row select {
@@ -472,7 +684,26 @@ html, body {
             <div class="auto-save-indicator">Changes saved automatically</div>
         </div>
         <div class="header-actions">
-            <button class="btn btn-secondary" onclick="openSettingsDialog()">Settings</button>
+            <div class="settings-dropdown-wrapper">
+                <button class="btn btn-secondary" id="settingsDropdownBtn" onclick="toggleSettingsDropdown()">Settings ⌄</button>
+                <div class="settings-dropdown" id="settingsDropdown" style="display: none;">
+                    <div class="dropdown-content">
+                        <div class="form-group">
+                            <label for="slugEdit">Page URL</label>
+                            <div class="url-preview">
+                                <span class="url-base">{{ domain }}/</span>
+                                <input type="text" id="slugEdit" value="{{ sender.slug ?? '' }}"
+                                       placeholder="your-name-happiness" pattern="[a-zA-Z0-9-]+" onchange="saveSlug()">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="notFoundEdit">Email Not Found Message</label>
+                            <textarea id="notFoundEdit" rows="4" onchange="saveNotFoundMessage()"
+                                      placeholder="Sorry, I don't think we've worked together, but thanks for checking out my happiness page!">{{ sender.not_found_message ?? '' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% if sender.slug and sender.status == 'active' %}
                 <button type="button" id="previewBtn" class="btn btn-secondary">Preview Happiness Page</button>
                 <button type="button" id="publishBtn" class="btn btn-primary">Send New Messages</button>
@@ -480,11 +711,54 @@ html, body {
         </div>
     </div>
     
-    <div class="messages-section">
-        <div class="messages-intro">
-            <p>Add personalized messages for the people you'll miss. They'll be able to find their message using their email address.</p>
+    <!-- Page Preview Header -->
+    <div class="page-preview-header">
+        <div class="preview-character">
+            <div class="character-display" id="characterDisplay">
+                {% if sender.theme == 'rosie' %}
+                    <img src="/assets/themes/characters/1.png" alt="Rosie the Unicorn" />
+                {% elseif sender.theme == 'hooty' %}
+                    <img src="/assets/themes/characters/2.png" alt="Hooty the Owl" />
+                {% elseif sender.theme == 'bruno' %}
+                    <img src="/assets/themes/characters/3.png" alt="Bruno the Bear" />
+                {% elseif sender.theme == 'whiskers' %}
+                    <img src="/assets/themes/characters/4.png" alt="Whiskers the Seal" />
+                {% elseif sender.theme == 'penny' %}
+                    <img src="/assets/themes/characters/5.png" alt="Penny the Pig" />
+                {% elseif sender.theme == 'lily' %}
+                    <img src="/assets/themes/characters/6.png" alt="Lily the Frog" />
+                {% elseif sender.theme == 'buzzy' %}
+                    <img src="/assets/themes/characters/7.png" alt="Buzzy the Bee" />
+                {% elseif sender.theme == 'panda' %}
+                    <img src="/assets/themes/characters/8.png" alt="Panda the Panda" />
+                {% else %}
+                    <img src="/assets/themes/characters/1.png" alt="Rosie the Unicorn" />
+                {% endif %}
+            </div>
+            <div class="theme-picker-wrapper">
+                <button class="edit-icon-btn" onclick="toggleThemePicker()" title="Change theme">
+                    <span class="edit-icon">✏️</span>
+                </button>
+                <div class="theme-picker-popup" id="themePicker" style="display: none;">
+                    <div class="theme-picker-header">
+                        <span>Choose Theme</span>
+                    </div>
+                    <div class="theme-options-compact">
+                        {% for theme in themes %}
+                        <div class="theme-option-mini" data-theme="{{ theme.id }}" data-bg-color="{{ theme.background_color }}" onclick="selectTheme('{{ theme.id }}', '{{ theme.background_color }}')">
+                            <img src="/assets/themes/characters/{{ theme.character_image }}" alt="{{ theme.name }}" title="{{ theme.name }}" />
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
-        
+        <div class="main-message-section">
+            <h2 class="main-message-display" id="mainMessageDisplay" onclick="editMainMessage()" title="Click to edit">{{ sender.overall_message ?? "You make me happy" }}</h2>
+        </div>
+    </div>
+
+    <div class="messages-section">
         <div class="messages-container">
             <div class="messages-table-header">
                 <div class="col-name">Name</div>
@@ -505,73 +779,6 @@ html, body {
     </div>
 </div>
 
-<!-- Settings Dialog -->
-<div id="settingsDialog" class="dialog-overlay {{ sender.slug ? '' : 'show' }}">
-    <div class="dialog">
-        <div class="dialog-header">
-            <h2>Page Settings</h2>
-            <button class="dialog-close" onclick="closeSettingsDialog()">&times;</button>
-        </div>
-        <div class="dialog-body">
-            <form id="settingsForm" class="settings-form">
-                <div class="form-group">
-                    <label for="slug">Page URL</label>
-                    <div class="form-field-container">
-                        <div class="url-preview">
-                            <span class="url-base">{{ domain }}/</span>
-                            <input type="text" id="slug" name="slug" value="{{ sender.slug ?? '' }}" 
-                                   placeholder="your-name-happiness" pattern="[a-zA-Z0-9-]+" required>
-                        </div>
-                        <small>Only letters, numbers, and hyphens allowed</small>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="overall_message">Main Message</label>
-                    <div class="form-field-container">
-                        <input type="text" id="overall_message" name="overall_message" 
-                               value="{{ sender.overall_message ?? '' }}" 
-                               placeholder="I'll miss you!" required>
-                        <small>This appears at the top of your happiness page</small>
-                    </div>
-                </div>
-                
-                <div class="form-group full-width">
-                    <label>Choose Theme</label>
-                    <div class="themes-grid">
-                        {% for theme in themes %}
-                        <div class="theme-option" data-theme="{{ theme.id }}">
-                            <div class="theme-preview" style="background: {{ theme.background_color }}">
-                                <div class="theme-character">
-                                    <img src="/assets/themes/characters/{{ theme.character_image }}" alt="{{ theme.name }}" />
-                                </div>
-                            </div>
-                            <div class="theme-info">
-                                <strong>{{ theme.name }}</strong>
-                                <span>{{ theme.description }}</span>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <input type="hidden" id="theme" name="theme" value="{{ sender.theme ?? 'rosie' }}">
-                </div>
-                
-                <div class="form-group full-width">
-                    <label for="not_found_message">Email Not Found Message</label>
-                    <div class="form-field-container">
-                        <textarea id="not_found_message" name="not_found_message" rows="3" 
-                                  placeholder="Sorry, I don't think we've worked together, but thanks for checking!">{{ sender.not_found_message ?? '' }}</textarea>
-                        <small>Shown when someone enters an email not in your list</small>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="dialog-footer">
-            <button class="btn btn-secondary" onclick="closeSettingsDialog()">Cancel</button>
-            <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
-        </div>
-    </div>
-</div>
 
 <!-- Publish Confirmation Modal -->
 <div id="publishModal" class="dialog-overlay" style="display: none;">
@@ -605,6 +812,7 @@ html, body {
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -612,7 +820,6 @@ html, body {
 const CREATION_URL = '{{ sender.creation_url }}';
 const SENDER_DATA = {{ sender|json_encode|raw }};
 let rowCount = 10;
-let isFirstSettingsSave = {{ sender.slug ? 'false' : 'true' }};
 
 // Emotion options
 const emotions = [
@@ -625,110 +832,11 @@ const emotions = [
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
-    setupThemeSelection();
+    initializePageTheme();
     setupAutoSave();
     populateMessages();
     setupButtons();
-
-    // If no slug exists, keep dialog open by default
-    if (!SENDER_DATA.slug) {
-        document.getElementById('settingsDialog').classList.add('show');
-    }
 });
-
-// Dialog functions
-function openSettingsDialog() {
-    document.getElementById('settingsDialog').classList.add('show');
-}
-
-function closeSettingsDialog() {
-    // Only allow closing if slug exists (settings have been saved at least once)
-    if (SENDER_DATA.slug) {
-        document.getElementById('settingsDialog').classList.remove('show');
-    }
-}
-
-function saveSettings() {
-    const form = document.getElementById('settingsForm');
-    const formData = new FormData(form);
-    
-    // Validate required fields
-    const slug = formData.get('slug');
-    const overallMessage = formData.get('overall_message');
-    
-    if (!slug || !overallMessage) {
-        alert('Please fill in all required fields');
-        return;
-    }
-    
-    const settingsData = {
-        settings: {
-            slug: slug,
-            overall_message: overallMessage,
-            theme: formData.get('theme'),
-            not_found_message: formData.get('not_found_message')
-        }
-    };
-    
-    const saveButton = document.querySelector('.dialog-footer .btn-primary');
-    saveButton.disabled = true;
-    saveButton.textContent = 'Saving...';
-    
-    fetch(`/api/create/${CREATION_URL}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(settingsData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Update local sender data
-            SENDER_DATA.slug = slug;
-            SENDER_DATA.overall_message = overallMessage;
-            SENDER_DATA.theme = formData.get('theme');
-            SENDER_DATA.not_found_message = formData.get('not_found_message');
-            
-            // If this was the first save, reload to show Preview/Publish buttons
-            if (isFirstSettingsSave) {
-                isFirstSettingsSave = false;
-                setTimeout(() => {
-                    location.reload();
-                }, 500);
-            }
-            
-            closeSettingsDialog();
-        } else {
-            alert('Error saving settings: ' + data.message);
-        }
-    })
-    .catch(error => {
-        alert('An error occurred while saving');
-    })
-    .finally(() => {
-        saveButton.disabled = false;
-        saveButton.textContent = 'Save Settings';
-    });
-}
-
-// Theme selection
-function setupThemeSelection() {
-    const selectedTheme = SENDER_DATA.theme || 'rosie';
-    
-    document.querySelectorAll('.theme-option').forEach(option => {
-        option.classList.remove('selected');
-        if (option.dataset.theme === selectedTheme) {
-            option.classList.add('selected');
-        }
-        
-        option.addEventListener('click', function() {
-            document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('selected'));
-            this.classList.add('selected');
-            document.getElementById('theme').value = this.dataset.theme;
-        });
-    });
-}
 
 function showPublishModal() {
     // Check if there are new messages to send
@@ -738,7 +846,9 @@ function showPublishModal() {
         return;
     }
 
-    document.getElementById('publishModal').style.display = 'flex';
+    const modal = document.getElementById('publishModal');
+    modal.style.display = 'flex';
+    modal.classList.add('show');
 }
 
 function getNewMessages() {
@@ -749,10 +859,12 @@ function getNewMessages() {
         const email = row.querySelector('.email-input').value.trim();
         const message = row.querySelector('.message-input').value.trim();
         const sentStatus = row.querySelector('.sent-status');
-        const isSent = sentStatus && sentStatus.textContent.includes('✅');
+        const statusText = sentStatus ? sentStatus.textContent.trim() : '';
 
-        // Include messages that have email, message content, and haven't been sent yet
-        if (email && message && !isSent) {
+        // Check if message is not sent (either has 🚧 or is empty but has content)
+        const isNotSent = statusText === '🚧' || (statusText === '' && email && message);
+
+        if (email && message && isNotSent) {
             messages.push({
                 email: email,
                 message: message
@@ -764,7 +876,11 @@ function getNewMessages() {
 }
 
 function closePublishModal() {
-    document.getElementById('publishModal').style.display = 'none';
+    const modal = document.getElementById('publishModal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300); // Wait for transition
 }
 
 function confirmPublish() {
@@ -773,11 +889,223 @@ function confirmPublish() {
 }
 
 function showNoNewMessagesModal() {
-    document.getElementById('noNewMessagesModal').style.display = 'flex';
+    const modal = document.getElementById('noNewMessagesModal');
+    modal.style.display = 'flex';
+    modal.classList.add('show');
 }
 
 function closeNoNewMessagesModal() {
-    document.getElementById('noNewMessagesModal').style.display = 'none';
+    const modal = document.getElementById('noNewMessagesModal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300); // Wait for transition
+}
+
+// Theme Picker Functions
+function toggleThemePicker() {
+    const picker = document.getElementById('themePicker');
+    const isVisible = picker.style.display !== 'none';
+
+    if (isVisible) {
+        picker.style.display = 'none';
+    } else {
+        picker.style.display = 'block';
+
+        // Mark current theme as selected
+        const currentTheme = SENDER_DATA.theme || 'rosie';
+        document.querySelectorAll('.theme-option-mini').forEach(option => {
+            option.classList.remove('selected');
+            if (option.dataset.theme === currentTheme) {
+                option.classList.add('selected');
+            }
+        });
+
+        // Close when clicking outside
+        setTimeout(() => {
+            document.addEventListener('click', handleThemePickerOutsideClick);
+        }, 0);
+    }
+}
+
+function handleThemePickerOutsideClick(event) {
+    const picker = document.getElementById('themePicker');
+    const wrapper = document.querySelector('.theme-picker-wrapper');
+
+    if (!wrapper.contains(event.target)) {
+        picker.style.display = 'none';
+        document.removeEventListener('click', handleThemePickerOutsideClick);
+    }
+}
+
+function selectTheme(themeId, backgroundColor) {
+    // Update UI immediately
+    updateCharacterDisplay(themeId);
+    updatePageBackground(backgroundColor);
+
+    // Update local data
+    SENDER_DATA.theme = themeId;
+
+    // Save to server
+    saveSettings({theme: themeId});
+
+    // Close picker
+    document.getElementById('themePicker').style.display = 'none';
+    document.removeEventListener('click', handleThemePickerOutsideClick);
+}
+
+function updateCharacterDisplay(themeId) {
+    const characterImages = {
+        'rosie': '/assets/themes/characters/1.png',
+        'hooty': '/assets/themes/characters/2.png',
+        'bruno': '/assets/themes/characters/3.png',
+        'whiskers': '/assets/themes/characters/4.png',
+        'penny': '/assets/themes/characters/5.png',
+        'lily': '/assets/themes/characters/6.png',
+        'buzzy': '/assets/themes/characters/7.png',
+        'panda': '/assets/themes/characters/8.png'
+    };
+
+    const characterDisplay = document.querySelector('#characterDisplay img');
+    if (characterDisplay && characterImages[themeId]) {
+        characterDisplay.src = characterImages[themeId];
+    }
+}
+
+function updatePageBackground(backgroundColor) {
+    if (backgroundColor) {
+        document.body.style.background = `linear-gradient(135deg, ${backgroundColor} 0%, #764ba2 100%)`;
+    }
+}
+
+function initializePageTheme() {
+    // Set initial background based on current theme
+    const themeColors = {
+        'rosie': '#f48fb1',
+        'hooty': '#4db6ac',
+        'bruno': '#8d6e63',
+        'whiskers': '#90a4ae',
+        'penny': '#f8bbd9',
+        'lily': '#81c784',
+        'buzzy': '#fff176',
+        'panda': '#757575'
+    };
+
+    const currentTheme = SENDER_DATA.theme || 'rosie';
+    const backgroundColor = themeColors[currentTheme] || '#667eea';
+    updatePageBackground(backgroundColor);
+}
+
+// Settings Dropdown Functions
+function toggleSettingsDropdown() {
+    const dropdown = document.getElementById('settingsDropdown');
+    const isVisible = dropdown.style.display !== 'none';
+
+    if (isVisible) {
+        dropdown.style.display = 'none';
+    } else {
+        dropdown.style.display = 'block';
+
+        // Close when clicking outside
+        setTimeout(() => {
+            document.addEventListener('click', handleOutsideClick);
+        }, 0);
+    }
+}
+
+function handleOutsideClick(event) {
+    const dropdown = document.getElementById('settingsDropdown');
+    const button = document.getElementById('settingsDropdownBtn');
+
+    if (!dropdown.contains(event.target) && !button.contains(event.target)) {
+        dropdown.style.display = 'none';
+        document.removeEventListener('click', handleOutsideClick);
+    }
+}
+
+function saveSlug() {
+    const slugValue = document.getElementById('slugEdit').value.trim();
+    if (slugValue) {
+        SENDER_DATA.slug = slugValue;
+        saveSettings({slug: slugValue});
+    }
+}
+
+function saveNotFoundMessage() {
+    const messageValue = document.getElementById('notFoundEdit').value.trim();
+    SENDER_DATA.not_found_message = messageValue;
+    saveSettings({not_found_message: messageValue});
+}
+
+// Main Message Editing Functions
+let isEditingMainMessage = false;
+
+function editMainMessage() {
+    if (isEditingMainMessage) return;
+
+    const display = document.getElementById('mainMessageDisplay');
+    const currentText = display.textContent;
+
+    // Create input
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentText;
+    input.className = 'main-message-display main-message-editing';
+    input.style.fontSize = '1.8rem';
+    input.style.width = '100%';
+
+    // Replace display with input
+    display.parentNode.replaceChild(input, display);
+    input.focus();
+    input.select();
+    isEditingMainMessage = true;
+
+    // Handle save
+    function saveMainMessage() {
+        const newText = input.value.trim() || 'You make me happy';
+
+        // Create new display element
+        const newDisplay = document.createElement('h2');
+        newDisplay.className = 'main-message-display';
+        newDisplay.id = 'mainMessageDisplay';
+        newDisplay.textContent = newText;
+        newDisplay.onclick = editMainMessage;
+        newDisplay.title = 'Click to edit';
+
+        // Replace input with display
+        input.parentNode.replaceChild(newDisplay, input);
+        isEditingMainMessage = false;
+
+        // Save to server
+        SENDER_DATA.overall_message = newText;
+        saveSettings({overall_message: newText});
+    }
+
+    // Save on blur or enter
+    input.addEventListener('blur', saveMainMessage);
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            input.blur();
+        }
+    });
+}
+
+// Updated save settings function
+function saveSettings(data = {}) {
+    const settingsData = {
+        settings: data
+    };
+
+    fetch(`/api/create/${CREATION_URL}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(settingsData)
+    })
+    .catch(error => {
+        console.error('Save error:', error);
+    });
 }
 
 // Auto-save setup
@@ -876,7 +1204,32 @@ function createMessageRow(message, index) {
             <span class="sent-status" title="${message.is_sent ? 'Message sent' : (sentEmoji ? 'Not sent yet' : '')}">${sentEmoji}</span>
         </div>
     `;
+
+    // Add event listeners to update sent status when content changes
+    row.addEventListener('input', function() {
+        updateRowSentStatus(row);
+    });
+
     return row;
+}
+
+function updateRowSentStatus(row) {
+    const email = row.querySelector('.email-input').value.trim();
+    const message = row.querySelector('.message-input').value.trim();
+    const sentStatusSpan = row.querySelector('.sent-status');
+
+    if (email && message) {
+        // Has content but hasn't been sent yet (new content)
+        const currentIcon = sentStatusSpan.textContent;
+        if (currentIcon !== '✅') { // Don't change if already sent
+            sentStatusSpan.textContent = '🚧';
+            sentStatusSpan.title = 'Not sent yet';
+        }
+    } else {
+        // No content, remove icon
+        sentStatusSpan.textContent = '';
+        sentStatusSpan.title = '';
+    }
 }
 
 function addMoreRows() {
