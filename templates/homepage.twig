@@ -66,38 +66,44 @@
         </div>
     </div>
 
-    <div class="waitlist-section">
+    <div class="signup-section">
         <h2>Ready to spread some happiness?</h2>
-        <p>Join the waitlist to create your own happiness page</p>
+        <p>Create your own happiness page in seconds</p>
 
-        <form id="waitlistForm" class="waitlist-form">
-            <input type="email" id="waitlistEmail" placeholder="Enter your email address" required>
-            <button type="submit">Join Waitlist</button>
+        <form id="signupForm" class="signup-form">
+            <input type="email" id="signupEmail" placeholder="Enter your email address" required>
+            <button type="submit">Create Your Page</button>
         </form>
 
-        <div id="waitlistMessage" class="form-message hidden"></div>
+        <div id="signupMessage" class="form-message hidden"></div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-document.getElementById('waitlistForm').addEventListener('submit', function(e) {
+// Clear any error messages when user starts typing
+document.getElementById('signupEmail').addEventListener('input', function() {
+    const messageDiv = document.getElementById('signupMessage');
+    messageDiv.classList.add('hidden');
+});
+
+document.getElementById('signupForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    
-    const email = document.getElementById('waitlistEmail').value.trim();
-    const messageDiv = document.getElementById('waitlistMessage');
+
+    const email = document.getElementById('signupEmail').value.trim();
+    const messageDiv = document.getElementById('signupMessage');
     const button = this.querySelector('button');
-    
+
     if (!email) {
         showMessage('Please enter your email address', 'error');
         return;
     }
-    
+
     button.disabled = true;
-    button.textContent = 'Adding...';
-    
-    fetch('/api/waitlist', {
+    button.textContent = 'Creating...';
+
+    fetch('/api/signup', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -107,22 +113,24 @@ document.getElementById('waitlistForm').addEventListener('submit', function(e) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showMessage('🎉 Added to waitlist! You\'ll receive an email when you can create your page.', 'success');
-            document.getElementById('waitlistEmail').value = '';
+            const creationUrl = data.creation_url;
+            showMessage(`🎉 Page created! Check your email or <a href="/create/${creationUrl}" style="color: inherit; text-decoration: underline;">click here to get started</a>`, 'success');
+            document.getElementById('signupEmail').value = '';
         } else {
             showMessage(data.message || 'An error occurred', 'error');
         }
     })
     .catch(error => {
+        console.error('Signup error:', error);
         showMessage('An error occurred. Please try again.', 'error');
     })
     .finally(() => {
         button.disabled = false;
-        button.textContent = 'Join Waitlist';
+        button.textContent = 'Create Your Page';
     });
-    
+
     function showMessage(text, type) {
-        messageDiv.textContent = text;
+        messageDiv.innerHTML = text;
         messageDiv.className = 'form-message ' + type;
         messageDiv.classList.remove('hidden');
     }

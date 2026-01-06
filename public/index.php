@@ -33,22 +33,25 @@ $app->get('/', function ($request, $response, $args) {
     ]);
 });
 
-// Waitlist signup (AJAX)
-$app->post('/api/waitlist', function ($request, $response, $args) {
+// Signup (AJAX)
+$app->post('/api/signup', function ($request, $response, $args) {
     $data = $request->getParsedBody();
     $email = trim($data['email'] ?? '');
-    
+
     if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $response->getBody()->write(json_encode(['success' => false, 'message' => 'Valid email required']));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
-    
+
     try {
-        \App\Services\WaitlistService::addToWaitlist($email);
-        $response->getBody()->write(json_encode(['success' => true, 'message' => 'Added to waitlist!']));
+        $creationUrl = \App\Services\WaitlistService::createPage($email);
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'creation_url' => $creationUrl
+        ]));
         return $response->withHeader('Content-Type', 'application/json');
     } catch (\Exception $e) {
-        $response->getBody()->write(json_encode(['success' => false, 'message' => 'Email already on waitlist']));
+        $response->getBody()->write(json_encode(['success' => false, 'message' => $e->getMessage()]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
@@ -271,7 +274,7 @@ $app->post('/api/publish/{creation_url}', function ($request, $response, $args) 
     }
 });
 
-// Redirect to waitlist signup for CTA clicks
+// Redirect to homepage for CTA clicks (legacy endpoint)
 $app->get('/api/waitlist-redirect', function ($request, $response, $args) {
     return $response->withHeader('Location', '/')->withStatus(302);
 });

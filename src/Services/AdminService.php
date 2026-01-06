@@ -29,9 +29,6 @@ class AdminService
         $now = new \DateTime();
         
         switch ($user['status']) {
-            case 'waitlist':
-                $startTime = new \DateTime($user['created_at']);
-                break;
             case 'inactive':
                 $startTime = $user['activated_at'] ? new \DateTime($user['activated_at']) : new \DateTime($user['created_at']);
                 break;
@@ -155,20 +152,20 @@ class AdminService
 
     private static function sendCreationEmail(string $email, string $creationUrl): void
     {
-        $subject = 'Create Your Happiness Page - You\'re off the waitlist!';
-        
+        $subject = 'Create Your Happiness Page!';
+
         // Use the current host for the URL (works in both dev and production)
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
         $createUrl = "{$protocol}://{$host}/create/{$creationUrl}";
-        
+
         $message = "
-Great news! You've been removed from the waitlist and can now create your happiness page.
+Welcome to Happiness!
+
+You're all set to create your happiness page and spread joy to your colleagues, classmates, and friends.
 
 Click here to get started:
 {$createUrl}
-
-Remember, this is your chance to bring smiles and happiness to your colleagues, classmates, and friends!
 
 This link is private and unique to you - don't share it with others.
 

@@ -4,12 +4,11 @@
 <div class="admin-dashboard">
     <div class="admin-header">
         <h1>Admin Dashboard</h1>
-        <p>Manage users and waitlist</p>
+        <p>Manage users</p>
     </div>
     
     <div class="filters">
         <button class="filter-btn active" data-filter="all">All Users</button>
-        <button class="filter-btn" data-filter="waitlist">On Waitlist</button>
         <button class="filter-btn" data-filter="inactive">Not Yet Active</button>
         <button class="filter-btn" data-filter="active">Active</button>
     </div>
@@ -32,7 +31,6 @@
                     <td class="email-cell">{{ user.email }}</td>
                     <td class="status-cell">
                         <span class="status-badge status-{{ user.status }}">
-                            {% if user.status == 'waitlist' %}On Waitlist{% endif %}
                             {% if user.status == 'inactive' %}Not Yet Active{% endif %}
                             {% if user.status == 'active' %}Active{% endif %}
                         </span>
@@ -56,22 +54,16 @@
                     <td class="time-cell">{{ user.time_in_state }}</td>
                     <td class="actions-cell">
                         <div class="actions-container">
-                            {% if user.status == 'waitlist' %}
-                                <button class="btn btn-primary" onclick="allowUser('{{ user.email }}')">
-                                    Allow on Site
-                                </button>
-                            {% elseif user.status == 'inactive' %}
+                            {% if user.status == 'inactive' %}
                                 <button class="btn btn-secondary" onclick="sendReminder('{{ user.email }}')">
                                     Send Reminder Email
                                 </button>
                             {% endif %}
-                            
+
                             <div class="dropdown">
                                 <button class="btn btn-dots" onclick="toggleDropdown(this)">⋮</button>
                                 <div class="dropdown-menu">
-                                    {% if user.status != 'waitlist' %}
-                                        <button onclick="resetCreationPage('{{ user.email }}')">Reset Creation URL</button>
-                                    {% endif %}
+                                    <button onclick="resetCreationPage('{{ user.email }}')">Reset Creation URL</button>
                                     <button onclick="deleteUser('{{ user.email }}')" class="danger">Delete User</button>
                                 </div>
                             </div>
@@ -156,10 +148,6 @@ document.addEventListener('click', function(e) {
 });
 
 // Admin actions
-function allowUser(email) {
-    adminAction('allow-user', { email }, `Allow ${email} on site?`, 'This will send them a creation link.');
-}
-
 function sendReminder(email) {
     adminAction('send-reminder', { email }, `Send reminder to ${email}?`, 'This will send them their creation link again.');
 }
@@ -184,11 +172,9 @@ function adminAction(action, data, title, message) {
         .then(response => {
             if (response.success) {
                 showAdminMessage('Action completed successfully!', 'success');
-                
+
                 // Update the UI based on the action instead of reloading
-                if (action === 'allow-user') {
-                    updateUserRow(data.email, 'inactive', 'Not Yet Active', 'For 0 minute');
-                } else if (action === 'delete-user') {
+                if (action === 'delete-user') {
                     removeUserRow(data.email);
                 } else {
                     // For other actions, just reload after a short delay
@@ -299,22 +285,16 @@ function updateActionButtons(container, email, status) {
     // Clear existing buttons except dropdown
     const dropdown = container.querySelector('.dropdown');
     container.innerHTML = '';
-    
+
     // Add appropriate action button based on status
-    if (status === 'waitlist') {
-        const allowButton = document.createElement('button');
-        allowButton.className = 'btn btn-primary';
-        allowButton.textContent = 'Allow on Site';
-        allowButton.onclick = () => allowUser(email);
-        container.appendChild(allowButton);
-    } else if (status === 'inactive') {
+    if (status === 'inactive') {
         const reminderButton = document.createElement('button');
         reminderButton.className = 'btn btn-secondary';
         reminderButton.textContent = 'Send Reminder Email';
         reminderButton.onclick = () => sendReminder(email);
         container.appendChild(reminderButton);
     }
-    
+
     // Re-add dropdown
     if (dropdown) {
         container.appendChild(dropdown);

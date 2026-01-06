@@ -157,7 +157,7 @@
             margin-left: 1rem;
         }
         
-        .waitlist-section {
+        .signup-section {
             margin-top: 2rem;
             padding: 1.5rem;
             background: rgba(255, 255, 255, 0.9);
@@ -168,21 +168,21 @@
             margin-right: auto;
             text-align: center;
         }
-        
-        .waitlist-section h3 {
+
+        .signup-section h3 {
             color: #333;
             margin-bottom: 0.75rem;
             font-size: 1.1rem;
         }
-        
-        .waitlist-section p {
+
+        .signup-section p {
             color: #666;
             margin-bottom: 1rem;
             font-size: 13px;
             line-height: 1.4;
         }
-        
-        .waitlist-form {
+
+        .signup-form {
             max-width: 350px;
             margin: 0 auto;
         }
@@ -257,17 +257,17 @@
         </div>
     </div>
     
-    <!-- Waitlist signup section (outside main container) -->
-    <div class="waitlist-section">
+    <!-- Signup section (outside main container) -->
+    <div class="signup-section">
         <h3>Want to create your own happiness page?</h3>
         <p>Join thousands of people who are spreading smiles and happiness to their colleagues, classmates, and friends.</p>
-        
-        <form id="waitlistForm" class="waitlist-form">
-            <input type="email" id="waitlistEmail" placeholder="Enter your email to join waitlist" required>
-            <button type="submit">Join Waitlist</button>
+
+        <form id="signupForm" class="signup-form">
+            <input type="email" id="signupEmail" placeholder="Enter your email to get started" required>
+            <button type="submit">Create Your Page</button>
         </form>
-        
-        <div id="waitlistMessage" class="form-message hidden"></div>
+
+        <div id="signupMessage" class="form-message hidden"></div>
     </div>
     
     <script>
@@ -325,7 +325,7 @@
                 if (isFirstLookup) {
                     hasShownFirstUseMessage = true;
                     resultHTML += '<div style="margin-top: 2rem; padding: 1rem; background: rgba(102, 126, 234, 0.1); border-radius: 8px; text-align: center;">';
-                    resultHTML += '<p style="margin: 0 0 0.5rem 0; font-size: 14px; color: #666;">Want to try looking up another email address or <a href="/api/waitlist-redirect" style="color: #667eea; text-decoration: none; font-weight: bold;">create your own happiness page</a>?</p>';
+                    resultHTML += '<p style="margin: 0 0 0.5rem 0; font-size: 14px; color: #666;">Want to try looking up another email address or <a href="/" style="color: #667eea; text-decoration: none; font-weight: bold;">create your own happiness page</a>?</p>';
                     resultHTML += '</div>';
                 }
 
@@ -345,23 +345,23 @@
         });
     });
     
-    // Waitlist form functionality
-    document.getElementById('waitlistForm').addEventListener('submit', function(e) {
+    // Signup form functionality
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        const email = document.getElementById('waitlistEmail').value.trim();
-        const messageDiv = document.getElementById('waitlistMessage');
+
+        const email = document.getElementById('signupEmail').value.trim();
+        const messageDiv = document.getElementById('signupMessage');
         const button = this.querySelector('button');
-        
+
         if (!email) {
-            showWaitlistMessage('Please enter your email address', 'error');
+            showSignupMessage('Please enter your email address', 'error');
             return;
         }
-        
+
         button.disabled = true;
-        button.textContent = 'Adding...';
-        
-        fetch('/api/waitlist', {
+        button.textContent = 'Creating...';
+
+        fetch('/api/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -371,18 +371,19 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showWaitlistMessage('🎉 Added to waitlist! You\'ll receive an email when you can create your page.', 'success');
-                document.getElementById('waitlistEmail').value = '';
+                const creationUrl = data.creation_url;
+                showSignupMessage('🎉 Page created! Check your email or click here to get started: <a href="/create/' + creationUrl + '" style="color: inherit; text-decoration: underline; font-weight: bold;">Start creating</a>', 'success');
+                document.getElementById('signupEmail').value = '';
             } else {
-                showWaitlistMessage(data.message || 'An error occurred', 'error');
+                showSignupMessage(data.message || 'An error occurred', 'error');
             }
         })
         .catch(error => {
-            showWaitlistMessage('An error occurred. Please try again.', 'error');
+            showSignupMessage('An error occurred. Please try again.', 'error');
         })
         .finally(() => {
             button.disabled = false;
-            button.textContent = 'Join Waitlist';
+            button.textContent = 'Create Your Page';
         });
     });
     
@@ -392,9 +393,9 @@
         resultDiv.className = 'result ' + type;
     }
     
-    function showWaitlistMessage(text, type) {
-        const messageDiv = document.getElementById('waitlistMessage');
-        messageDiv.textContent = text;
+    function showSignupMessage(text, type) {
+        const messageDiv = document.getElementById('signupMessage');
+        messageDiv.innerHTML = text;
         messageDiv.className = 'form-message ' + type;
         messageDiv.classList.remove('hidden');
     }

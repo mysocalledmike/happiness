@@ -326,25 +326,25 @@ button:active {
     padding: 2rem;
 }
 
-.waitlist-section {
+.signup-section {
     background: #f8f9fa;
     padding: 2rem;
     border-radius: 15px;
     margin-top: 3rem;
 }
 
-.waitlist-section h2 {
+.signup-section h2 {
     color: #333;
     margin-bottom: 0.5rem;
     font-size: 1.8rem;
 }
 
-.waitlist-section p {
+.signup-section p {
     color: #666;
     margin-bottom: 1.5rem;
 }
 
-.waitlist-form {
+.signup-form {
     max-width: 400px;
     margin: 0 auto;
 }
@@ -477,11 +477,6 @@ input[type="email"]:focus {
     font-size: 12px;
     font-weight: bold;
     text-transform: uppercase;
-}
-
-.status-waitlist {
-    background: #fff3cd;
-    color: #856404;
 }
 
 .status-inactive {
