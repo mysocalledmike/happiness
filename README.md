@@ -11,7 +11,7 @@ A heartwarming web application that allows people to create personalized goodbye
 - **Personalized Messages**: Each recipient gets a unique, heartfelt message
 - **Email Lookup**: Recipients find their message by entering their email
 - **Squishmallow Themes**: 8 adorable character themes with matching color schemes
-- **Waitlist System**: Manages user onboarding and access control
+- **Instant Signup**: Create your happiness page immediately with smart defaults
 - **Admin Dashboard**: Complete user management and oversight tools
 - **Mobile Responsive**: Works beautifully on all devices
 
@@ -19,11 +19,11 @@ A heartwarming web application that allows people to create personalized goodbye
 
 ### For Message Creators
 
-1. **Join Waitlist**: Users sign up with their email address
-2. **Get Invited**: Admins approve users and send creation links
-3. **Choose Settings**: Select page URL, main message, and squishmallow theme
+1. **Sign Up**: Enter your email to create a page instantly
+2. **Get Creation Link**: Receive your unique creation link via email
+3. **Customize Page**: Edit your URL slug, main message, and choose a squishmallow theme
 4. **Add Messages**: Create personalized messages for specific email addresses
-5. **Go Live**: Page becomes publicly accessible at their chosen URL
+5. **Go Live**: Page becomes publicly accessible at your chosen URL
 
 ### For Message Recipients
 
@@ -34,10 +34,10 @@ A heartwarming web application that allows people to create personalized goodbye
 
 ### For Administrators
 
-1. **Manage Waitlist**: Approve users from waitlist to active status
-2. **Monitor Activity**: Track user engagement and page creation
+1. **Monitor Users**: View all user accounts and their statuses
+2. **Track Activity**: See time spent in each status and engagement metrics
 3. **Send Reminders**: Nudge inactive users to complete their pages
-4. **User Management**: Reset creation URLs, delete users, view analytics
+4. **User Management**: Reset creation URLs, delete users, activate pages
 
 ## 🎨 Squishmallow Themes
 
@@ -71,7 +71,7 @@ Each theme includes a prominent character display and matching background gradie
 ### Database Schema
 - `senders`: User accounts and page settings
 - `messages`: Personalized messages for recipients
-- `waitlist`: Email signups awaiting approval
+- `email_notifications`: Tracking sent notification emails
 - `stats`: Usage analytics and metrics
 
 ## 🚀 Getting Started
@@ -117,19 +117,18 @@ Each theme includes a prominent character display and matching background gradie
 
 #### Admin Tools
 - Complete user management dashboard
-- Filter users by status (waitlist, inactive, active)
-- Bulk actions and individual user controls
+- Filter users by status (inactive, active)
+- Individual user controls and actions
 - Real-time status updates
 
 ## 🎯 User Journey & Status Flow
 
 ### User Statuses
-1. **Waitlist**: Initial signup, awaiting admin approval
-2. **Inactive**: Approved but haven't completed their page
-3. **Active**: Page is live and publicly accessible
+1. **Inactive**: User signed up, creation link sent, but page not yet published
+2. **Active**: Page is live and publicly accessible
 
 ### Admin Actions
-- **Allow User**: Move from waitlist → inactive (sends creation email)
+- **Activate User**: Manually activate an inactive user's page
 - **Send Reminder**: Nudge inactive users to complete their page
 - **Reset Creation URL**: Generate new creation link (invalidates old)
 - **Delete User**: Permanently remove user and all data
@@ -151,7 +150,7 @@ happiness/
 │       ├── EmailService.php
 │       ├── SenderService.php
 │       ├── ThemeService.php
-│       └── WaitlistService.php
+│       └── SignupService.php
 ├── templates/             # Twig template files
 │   ├── layout.twig        # Base layout template
 │   ├── homepage.twig      # Landing page
@@ -167,9 +166,9 @@ happiness/
 ## 🔌 API Endpoints
 
 ### Public Endpoints
-- `GET /` - Homepage with waitlist signup
-- `GET /{slug}` - Public goodbye page
-- `POST /api/waitlist` - Join waitlist
+- `GET /` - Homepage with signup form
+- `GET /{slug}` - Public happiness page
+- `POST /api/signup` - Create new page instantly
 - `POST /api/{slug}/lookup` - Find personalized message
 
 ### Creation Flow
@@ -178,7 +177,7 @@ happiness/
 
 ### Admin Endpoints
 - `GET /admin` - Admin dashboard
-- `POST /api/admin/allow-user` - Approve waitlist user
+- `POST /api/admin/allow-user` - Activate user page
 - `POST /api/admin/send-reminder` - Send reminder email
 - `POST /api/admin/reset-creation` - Reset creation URL
 - `POST /api/admin/delete-user` - Delete user account
@@ -231,10 +230,10 @@ public static function getAppDescription(): string
 3. Character images automatically display in theme selector
 
 ### Email Templates
-Email content is defined in `AdminService.php`:
-- `sendCreationEmail()` - "You're off the waitlist" 
-- `sendReminderEmail()` - Reminder to complete page
-- `sendResetCreationEmail()` - New creation URL
+Email content is defined in service classes:
+- `SignupService::sendCreationEmail()` - Welcome email with creation link
+- `AdminService::sendReminderEmail()` - Reminder to complete page
+- `AdminService::sendResetCreationEmail()` - New creation URL
 
 ### Styling
 - Main styles in `public/assets/css/style.css`

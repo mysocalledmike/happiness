@@ -44,7 +44,7 @@ $app->post('/api/signup', function ($request, $response, $args) {
     }
 
     try {
-        $creationUrl = \App\Services\WaitlistService::createPage($email);
+        $creationUrl = \App\Services\SignupService::createPage($email);
         $response->getBody()->write(json_encode([
             'success' => true,
             'creation_url' => $creationUrl
@@ -272,11 +272,6 @@ $app->post('/api/publish/{creation_url}', function ($request, $response, $args) 
         ]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
-});
-
-// Redirect to homepage for CTA clicks (legacy endpoint)
-$app->get('/api/waitlist-redirect', function ($request, $response, $args) {
-    return $response->withHeader('Location', '/')->withStatus(302);
 });
 
 $app->run();

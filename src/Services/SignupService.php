@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Database;
 
-class WaitlistService
+class SignupService
 {
     public static function createPage(string $email): string
     {

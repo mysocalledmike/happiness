@@ -72,9 +72,6 @@ class AdminService
             'last_activity' => date('Y-m-d H:i:s')
         ], 'email = ?', [$email]);
 
-        // Remove from waitlist
-        $db->delete('waitlist', 'email = ?', [$email]);
-
         // Send email notification
         self::sendCreationEmail($email, $creationUrl);
     }
@@ -144,10 +141,9 @@ class AdminService
     public static function deleteUser(string $email): void
     {
         $db = Database::getInstance();
-        
-        // Delete from all tables (cascading will handle messages)
+
+        // Delete from senders table (cascading will handle messages and notifications)
         $db->delete('senders', 'email = ?', [$email]);
-        $db->delete('waitlist', 'email = ?', [$email]);
     }
 
     private static function sendCreationEmail(string $email, string $creationUrl): void

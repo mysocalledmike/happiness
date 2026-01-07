@@ -1,17 +1,10 @@
 -- Database schema for multi-user happiness site
 
--- Waitlist table for email signups
-CREATE TABLE IF NOT EXISTS waitlist (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Senders table for people creating happiness pages
 CREATE TABLE IF NOT EXISTS senders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT UNIQUE NOT NULL,
-    status TEXT NOT NULL CHECK (status IN ('waitlist', 'inactive', 'active')) DEFAULT 'waitlist',
+    status TEXT NOT NULL CHECK (status IN ('inactive', 'active')) DEFAULT 'inactive',
     slug TEXT UNIQUE,
     overall_message TEXT,
     theme TEXT,
@@ -61,5 +54,4 @@ CREATE INDEX IF NOT EXISTS idx_senders_status ON senders (status);
 CREATE INDEX IF NOT EXISTS idx_senders_slug ON senders (slug);
 CREATE INDEX IF NOT EXISTS idx_senders_creation_url ON senders (creation_url);
 CREATE INDEX IF NOT EXISTS idx_messages_sender_email ON messages (sender_id, recipient_email);
-CREATE INDEX IF NOT EXISTS idx_waitlist_email ON waitlist (email);
 CREATE INDEX IF NOT EXISTS idx_email_notifications_sender_email ON email_notifications (sender_id, recipient_email);
