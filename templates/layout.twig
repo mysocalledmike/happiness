@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title ?? 'Happiness' }}</title>
+    <title>{{ title ?? 'One Trillion Smiles' }}</title>
     <link rel="stylesheet" href="/assets/css/style.css">
+    {% block head %}{% endblock %}
 </head>
-<body class="{{ body_class ?? '' }}">
-    <div class="container {{ container_class ?? '' }}">
-        {% block content %}{% endblock %}
-    </div>
-    
+<body>
+    {% block body %}{% endblock %}
+
     <script src="/assets/js/main.js"></script>
     {% block scripts %}{% endblock %}
 </body>
