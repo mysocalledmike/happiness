@@ -18,7 +18,7 @@ class EmailService
         return self::$isDevelopment;
     }
     
-    public static function sendEmail(string $to, string $subject, string $message, string $from = null): bool
+    public static function sendEmail(string $to, string $subject, string $message, ?string $from = null): bool
     {
         // Use configured email sender if not specified
         if ($from === null) {

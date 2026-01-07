@@ -160,21 +160,27 @@ $app->get('/dashboard/{dashboard_url}', function ($request, $response, $args) {
 $app->post('/api/dashboard/{dashboard_url}/send', function ($request, $response, $args) {
     $dashboardUrl = $args['dashboard_url'];
     $data = $request->getParsedBody();
-    
+
+    // Handle JSON body if getParsedBody returns null
+    if ($data === null) {
+        $body = (string) $request->getBody();
+        $data = json_decode($body, true);
+    }
+
     $db = \App\Database::getInstance();
     $sender = $db->fetchOne('SELECT id FROM senders WHERE dashboard_url = ?', [$dashboardUrl]);
-    
+
     if (!$sender) {
         $response->getBody()->write(json_encode(['success' => false, 'error' => 'Dashboard not found']));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
     }
-    
+
     try {
         $result = \App\Services\MessageService::createMessage(
             $sender['id'],
-            $data['recipient_name'],
-            $data['recipient_email'],
-            $data['message']
+            $data['recipient_name'] ?? '',
+            $data['recipient_email'] ?? '',
+            $data['message'] ?? ''
         );
         
         $response->getBody()->write(json_encode([
