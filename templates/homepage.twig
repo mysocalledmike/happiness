@@ -1,139 +1,361 @@
 {% extends "layout.twig" %}
 
-{% block content %}
-<div class="homepage">
-    <div class="hero-section">
-        <h1 class="hero-title">Bring a smile to 1 billion faces</h1>
-        <p class="hero-subtitle">Create personalized happiness messages for colleagues, classmates, and friends to spread joy and positivity.</p>
-        
-        <div class="smile-counter">
-            <div class="smile-number">{{ smile_count|number_format }}</div>
-            <div class="smile-label">smiles created so far</div>
+{% block body %}
+<div class="gradient-bg-light" style="min-height: 100vh;">
+    <div class="container" style="padding-top: 4rem; padding-bottom: 4rem;">
+        {# Hero Section #}
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h1 class="font-poppins" style="font-size: 3rem; font-weight: 700; color: #1f2937; margin-bottom: 1.5rem;">
+                1 Trillion Smiles
+            </h1>
+            <h2 class="font-poppins" style="font-size: 2.5rem; font-weight: 700; color: #1f2937; margin-bottom: 1rem;">
+                Spread Smiles.<br>Not stats.
+            </h2>
+            <p class="font-lora" style="font-size: 1.125rem; color: #6b7280; max-width: 600px; margin: 0 auto 2rem;">
+                Smiles are heartfelt messages you send that create happiness and make people's day.
+            </p>
         </div>
-    </div>
-    
-    <div class="features-section">
-        <div class="feature">
-            <div class="feature-icon">💝</div>
-            <h3>Personalized Messages</h3>
-            <p>Create custom happiness messages for each person you want to uplift</p>
+
+        {# Main Content Grid #}
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 4rem; align-items: start;">
+            {# Left: Problem Statement #}
+            <div>
+                <h3 class="font-poppins" style="font-size: 1.875rem; font-weight: 700; color: #1f2937; margin-bottom: 2rem;">
+                    The Internet is making us miserable, so let's fix it.
+                </h3>
+
+                <div style="display: grid; gap: 2rem;">
+                    {# Problem 1 #}
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="font-size: 2.5rem; flex-shrink: 0;">😔</div>
+                        <div>
+                            <p class="font-lora" style="color: #374151; line-height: 1.6;">
+                                Between endless scrolling, comparing our lives to highlight reels, or chasing likes and followers that don't actually make us happy, depression rates among young people have doubled over the past decade.
+                            </p>
+                        </div>
+                    </div>
+
+                    {# Problem 2 #}
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="font-size: 2.5rem; flex-shrink: 0;">😊</div>
+                        <div>
+                            <p class="font-lora" style="color: #374151; line-height: 1.6;">
+                                So instead of vanity metrics, shallow self-promotion, or algorithms that make you feel inadequate, focus on what really makes us happy - kindness, gratitude, and the simple joy of making someone's day better.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 3rem;">
+                    <h3 class="font-poppins" style="font-size: 1.5rem; font-weight: 700; color: #1f2937; margin-bottom: 1rem;">
+                        Mission: Create 1 trillion smiles, one at a time.
+                    </h3>
+                    <p class="font-lora" style="color: #374151; line-height: 1.6;">
+                        Send smiles to the people who make your day, workplace, or entire life better, and join the movement to make the internet a little brighter.
+                    </p>
+                </div>
+            </div>
+
+            {# Right: Signup Form #}
+            <div class="card-lg">
+                <h3 class="font-poppins" style="font-size: 1.5rem; font-weight: 700; color: #1f2937; margin-bottom: 0.5rem;">
+                    Get Started
+                </h3>
+                <p class="font-lora" style="color: #6b7280; margin-bottom: 1.5rem;">
+                    Start spreading smiles in 2 minutes
+                </p>
+
+                <form id="signup-form" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Your name</label>
+                        <input
+                            type="text"
+                            name="name"
+                            class="form-input"
+                            placeholder="Alex"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Your email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            class="form-input"
+                            placeholder="alex@example.com"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Pick your vibe</label>
+                        <div class="avatar-grid">
+                            {% set avatars = ['🌟', '🌈', '☀️', '🎈', '🌸', '🎨', '🎪', '🎭', '🦋', '🌺'] %}
+                            {% for avatar in avatars %}
+                                <button
+                                    type="button"
+                                    class="avatar-option"
+                                    data-avatar="{{ avatar }}"
+                                >{{ avatar }}</button>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" name="avatar" id="avatar-input" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg" style="margin-top: 1rem;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                        Start Spreading Smiles
+                    </button>
+                </form>
+            </div>
         </div>
-        
-        <div class="feature">
-            <div class="feature-icon">🎨</div>
-            <h3>Beautiful Themes</h3>
-            <p>Choose from 8 unique themes to match your personality and style</p>
+
+        {# Stats Cards #}
+        <div class="stats-grid" {% if not show_company_stats %}style="grid-template-columns: repeat(2, 1fr);"{% endif %}>
+            {# Global Stats #}
+            <button class="stat-card" onclick="openModal('global-modal')">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="stat-card-title">Total Smiles</h4>
+                        <p class="stat-card-subtitle">created globally</p>
+                    </div>
+                </div>
+
+                <div class="stat-card-number">{{ global_smiles|number_format }}</div>
+                <p class="stat-card-progress-text">{{ global_progress }}% of 1 trillion</p>
+            </button>
+
+            {# Cross-Company Stats #}
+            <button class="stat-card" onclick="openModal('companies-modal')">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="stat-card-title">{{ total_companies }} companies</h4>
+                        <p class="stat-card-subtitle">spreading happiness</p>
+                    </div>
+                </div>
+
+                <div class="stat-card-number">{{ total_companies }}</div>
+                <p class="stat-card-progress-text">Click to see top companies</p>
+            </button>
+
+            {# Within-Company Stats (conditional) #}
+            {% if show_company_stats and company %}
+                <button class="stat-card" onclick="openModal('company-modal')">
+                    <div class="stat-card-header">
+                        <div class="stat-card-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                                <polyline points="17 6 23 6 23 12"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="stat-card-title">{{ company_smiles }} {{ company_name }} smiles</h4>
+                            <p class="stat-card-subtitle">from your company</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card-number">{{ company_smiles }}</div>
+                    <p class="stat-card-progress-text">Click to see leaderboard</p>
+                </button>
+            {% endif %}
         </div>
-        
-        <div class="feature">
-            <div class="feature-icon">📱</div>
-            <h3>Share Easily</h3>
-            <p>Send your custom happiness page link to friends, family, and colleagues</p>
-        </div>
-    </div>
-
-    <div class="leaderboard-section">
-        <h2>Happiness Leaderboard</h2>
-        <p>See who's spreading the most smiles!</p>
-
-        <div class="leaderboard-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Creator</th>
-                        <th>Smiles Created</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for leader in leaderboard %}
-                    <tr>
-                        <td class="creator-cell">
-                            {% if leader.slug %}
-                                <a href="/{{ leader.slug }}" class="creator-link">{{ leader.email }}</a>
-                            {% else %}
-                                {{ leader.email }}
-                            {% endif %}
-                        </td>
-                        <td class="smiles-cell">{{ leader.smile_count|number_format }}</td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="2" class="no-data">No happiness creators yet. Be the first!</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="signup-section">
-        <h2>Ready to spread some happiness?</h2>
-        <p>Create your own happiness page in seconds</p>
-
-        <form id="signupForm" class="signup-form">
-            <input type="email" id="signupEmail" placeholder="Enter your email address" required>
-            <button type="submit">Create Your Page</button>
-        </form>
-
-        <div id="signupMessage" class="form-message hidden"></div>
     </div>
 </div>
+
+{# Global Progress Modal #}
+<div id="global-modal" class="modal-overlay hidden" onclick="if(event.target === this) closeModal('global-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeModal('global-modal')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+
+        <div class="modal-header">
+            <div class="modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="modal-title">Global Progress</h3>
+                <p class="modal-subtitle">Our journey to 1 trillion smiles</p>
+            </div>
+        </div>
+
+        <div class="stat-card-number" style="text-align: center; margin-bottom: 1.5rem;">
+            {{ global_smiles|number_format }}
+        </div>
+
+        <p style="text-align: center;" class="font-lora mb-4" style="color: #6b7280;">
+            {{ global_progress }}% of 1 trillion
+        </p>
+
+        <div class="stat-card-progress mb-4">
+            <div class="stat-card-progress-bar" style="width: {{ global_progress }}%;"></div>
+        </div>
+
+        <p style="text-align: center;" class="font-lora" style="color: #6b7280;">
+            Every smile counts. Together, we're spreading happiness one heartfelt message at a time.
+        </p>
+    </div>
+</div>
+
+{# Companies Modal #}
+<div id="companies-modal" class="modal-overlay hidden" onclick="if(event.target === this) closeModal('companies-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeModal('companies-modal')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+
+        <div class="modal-header">
+            <div class="modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="modal-title">Top Companies</h3>
+                <p class="modal-subtitle">Leading the happiness movement</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+            {% for company in top_companies %}
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">#{{ loop.index }}</div>
+                    <div class="leaderboard-info">
+                        <div class="leaderboard-name">{{ company.company }}</div>
+                        <div class="leaderboard-count">{{ company.smile_count }} smiles created</div>
+                    </div>
+                </div>
+            {% else %}
+                <p style="text-align: center;" class="font-lora" style="color: #6b7280;">No companies yet. Be the first!</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{# Company Leaderboard Modal #}
+{% if show_company_stats and company %}
+<div id="company-modal" class="modal-overlay hidden" onclick="if(event.target === this) closeModal('company-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeModal('company-modal')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+
+        <div class="modal-header">
+            <div class="modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                    <polyline points="17 6 23 6 23 12"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="modal-title">{{ company_name }} Leaderboard</h3>
+                <p class="modal-subtitle">Top smile creators at your company</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+            {% for sender in company_top_senders %}
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">#{{ loop.index }}</div>
+                    <div class="leaderboard-avatar">{{ sender.avatar }}</div>
+                    <div class="leaderboard-info">
+                        <div class="leaderboard-name">{{ sender.name }}</div>
+                        <div class="leaderboard-count">{{ sender.smile_count }} smiles created</div>
+                    </div>
+                </div>
+            {% else %}
+                <p style="text-align: center;" class="font-lora" style="color: #6b7280;">No one from {{ company_name }} yet. Be the first!</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}
 
 {% block scripts %}
 <script>
-// Clear any error messages when user starts typing
-document.getElementById('signupEmail').addEventListener('input', function() {
-    const messageDiv = document.getElementById('signupMessage');
-    messageDiv.classList.add('hidden');
+// Avatar picker
+document.querySelectorAll('.avatar-option').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+        document.getElementById('avatar-input').value = this.dataset.avatar;
+    });
 });
 
-document.getElementById('signupForm').addEventListener('submit', function(e) {
+// Form submission
+document.getElementById('signup-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const email = document.getElementById('signupEmail').value.trim();
-    const messageDiv = document.getElementById('signupMessage');
-    const button = this.querySelector('button');
+    const formData = new FormData(this);
+    const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        avatar: formData.get('avatar')
+    };
 
-    if (!email) {
-        showMessage('Please enter your email address', 'error');
+    if (!data.avatar) {
+        alert('Please pick your vibe');
         return;
     }
 
-    button.disabled = true;
-    button.textContent = 'Creating...';
+    try {
+        const response = await fetch('/api/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
 
-    fetch('/api/signup', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: email })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const creationUrl = data.creation_url;
-            showMessage(`🎉 Page created! Check your email or <a href="/create/${creationUrl}" style="color: inherit; text-decoration: underline;">click here to get started</a>`, 'success');
-            document.getElementById('signupEmail').value = '';
+        const result = await response.json();
+
+        if (result.success) {
+            window.location.href = `/dashboard/${result.dashboard_url}?first_visit=1`;
         } else {
-            showMessage(data.message || 'An error occurred', 'error');
+            alert(result.error || 'Signup failed. Please try again.');
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Signup error:', error);
-        showMessage('An error occurred. Please try again.', 'error');
-    })
-    .finally(() => {
-        button.disabled = false;
-        button.textContent = 'Create Your Page';
-    });
-
-    function showMessage(text, type) {
-        messageDiv.innerHTML = text;
-        messageDiv.className = 'form-message ' + type;
-        messageDiv.classList.remove('hidden');
+        alert('An error occurred. Please try again.');
     }
 });
+
+// Modal functions
+function openModal(id) {
+    document.getElementById(id).classList.remove('hidden');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.add('hidden');
+}
 </script>
 {% endblock %}

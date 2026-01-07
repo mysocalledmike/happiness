@@ -1,0 +1,284 @@
+{% extends "layout.twig" %}
+
+{% block body %}
+{# Sticky Header #}
+<div class="sticky-header">
+    <div class="sticky-header-content">
+        <a href="/" class="logo">1 Trillion Smiles</a>
+        <div class="header-stats">
+            <button class="header-stat" onclick="openModal('global-modal')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                <span><strong>{{ global_smiles|number_format }}</strong> of 1T smiles</span>
+            </button>
+            {% if company %}
+            <button class="header-stat" onclick="openModal('company-modal')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+                </svg>
+                <span><strong>{{ company_smiles }}</strong> {{ company }} smiles</span>
+            </button>
+            {% endif %}
+            <button class="btn btn-white btn-sm" onclick="openModal('signup-modal')">Start Spreading Smiles</button>
+        </div>
+    </div>
+</div>
+
+<div class="gradient-bg-light" style="min-height: 100vh; padding-top: 3rem; padding-bottom: 4rem;">
+    <div class="container-narrow">
+        {# The Message #}
+        <div class="message-card mb-8">
+            <div class="message-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span class="message-badge-text">Hey {{ message.recipient_name }}</span>
+            </div>
+
+            <div class="message-content mb-8">
+                <div class="message-emoji">💛</div>
+                <p class="message-text">"{{ message.message }}"</p>
+            </div>
+
+            <div class="message-sender">
+                <div class="message-sender-avatar">{{ sender.avatar }}</div>
+                <div class="message-sender-info">
+                    <h4>{{ sender.name }}</h4>
+                    <p>Has created {{ sender_smile_count }} smile{{ sender_smile_count != 1 ? 's' : '' }} ✨</p>
+                </div>
+            </div>
+        </div>
+
+        {# Warmth Treasure Hunt #}
+        <div class="card-lg mb-8">
+            <h3 class="font-poppins" style="font-size: 1.25rem; font-weight: 700; color: #1f2937; margin-bottom: 1rem;">
+                Curious what else {{ sender.name }} said?
+            </h3>
+            <p class="font-lora" style="color: #6b7280; margin-bottom: 1.5rem;">
+                {{ sender.name }} sent Smiles to others too. Enter an email to peek at their Smile 👀
+            </p>
+            <div style="display: flex; gap: 0.75rem;">
+                <input
+                    type="email"
+                    id="lookup-email"
+                    class="form-input"
+                    placeholder="someone@example.com"
+                    style="flex: 1;"
+                >
+                <button class="btn btn-primary" onclick="lookupMessage()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    Look up
+                </button>
+            </div>
+
+            <div id="lookup-result" class="hidden" style="margin-top: 1rem; padding: 1rem; border-radius: 1rem; background: linear-gradient(to right, #fff7ed, #fce7f3); border: 2px solid #fb923c;"></div>
+        </div>
+
+        {# Product Plug #}
+        <div class="card-lg" style="background: linear-gradient(135deg, #fb923c, #ec4899, #fb923c); color: white; text-align: center;">
+            <h2 class="font-poppins" style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">
+                What is One Trillion Smiles?
+            </h2>
+            <p class="font-lora" style="font-size: 1.125rem; color: rgba(255,255,255,0.9); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+                Smiles are heartfelt messages you send that create happiness and make people's day.
+            </p>
+            <button class="btn btn-white btn-lg" onclick="openModal('signup-modal')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                Start Spreading Smiles
+            </button>
+        </div>
+    </div>
+</div>
+
+{# Modals #}
+<div id="global-modal" class="modal-overlay hidden" onclick="if(event.target === this) closeModal('global-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeModal('global-modal')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+        <div class="modal-header">
+            <div class="modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="modal-title">Global Progress</h3>
+                <p class="modal-subtitle">Our journey to 1 trillion smiles</p>
+            </div>
+        </div>
+        <div class="stat-card-number" style="text-align: center; margin-bottom: 1.5rem;">{{ global_smiles|number_format }}</div>
+        <p style="text-align: center;" class="font-lora mb-4" style="color: #6b7280;">{{ global_progress }}% of 1 trillion</p>
+        <div class="stat-card-progress mb-4"><div class="stat-card-progress-bar" style="width: {{ global_progress }}%;"></div></div>
+        <p style="text-align: center;" class="font-lora" style="color: #6b7280;">Every smile counts. Together, we're spreading happiness one heartfelt message at a time.</p>
+    </div>
+</div>
+
+{% if company %}
+<div id="company-modal" class="modal-overlay hidden" onclick="if(event.target === this) closeModal('company-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeModal('company-modal')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+        <div class="modal-header">
+            <div class="modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="modal-title">{{ company }} Leaderboard</h3>
+                <p class="modal-subtitle">Top smile creators at your company</p>
+            </div>
+        </div>
+        <div style="margin-top: 1.5rem;">
+            {% for s in company_top_senders %}
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">#{{ loop.index }}</div>
+                    <div class="leaderboard-avatar">{{ s.avatar }}</div>
+                    <div class="leaderboard-info">
+                        <div class="leaderboard-name">{{ s.name }}</div>
+                        <div class="leaderboard-count">{{ s.smile_count }} smiles created</div>
+                    </div>
+                </div>
+            {% else %}
+                <p style="text-align: center;" class="font-lora" style="color: #6b7280;">No one from {{ company }} yet. Be the first!</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{# Signup Modal #}
+<div id="signup-modal" class="modal-overlay hidden" onclick="if(event.target === this) closeModal('signup-modal')">
+    <div class="modal" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeModal('signup-modal')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+        <h2 class="modal-title mb-2">Start Spreading Smiles</h2>
+        <p class="font-lora" style="color: #6b7280; margin-bottom: 1.5rem;">
+            Send heartfelt, personalized messages that spread genuine joy. It takes just 2 minutes.
+        </p>
+        <form id="signup-form">
+            <div class="form-group">
+                <label class="form-label">Your name</label>
+                <input type="text" name="name" class="form-input" placeholder="Alex" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Your email</label>
+                <input type="email" name="email" class="form-input" placeholder="alex@example.com" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Pick your vibe</label>
+                <div class="avatar-grid">
+                    {% set avatars = ['🌟', '🌈', '☀️', '🎈', '🌸', '🎨', '🎪', '🎭', '🦋', '🌺'] %}
+                    {% for avatar in avatars %}
+                        <button type="button" class="avatar-option" data-avatar="{{ avatar }}">{{ avatar }}</button>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="avatar" id="avatar-input" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                Start Spreading Smiles
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openModal(id) {
+    document.getElementById(id).classList.remove('hidden');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.add('hidden');
+}
+
+async function lookupMessage() {
+    const email = document.getElementById('lookup-email').value.trim();
+    if (!email) return;
+
+    try {
+        const response = await fetch('/api/sender/{{ sender.id }}/lookup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+
+        const result = await response.json();
+        const resultDiv = document.getElementById('lookup-result');
+
+        if (result.success && result.messages.length > 0) {
+            resultDiv.innerHTML = result.messages.map(msg => `
+                <div style="margin-bottom: 1rem;">
+                    <p class="font-poppins" style="font-weight: 600; color: #7c2d12; font-size: 0.875rem;">
+                        Smile to ${email.split('@')[0]}:
+                    </p>
+                    <p class="font-lora" style="color: #1f2937; font-style: italic;">"${msg.message}"</p>
+                </div>
+            `).join('');
+            resultDiv.classList.remove('hidden');
+        } else {
+            resultDiv.innerHTML = '<p class="font-lora" style="color: #6b7280; text-align: center;">No Smile found for this email 🤷‍♀️</p>';
+            resultDiv.classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error('Lookup error:', error);
+        alert('An error occurred. Please try again.');
+    }
+}
+
+// Avatar picker for signup modal
+document.querySelectorAll('.avatar-option').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+        document.getElementById('avatar-input').value = this.dataset.avatar;
+    });
+});
+
+// Signup form
+document.getElementById('signup-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        avatar: formData.get('avatar')
+    };
+
+    if (!data.avatar) {
+        alert('Please pick your vibe');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            window.location.href = `/dashboard/${result.dashboard_url}?first_visit=1`;
+        } else {
+            alert(result.error || 'Signup failed. Please try again.');
+        }
+    } catch (error) {
+        console.error('Signup error:', error);
+        alert('An error occurred. Please try again.');
+    }
+});
+</script>
+{% endblock %}

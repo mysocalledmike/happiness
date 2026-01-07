@@ -1,91 +1,110 @@
 {% extends "layout.twig" %}
 
-{% block content %}
-<div class="admin-dashboard">
-    <div class="admin-header">
-        <h1>Admin Dashboard</h1>
-        <p>Manage users</p>
-    </div>
-    
-    <div class="filters">
-        <button class="filter-btn active" data-filter="all">All Users</button>
-        <button class="filter-btn" data-filter="inactive">Not Yet Active</button>
-        <button class="filter-btn" data-filter="active">Active</button>
-    </div>
-    
-    <div class="users-table-container">
-        <table class="users-table">
-            <thead>
-                <tr>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Slug</th>
-                    <th>Creation URL</th>
-                    <th>Time in State</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr data-status="{{ user.status }}">
-                    <td class="email-cell">{{ user.email }}</td>
-                    <td class="status-cell">
-                        <span class="status-badge status-{{ user.status }}">
-                            {% if user.status == 'inactive' %}Not Yet Active{% endif %}
-                            {% if user.status == 'active' %}Active{% endif %}
-                        </span>
-                    </td>
-                    <td class="slug-cell">
-                        {% if user.status == 'active' and user.slug %}
-                            <a href="/{{ user.slug }}" target="_blank" class="slug-link">{{ user.slug }}</a>
-                        {% else %}
-                            <span class="slug-empty">—</span>
-                        {% endif %}
-                    </td>
-                    <td class="creation-url-cell">
-                        {% if user.creation_url %}
-                            <a href="/create/{{ user.creation_url }}" target="_blank" class="creation-url-link">
-                                {{ user.creation_url|slice(0, 20) }}...
-                            </a>
-                        {% else %}
-                            <span class="creation-url-empty">—</span>
-                        {% endif %}
-                    </td>
-                    <td class="time-cell">{{ user.time_in_state }}</td>
-                    <td class="actions-cell">
-                        <div class="actions-container">
-                            {% if user.status == 'inactive' %}
-                                <button class="btn btn-secondary" onclick="sendReminder('{{ user.email }}')">
-                                    Send Reminder Email
-                                </button>
-                            {% endif %}
+{% block body %}
+<div style="min-height: 100vh; background: #f9fafb; padding: 2rem;">
+    <div style="max-width: 1400px; margin: 0 auto;">
+        <div style="background: white; border-radius: 1rem; padding: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h1 class="font-poppins" style="font-size: 2rem; font-weight: 700; color: #1f2937; margin-bottom: 2rem;">
+                Admin Dashboard
+            </h1>
 
-                            <div class="dropdown">
-                                <button class="btn btn-dots" onclick="toggleDropdown(this)">⋮</button>
-                                <div class="dropdown-menu">
-                                    <button onclick="resetCreationPage('{{ user.email }}')">Reset Creation URL</button>
-                                    <button onclick="deleteUser('{{ user.email }}')" class="danger">Delete User</button>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #e5e7eb;">
+                            <th style="text-align: left; padding: 1rem; font-family: 'Poppins', sans-serif; font-weight: 600; color: #374151;">Name</th>
+                            <th style="text-align: left; padding: 1rem; font-family: 'Poppins', sans-serif; font-weight: 600; color: #374151;">Email</th>
+                            <th style="text-align: center; padding: 1rem; font-family: 'Poppins', sans-serif; font-weight: 600; color: #374151;">Confirmed</th>
+                            <th style="text-align: center; padding: 1rem; font-family: 'Poppins', sans-serif; font-weight: 600; color: #374151;">Messages</th>
+                            <th style="text-align: center; padding: 1rem; font-family: 'Poppins', sans-serif; font-weight: 600; color: #374151;">Smiles</th>
+                            <th style="text-align: left; padding: 1rem; font-family: 'Poppins', sans-serif; font-weight: 600; color: #374151;">Created</th>
+                            <th style="text-align: right; padding: 1rem; font-family: 'Poppins', sans-serif; font-weight: 600; color: #374151;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: linear-gradient(135deg, #fb923c, #ec4899); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                                        {{ user.avatar }}
+                                    </div>
+                                    <span class="font-poppins" style="font-weight: 600; color: #1f2937;">{{ user.name }}</span>
                                 </div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    
-    <div id="adminMessage" class="admin-message hidden"></div>
-</div>
-
-<!-- Confirmation Modal -->
-<div id="confirmModal" class="modal hidden">
-    <div class="modal-content">
-        <h3 id="confirmTitle">Confirm Action</h3>
-        <p id="confirmMessage">Are you sure?</p>
-        <div class="modal-actions">
-            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-            <button class="btn btn-danger" id="confirmBtn">Confirm</button>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <span class="font-lora" style="color: #6b7280;">{{ user.email }}</span>
+                            </td>
+                            <td style="padding: 1rem; text-align: center;">
+                                {% if user.email_confirmed %}
+                                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 50%; background: #d1fae5;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                    </span>
+                                {% else %}
+                                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 50%; background: #fee2e2;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3">
+                                            <path d="M18 6L6 18M6 6l12 12"/>
+                                        </svg>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td style="padding: 1rem; text-align: center;">
+                                <span class="font-poppins" style="font-weight: 600; color: #1f2937;">{{ user.message_count }}</span>
+                            </td>
+                            <td style="padding: 1rem; text-align: center;">
+                                <span class="font-poppins" style="font-weight: 600; color: #fb923c;">{{ user.smiles_created }}</span>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <span class="font-lora" style="font-size: 0.875rem; color: #6b7280;">{{ user.created_at|date('M j, Y') }}</span>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                    <button
+                                        onclick="sendReminder('{{ user.email }}')"
+                                        class="btn btn-sm"
+                                        style="background: #f3f4f6; color: #6b7280; border: none; padding: 0.5rem; border-radius: 0.5rem; cursor: pointer;"
+                                        title="Send Reminder"
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                            <polyline points="22,6 12,13 2,6"/>
+                                        </svg>
+                                    </button>
+                                    <button
+                                        onclick="resetDashboard('{{ user.email }}')"
+                                        class="btn btn-sm"
+                                        style="background: #f3f4f6; color: #6b7280; border: none; padding: 0.5rem; border-radius: 0.5rem; cursor: pointer;"
+                                        title="Reset Dashboard URL"
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                                        </svg>
+                                    </button>
+                                    <button
+                                        onclick="deleteUser('{{ user.email }}')"
+                                        class="btn btn-sm"
+                                        style="background: #fef2f2; color: #ef4444; border: none; padding: 0.5rem; border-radius: 0.5rem; cursor: pointer;"
+                                        title="Delete User"
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" style="padding: 3rem; text-align: center;">
+                                <p class="font-lora" style="color: #6b7280;">No users yet</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -93,211 +112,73 @@
 
 {% block scripts %}
 <script>
-// Filter functionality
-document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        
-        const filter = this.dataset.filter;
-        const rows = document.querySelectorAll('.users-table tbody tr');
-        
-        rows.forEach(row => {
-            if (filter === 'all' || row.dataset.status === filter) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    });
-});
+async function sendReminder(email) {
+    if (!confirm(`Send reminder email to ${email}?`)) return;
 
-// Dropdown functionality
-function toggleDropdown(button) {
-    const dropdown = button.parentElement;
-    const menu = dropdown.querySelector('.dropdown-menu');
-    
-    // Close all other dropdowns
-    document.querySelectorAll('.dropdown-menu').forEach(m => {
-        if (m !== menu) m.classList.remove('show');
-    });
-    
-    // Check if there's enough space below, otherwise position above
-    const rect = dropdown.getBoundingClientRect();
-    const menuHeight = 100; // Approximate menu height
-    const spaceBelow = window.innerHeight - rect.bottom;
-    
-    if (spaceBelow < menuHeight && rect.top > menuHeight) {
-        // Position above
-        menu.style.top = 'auto';
-        menu.style.bottom = '100%';
-    } else {
-        // Position below (default)
-        menu.style.top = '100%';
-        menu.style.bottom = 'auto';
-    }
-    
-    menu.classList.toggle('show');
-}
-
-// Close dropdowns when clicking outside
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.dropdown')) {
-        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
-    }
-});
-
-// Admin actions
-function sendReminder(email) {
-    adminAction('send-reminder', { email }, `Send reminder to ${email}?`, 'This will send them their creation link again.');
-}
-
-function resetCreationPage(email) {
-    adminAction('reset-creation', { email }, `Reset creation page for ${email}?`, 'This will generate a new creation URL and invalidate the old one.');
-}
-
-function deleteUser(email) {
-    adminAction('delete-user', { email }, `Delete ${email}?`, 'This will permanently delete their account and all data. This action cannot be undone!');
-}
-
-function adminAction(action, data, title, message) {
-    showModal(title, message, () => {
-        const button = document.getElementById('confirmBtn');
-        setLoadingState(button, true);
-        
-        request(`/api/admin/${action}`, {
+    try {
+        const response = await fetch('/api/admin/send-reminder', {
             method: 'POST',
-            body: data
-        })
-        .then(response => {
-            if (response.success) {
-                showAdminMessage('Action completed successfully!', 'success');
-
-                // Update the UI based on the action instead of reloading
-                if (action === 'delete-user') {
-                    removeUserRow(data.email);
-                } else {
-                    // For other actions, just reload after a short delay
-                    setTimeout(() => location.reload(), 1000);
-                }
-            } else {
-                showAdminMessage('Error: ' + response.message, 'error');
-            }
-        })
-        .catch(error => {
-            showAdminMessage('An error occurred', 'error');
-        })
-        .finally(() => {
-            setLoadingState(button, false);
-            closeModal();
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
         });
-    });
-}
 
-function showModal(title, message, onConfirm) {
-    document.getElementById('confirmTitle').textContent = title;
-    document.getElementById('confirmMessage').textContent = message;
-    document.getElementById('confirmModal').classList.remove('hidden');
-    
-    document.getElementById('confirmBtn').onclick = onConfirm;
-}
+        const result = await response.json();
 
-function closeModal() {
-    document.getElementById('confirmModal').classList.add('hidden');
-}
-
-function showAdminMessage(text, type) {
-    const messageEl = document.getElementById('adminMessage');
-    messageEl.textContent = text;
-    messageEl.className = 'admin-message ' + type;
-    messageEl.classList.remove('hidden');
-    
-    setTimeout(() => {
-        messageEl.classList.add('hidden');
-    }, 5000);
-}
-
-function updateUserRow(email, newStatus, statusText, timeText) {
-    const rows = document.querySelectorAll('.users-table tbody tr');
-    
-    rows.forEach(row => {
-        const emailCell = row.querySelector('.email-cell');
-        if (emailCell && emailCell.textContent.trim() === email) {
-            // Update status
-            row.setAttribute('data-status', newStatus);
-            
-            // Update status badge
-            const statusBadge = row.querySelector('.status-badge');
-            statusBadge.className = `status-badge status-${newStatus}`;
-            statusBadge.textContent = statusText;
-            
-            // Update slug column
-            const slugCell = row.querySelector('.slug-cell');
-            if (newStatus === 'active') {
-                // We don't know the slug yet, so show a placeholder
-                slugCell.innerHTML = '<span class="slug-empty">Creating...</span>';
-            } else {
-                slugCell.innerHTML = '<span class="slug-empty">—</span>';
-            }
-            
-            // Update creation URL column
-            const creationUrlCell = row.querySelector('.creation-url-cell');
-            if (newStatus === 'inactive' || newStatus === 'active') {
-                // Show "Available" for users with creation URLs
-                creationUrlCell.innerHTML = '<span class="creation-url-link">Available</span>';
-            } else {
-                creationUrlCell.innerHTML = '<span class="creation-url-empty">—</span>';
-            }
-            
-            // Update time
-            const timeCell = row.querySelector('.time-cell');
-            timeCell.textContent = timeText;
-            
-            // Update action buttons
-            const actionsCell = row.querySelector('.actions-cell .actions-container');
-            updateActionButtons(actionsCell, email, newStatus);
-            
-            // Add visual feedback
-            row.style.backgroundColor = '#d4edda';
-            setTimeout(() => {
-                row.style.backgroundColor = '';
-            }, 2000);
+        if (result.success) {
+            alert('Reminder sent!');
+        } else {
+            alert('Error: ' + (result.message || 'Failed to send reminder'));
         }
-    });
-}
-
-function removeUserRow(email) {
-    const rows = document.querySelectorAll('.users-table tbody tr');
-    
-    rows.forEach(row => {
-        const emailCell = row.querySelector('.email-cell');
-        if (emailCell && emailCell.textContent.trim() === email) {
-            row.style.transition = 'opacity 0.5s ease';
-            row.style.opacity = '0';
-            setTimeout(() => {
-                row.remove();
-            }, 500);
-        }
-    });
-}
-
-function updateActionButtons(container, email, status) {
-    // Clear existing buttons except dropdown
-    const dropdown = container.querySelector('.dropdown');
-    container.innerHTML = '';
-
-    // Add appropriate action button based on status
-    if (status === 'inactive') {
-        const reminderButton = document.createElement('button');
-        reminderButton.className = 'btn btn-secondary';
-        reminderButton.textContent = 'Send Reminder Email';
-        reminderButton.onclick = () => sendReminder(email);
-        container.appendChild(reminderButton);
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred');
     }
+}
 
-    // Re-add dropdown
-    if (dropdown) {
-        container.appendChild(dropdown);
+async function resetDashboard(email) {
+    if (!confirm(`Reset dashboard URL for ${email}? Their old link will stop working.`)) return;
+
+    try {
+        const response = await fetch('/api/admin/reset-creation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Dashboard URL reset! They will receive an email with the new link.');
+        } else {
+            alert('Error: ' + (result.message || 'Failed to reset'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred');
+    }
+}
+
+async function deleteUser(email) {
+    if (!confirm(`Delete ${email} and all their messages? This cannot be undone.`)) return;
+
+    try {
+        const response = await fetch('/api/admin/delete-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('User deleted');
+            location.reload();
+        } else {
+            alert('Error: ' + (result.message || 'Failed to delete'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred');
     }
 }
 </script>
