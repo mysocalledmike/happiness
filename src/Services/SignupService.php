@@ -6,100 +6,108 @@ use App\Database;
 
 class SignupService
 {
-    public static function createPage(string $email): string
+    public static function createUser(string $name, string $email, string $avatar): string
     {
         $db = Database::getInstance();
 
-        // Check if already exists
-        $existing = $db->fetchOne('SELECT 1 FROM senders WHERE email = ?', [$email]);
+        // Check if email already exists
+        $existing = $db->fetchOne('SELECT id, dashboard_url FROM senders WHERE email = ?', [$email]);
         if ($existing) {
-            throw new \Exception('Email already has a page. Check your email for your creation link!');
+            // Return existing dashboard URL
+            return $existing['dashboard_url'];
         }
 
-        // Generate unique creation URL
-        $creationUrl = $db->generateUniqueId('senders', 'creation_url', 32);
+        // Generate unique tokens
+        $dashboardUrl = $db->generateUniqueId('senders', 'dashboard_url', 32);
+        $confirmationToken = $db->generateUniqueId('senders', 'email_confirmation_token', 32);
 
-        // Generate smart defaults
-        $defaults = self::generateSmartDefaults($email);
-
-        // Create user with inactive status (they haven't created messages yet)
+        // Create sender
         $db->insert('senders', [
+            'name' => $name,
             'email' => $email,
-            'status' => 'inactive',
-            'creation_url' => $creationUrl,
-            'slug' => $defaults['slug'],
-            'overall_message' => $defaults['overall_message'],
-            'theme' => $defaults['theme'],
-            'not_found_message' => $defaults['not_found_message'],
-            'activated_at' => date('Y-m-d H:i:s'),
+            'avatar' => $avatar,
+            'email_confirmed' => 0,
+            'email_confirmation_token' => $confirmationToken,
+            'dashboard_url' => $dashboardUrl,
             'last_activity' => date('Y-m-d H:i:s')
         ]);
 
-        // Send creation email
-        self::sendCreationEmail($email, $creationUrl);
+        // Send confirmation email
+        self::sendConfirmationEmail($email, $confirmationToken);
 
-        return $creationUrl;
+        // Send dashboard access email
+        self::sendDashboardEmail($name, $email, $dashboardUrl);
+
+        return $dashboardUrl;
     }
 
-    private static function generateSmartDefaults(string $email): array
+    public static function confirmEmail(string $token): bool
     {
         $db = Database::getInstance();
 
-        // Generate slug from email prefix
-        $emailPrefix = explode('@', $email)[0];
-        $baseSlug = preg_replace('/[^a-zA-Z0-9]/', '', $emailPrefix);
-        $baseSlug = strtolower($baseSlug);
+        $sender = $db->fetchOne(
+            'SELECT id, email_confirmed FROM senders WHERE email_confirmation_token = ?',
+            [$token]
+        );
 
-        // Ensure slug is unique
-        $slug = $baseSlug;
-        $counter = 1;
-        while (true) {
-            $existing = $db->fetchOne('SELECT 1 FROM senders WHERE slug = ?', [$slug]);
-            if (!$existing) {
-                break;
-            }
-            $slug = $baseSlug . $counter;
-            $counter++;
+        if (!$sender) {
+            return false;
         }
 
-        // Random theme
-        $themes = ['rosie', 'hooty', 'bruno', 'whiskers', 'penny', 'lily', 'buzzy', 'panda'];
-        $randomTheme = $themes[array_rand($themes)];
+        if ($sender['email_confirmed']) {
+            // Already confirmed
+            return true;
+        }
 
-        return [
-            'slug' => $slug,
-            'overall_message' => 'You make me happy',
-            'theme' => $randomTheme,
-            'not_found_message' => "I don't think we've crossed paths, but thanks for checking out my happiness page! Feel free to create your own."
-        ];
+        // Mark as confirmed
+        $db->update('senders', [
+            'email_confirmed' => 1
+        ], 'email_confirmation_token = ?', [$token]);
+
+        return true;
     }
 
-    private static function sendCreationEmail(string $email, string $creationUrl): void
+    private static function sendConfirmationEmail(string $email, string $token): void
     {
-        $subject = 'Create Your Happiness Page!';
+        $subject = 'Confirm your email for One Trillion Smiles';
 
-        // Use the current host for the URL (works in both dev and production)
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
-        $createUrl = "{$protocol}://{$host}/create/{$creationUrl}";
+        $confirmUrl = "{$protocol}://{$host}/confirm/{$token}";
 
         $message = "
-Welcome to Happiness!
+Welcome to One Trillion Smiles!
 
-You're all set to create your happiness page and spread joy to your colleagues, classmates, and friends.
+Please confirm your email address by clicking the link below:
+{$confirmUrl}
 
-Click here to get started:
-{$createUrl}
+Why confirm? It helps us verify it's really you and lets you send unlimited Smiles.
 
-This link is private and unique to you - don't share it with others.
+Thanks for spreading happiness!
+        ";
+
+        \App\Services\EmailService::sendEmail($email, $subject, $message);
+    }
+
+    private static function sendDashboardEmail(string $name, string $email, string $dashboardUrl): void
+    {
+        $subject = 'Your Smile Dashboard is Ready!';
+
+        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
+        $dashboardLink = "{$protocol}://{$host}/dashboard/{$dashboardUrl}";
+
+        $message = "
+Hey {$name}!
+
+Your Smile dashboard is ready. Start spreading smiles:
+{$dashboardLink}
+
+This link is private and unique to you - bookmark it to get back anytime!
 
 Happy creating!
         ";
 
-        $result = \App\Services\EmailService::sendEmail($email, $subject, $message);
-
-        if (!$result) {
-            throw new \Exception('Failed to send email. Please check mail configuration.');
-        }
+        \App\Services\EmailService::sendEmail($email, $subject, $message);
     }
 }

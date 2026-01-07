@@ -130,7 +130,26 @@ class Database
                 [$id]
             );
         } while ($exists);
-        
+
+        return $id;
+    }
+
+    public function generateBase62Id(string $table, string $column, int $length = 8): string
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        do {
+            $id = '';
+            for ($i = 0; $i < $length; $i++) {
+                $id .= $characters[random_int(0, 61)];
+            }
+
+            $exists = $this->fetchOne(
+                "SELECT 1 FROM {$table} WHERE {$column} = ?",
+                [$id]
+            );
+        } while ($exists);
+
         return $id;
     }
 }

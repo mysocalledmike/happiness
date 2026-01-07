@@ -6,24 +6,206 @@ use App\Database;
 
 class MessageService
 {
-    public static function lookupMessage(string $slug, string $email): ?array
+    const UNCONFIRMED_MESSAGE_LIMIT = 3;
+
+    public static function canSendMessage(int $senderId): array
     {
         $db = Database::getInstance();
-        
-        // First get the sender by slug
-        $sender = $db->fetchOne('SELECT id FROM senders WHERE slug = ? AND status = "active"', [$slug]);
-        
+
+        $sender = $db->fetchOne('SELECT email_confirmed FROM senders WHERE id = ?', [$senderId]);
         if (!$sender) {
-            throw new \Exception('Happiness page not found');
+            return ['can_send' => false, 'reason' => 'Sender not found'];
         }
-        
-        // Look up the message
+
+        // Confirmed users can send unlimited messages
+        if ($sender['email_confirmed']) {
+            return ['can_send' => true];
+        }
+
+        // Unconfirmed users can send up to 3 messages
+        $messageCount = $db->fetchOne(
+            'SELECT COUNT(*) as count FROM messages WHERE sender_id = ?',
+            [$senderId]
+        );
+
+        if ($messageCount['count'] >= self::UNCONFIRMED_MESSAGE_LIMIT) {
+            return [
+                'can_send' => false,
+                'reason' => 'Please confirm your email to send more Smiles'
+            ];
+        }
+
+        return ['can_send' => true];
+    }
+
+    public static function createMessage(
+        int $senderId,
+        string $recipientName,
+        string $recipientEmail,
+        string $message
+    ): array {
+        $db = Database::getInstance();
+
+        // Check if user can send
+        $canSend = self::canSendMessage($senderId);
+        if (!$canSend['can_send']) {
+            throw new \Exception($canSend['reason']);
+        }
+
+        // Generate unique message URL
+        $messageUrl = $db->generateBase62Id('messages', 'message_url', 8);
+
+        // Create message
+        $messageId = $db->insert('messages', [
+            'sender_id' => $senderId,
+            'recipient_name' => $recipientName,
+            'recipient_email' => $recipientEmail,
+            'message' => $message,
+            'message_url' => $messageUrl,
+            'sent_at' => date('Y-m-d H:i:s')
+        ]);
+
+        // Send email to recipient
+        self::sendMessageEmail($senderId, $recipientName, $recipientEmail, $messageUrl);
+
+        // Update sender's last activity
+        $db->update('senders', [
+            'last_activity' => date('Y-m-d H:i:s')
+        ], 'id = ?', [$senderId]);
+
+        return [
+            'id' => $messageId,
+            'message_url' => $messageUrl
+        ];
+    }
+
+    public static function getMessageByUrl(string $messageUrl): ?array
+    {
+        $db = Database::getInstance();
+
         $message = $db->fetchOne('
-            SELECT recipient_name, message, emotion 
-            FROM messages 
+            SELECT
+                m.*,
+                s.name as sender_name,
+                s.avatar as sender_avatar
+            FROM messages m
+            JOIN senders s ON m.sender_id = s.id
+            WHERE m.message_url = ?
+        ', [$messageUrl]);
+
+        return $message ?: null;
+    }
+
+    public static function getMessagesBySender(int $senderId): array
+    {
+        $db = Database::getInstance();
+
+        return $db->fetchAll('
+            SELECT *
+            FROM messages
+            WHERE sender_id = ?
+            ORDER BY created_at DESC
+        ', [$senderId]);
+    }
+
+    public static function getSenderMessageCount(int $senderId): int
+    {
+        $db = Database::getInstance();
+
+        $result = $db->fetchOne(
+            'SELECT COUNT(*) as count FROM messages WHERE sender_id = ?',
+            [$senderId]
+        );
+
+        return (int) $result['count'];
+    }
+
+    public static function getOtherMessagesBySender(int $senderId, string $recipientEmail): array
+    {
+        $db = Database::getInstance();
+
+        return $db->fetchAll('
+            SELECT *
+            FROM messages
             WHERE sender_id = ? AND recipient_email = ?
-        ', [$sender['id'], $email]);
-        
-        return $message;
+            ORDER BY sent_at DESC
+        ', [$senderId, $recipientEmail]);
+    }
+
+    public static function markAsRead(string $messageUrl): bool
+    {
+        $db = Database::getInstance();
+
+        $message = $db->fetchOne('SELECT id, read_at FROM messages WHERE message_url = ?', [$messageUrl]);
+
+        if (!$message) {
+            return false;
+        }
+
+        // If already read, don't update
+        if ($message['read_at']) {
+            return true;
+        }
+
+        // Mark as read
+        $db->update('messages', [
+            'read_at' => date('Y-m-d H:i:s')
+        ], 'message_url = ?', [$messageUrl]);
+
+        // Increment global smile count
+        StatsService::incrementSmileCount();
+
+        return true;
+    }
+
+    public static function deleteMessage(int $messageId, int $senderId): bool
+    {
+        $db = Database::getInstance();
+
+        // Verify ownership
+        $message = $db->fetchOne('SELECT id FROM messages WHERE id = ? AND sender_id = ?', [$messageId, $senderId]);
+        if (!$message) {
+            return false;
+        }
+
+        $db->delete('messages', 'id = ? AND sender_id = ?', [$messageId, $senderId]);
+        return true;
+    }
+
+    private static function sendMessageEmail(int $senderId, string $recipientName, string $recipientEmail, string $messageUrl): void
+    {
+        $db = Database::getInstance();
+
+        $sender = $db->fetchOne('SELECT name FROM senders WHERE id = ?', [$senderId]);
+        if (!$sender) {
+            return;
+        }
+
+        $subject = "{$sender['name']} sent you a Smile!";
+
+        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
+        $messageLink = "{$protocol}://{$host}/s/{$messageUrl}";
+
+        $message = "
+Hey {$recipientName}!
+
+{$sender['name']} sent you a heartfelt Smile. Click below to read it:
+
+{$messageLink}
+
+Smiles are heartfelt messages that create happiness and make people's day.
+
+✨ One Trillion Smiles
+        ";
+
+        \App\Services\EmailService::sendEmail($recipientEmail, $subject, $message);
+
+        // Track that we sent this email
+        $db->insert('email_notifications', [
+            'sender_id' => $senderId,
+            'recipient_email' => $recipientEmail,
+            'notification_type' => 'message'
+        ]);
     }
 }
