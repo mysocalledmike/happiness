@@ -513,6 +513,11 @@ h1, h2, h3, h4, h5, h6 {
     border: 2px solid #F59E0B;
 }
 
+.banner-info {
+    background: #DBEAFE;
+    border: 2px solid #3B82F6;
+}
+
 .banner-close {
     position: absolute;
     top: 16px;
@@ -739,9 +744,9 @@ h1, h2, h3, h4, h5, h6 {
 .message-hero {
     background: white;
     border-radius: var(--border-radius);
-    padding: 48px;
+    padding: 48px 40px;
     margin-bottom: 32px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
     text-align: center;
 }
 
@@ -1149,16 +1154,59 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-light);
 }
 
-.actions-menu {
+.actions-menu-btn {
     background: none;
     border: none;
     cursor: pointer;
     padding: 4px;
     color: var(--text-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
 }
 
-.actions-menu:hover {
+.actions-menu-btn:hover {
     color: var(--text-dark);
+    background: var(--bg-light);
+}
+
+.actions-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 4px;
+    background: white;
+    border: 1px solid #E5E5E5;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    z-index: 100;
+    overflow: hidden;
+}
+
+.actions-dropdown button {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: white;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text-dark);
+    transition: background 0.2s;
+}
+
+.actions-dropdown button:hover {
+    background: var(--bg-light);
+}
+
+.actions-dropdown button svg {
+    flex-shrink: 0;
 }
 
 /* ========================================

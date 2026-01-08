@@ -11,22 +11,22 @@
         <div class="admin-stats">
             <div class="admin-stat">
                 <div class="admin-stat-number">{{ users|length }}</div>
-                <div class="admin-stat-label">Total</div>
-            </div>
-            <div class="admin-stat">
-                {% set confirmed_count = users|filter(u => u.email_confirmed)|length %}
-                <div class="admin-stat-number">{{ confirmed_count }}</div>
-                <div class="admin-stat-label">Confirmed</div>
+                <div class="admin-stat-label">Total Users</div>
             </div>
             <div class="admin-stat">
                 {% set active_count = users|filter(u => u.message_count > 0)|length %}
                 <div class="admin-stat-number">{{ active_count }}</div>
-                <div class="admin-stat-label">Active</div>
+                <div class="admin-stat-label">Active Users</div>
             </div>
             <div class="admin-stat">
-                {% set total_smiles = users|reduce((carry, u) => carry + u.smiles_created, 0) %}
-                <div class="admin-stat-number">{{ total_smiles }}</div>
-                <div class="admin-stat-label">Smiles</div>
+                {% set total_sent = users|reduce((carry, u) => carry + u.message_count, 0) %}
+                <div class="admin-stat-number">{{ total_sent }}</div>
+                <div class="admin-stat-label">Total Smiles Sent</div>
+            </div>
+            <div class="admin-stat">
+                {% set total_created = users|reduce((carry, u) => carry + u.smiles_created, 0) %}
+                <div class="admin-stat-number">{{ total_created }}</div>
+                <div class="admin-stat-label">Total Smiles Created</div>
             </div>
         </div>
     </div>
@@ -37,23 +37,43 @@
     <div class="admin-container">
         {# Filters #}
         <div class="filters-card">
-            <h3>Filters</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
-                <div class="filter-group">
-                    <label class="filter-label">Email Status</label>
-                    <div class="filter-buttons">
-                        <button class="filter-btn active" onclick="filterUsers('all')">All</button>
-                        <button class="filter-btn" onclick="filterUsers('confirmed')">Confirmed</button>
-                        <button class="filter-btn" onclick="filterUsers('unconfirmed')">Unconfirmed</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 32px;">
+                <div style="display: flex; gap: 32px; align-items: center; flex: 1;">
+                    <div class="filter-group">
+                        <label class="filter-label">User Status</label>
+                        <div style="display: flex; gap: 16px; align-items: center;">
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px;">
+                                <input type="radio" name="user-status" value="all" checked onchange="applyFilters()">
+                                All users
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px;">
+                                <input type="radio" name="user-status" value="confirmed" onchange="applyFilters()">
+                                Confirmed
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px;">
+                                <input type="radio" name="user-status" value="unconfirmed" onchange="applyFilters()">
+                                Unconfirmed
+                            </label>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Smiles Sent</label>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <input type="number" id="min-smiles" class="form-input" placeholder="0" min="0" value="0" onchange="applyFilters()" style="width: 80px;">
+                            <span style="color: var(--text-gray);">to</span>
+                            {% set max_smiles = 0 %}
+                            {% for user in users %}
+                                {% if user.message_count > max_smiles %}
+                                    {% set max_smiles = user.message_count %}
+                                {% endif %}
+                            {% endfor %}
+                            <input type="number" id="max-smiles" class="form-input" placeholder="{{ max_smiles }}" min="0" value="{{ max_smiles }}" onchange="applyFilters()" style="width: 80px;">
+                        </div>
                     </div>
                 </div>
-                <div class="filter-group">
-                    <label class="filter-label">Minimum Smiles Sent</label>
-                    <input type="number" class="form-input" placeholder="0" min="0" onchange="filterBySmiles(this.value)">
+                <div class="filter-results" style="white-space: nowrap; color: var(--text-gray); font-size: 14px;">
+                    Showing <strong id="visible-count">{{ users|length }}</strong> of <strong>{{ users|length }}</strong> users
                 </div>
-            </div>
-            <div class="filter-results">
-                Showing <strong>{{ users|length }}</strong> of <strong>{{ users|length }}</strong> users
             </div>
         </div>
 
@@ -65,16 +85,15 @@
                         <th>Email</th>
                         <th>Confirmed</th>
                         <th>Smiles Sent</th>
-                        <th>Dashboard URL</th>
                         <th>Created At</th>
                         <th>Last Activity</th>
-                        <th>Actions</th>
+                        <th style="width: 40px;"></th>
                     </tr>
                 </thead>
                 <tbody id="users-tbody">
                     {% for user in users %}
-                    <tr data-confirmed="{{ user.email_confirmed }}" data-smiles="{{ user.message_count }}">
-                        <td>
+                    <tr data-confirmed="{{ user.email_confirmed }}" data-smiles="{{ user.message_count }}" data-dashboard="{{ user.dashboard_url }}" class="user-row">
+                        <td onclick="goToDashboard('{{ user.dashboard_url }}')" style="cursor: pointer;">
                             <div class="email-cell">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
@@ -82,7 +101,7 @@
                                 {{ user.email }}
                             </div>
                         </td>
-                        <td>
+                        <td onclick="goToDashboard('{{ user.dashboard_url }}')" style="cursor: pointer;">
                             <div class="confirmed-badge {{ user.email_confirmed ? 'yes' : 'no' }}">
                                 {% if user.email_confirmed %}
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
@@ -95,13 +114,10 @@
                                 {% endif %}
                             </div>
                         </td>
-                        <td>
+                        <td onclick="goToDashboard('{{ user.dashboard_url }}')" style="cursor: pointer;">
                             <span class="smiles-count">{{ user.message_count }}</span>
                         </td>
-                        <td>
-                            <span class="dashboard-url">/{{ user.dashboard_url|slice(0, 8) }}</span>
-                        </td>
-                        <td>
+                        <td onclick="goToDashboard('{{ user.dashboard_url }}')" style="cursor: pointer;">
                             <div style="display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 13px;">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
@@ -109,7 +125,7 @@
                                 {{ user.created_at|date('M j, Y') }}
                             </div>
                         </td>
-                        <td>
+                        <td onclick="goToDashboard('{{ user.dashboard_url }}')" style="cursor: pointer;">
                             <div style="display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 13px;">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
@@ -117,17 +133,37 @@
                                 {{ user.last_activity|date('M j, Y') }}
                             </div>
                         </td>
-                        <td>
-                            <button class="actions-menu" onclick="showActionsMenu('{{ user.email }}')">
+                        <td style="position: relative;">
+                            <button class="actions-menu-btn" onclick="toggleActionsDropdown(event, '{{ user.email }}', '{{ user.dashboard_url }}')">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
                                 </svg>
                             </button>
+                            <div id="actions-{{ user.email }}" class="actions-dropdown hidden">
+                                <button onclick="sendReminder('{{ user.email }}')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                                    </svg>
+                                    Send Reminder
+                                </button>
+                                <button onclick="resetDashboard('{{ user.email }}')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                                    </svg>
+                                    Reset Dashboard
+                                </button>
+                                <button onclick="deleteUser('{{ user.email }}')" style="color: #EF4444;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    </svg>
+                                    Delete User
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="7" style="text-align: center; padding: 60px 0; color: var(--text-gray);">
+                        <td colspan="6" style="text-align: center; padding: 60px 0; color: var(--text-gray);">
                             No users yet
                         </td>
                     </tr>
@@ -141,62 +177,63 @@
 
 {% block scripts %}
 <script>
-function filterUsers(type) {
-    // Update active button
-    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-
-    // Filter rows
-    const rows = document.querySelectorAll('#users-tbody tr[data-confirmed]');
-    let visibleCount = 0;
-
-    rows.forEach(row => {
-        const confirmed = row.dataset.confirmed === '1';
-        let show = true;
-
-        if (type === 'confirmed' && !confirmed) show = false;
-        if (type === 'unconfirmed' && confirmed) show = false;
-
-        row.style.display = show ? '' : 'none';
-        if (show) visibleCount++;
-    });
-
-    updateFilterResults(visibleCount);
+// Navigate to user dashboard
+function goToDashboard(dashboardUrl) {
+    window.open('/dashboard/' + dashboardUrl, '_blank');
 }
 
-function filterBySmiles(min) {
+// Toggle actions dropdown
+function toggleActionsDropdown(event, email, dashboardUrl) {
+    event.stopPropagation();
+
+    // Close all other dropdowns
+    document.querySelectorAll('.actions-dropdown').forEach(dropdown => {
+        if (dropdown.id !== 'actions-' + email) {
+            dropdown.classList.add('hidden');
+        }
+    });
+
+    // Toggle this dropdown
+    const dropdown = document.getElementById('actions-' + email);
+    dropdown.classList.toggle('hidden');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.actions-menu-btn')) {
+        document.querySelectorAll('.actions-dropdown').forEach(dropdown => {
+            dropdown.classList.add('hidden');
+        });
+    }
+});
+
+function applyFilters() {
+    const userStatus = document.querySelector('input[name="user-status"]:checked').value;
+    const minVal = parseInt(document.getElementById('min-smiles').value) || 0;
+    const maxVal = parseInt(document.getElementById('max-smiles').value) || 999999;
+
     const rows = document.querySelectorAll('#users-tbody tr[data-smiles]');
     let visibleCount = 0;
 
     rows.forEach(row => {
         const smiles = parseInt(row.dataset.smiles);
-        const show = smiles >= (parseInt(min) || 0);
+        const confirmed = row.dataset.confirmed === '1';
+
+        let show = true;
+
+        // Apply user status filter
+        if (userStatus === 'confirmed' && !confirmed) show = false;
+        if (userStatus === 'unconfirmed' && confirmed) show = false;
+
+        // Apply smiles range filter
+        if (smiles < minVal || smiles > maxVal) show = false;
 
         row.style.display = show ? '' : 'none';
         if (show) visibleCount++;
     });
 
-    updateFilterResults(visibleCount);
-}
-
-function updateFilterResults(count) {
-    const total = document.querySelectorAll('#users-tbody tr[data-confirmed]').length;
-    document.querySelector('.filter-results').innerHTML =
-        `Showing <strong>${count}</strong> of <strong>${total}</strong> users`;
-}
-
-function showActionsMenu(email) {
-    const actions = [
-        `Send Reminder to ${email}`,
-        `Reset Dashboard URL`,
-        `Delete User`
-    ];
-
-    const action = prompt(`Actions for ${email}:\n1. Send Reminder\n2. Reset Dashboard\n3. Delete User\n\nEnter number:`);
-
-    if (action === '1') sendReminder(email);
-    else if (action === '2') resetDashboard(email);
-    else if (action === '3') deleteUser(email);
+    // Update visible count
+    document.getElementById('visible-count').textContent = visibleCount;
 }
 
 async function sendReminder(email) {

@@ -112,9 +112,11 @@ export function MessageCard({
           <div className="text-4xl flex-shrink-0 mt-2">
             {messageEmoji}
           </div>
-          <p className="text-3xl md:text-4xl text-gray-900 leading-relaxed flex-1 font-lora">
-            "{message}"
-          </p>
+          <div className="flex-1">
+            <p className="text-3xl md:text-4xl text-gray-900 leading-relaxed font-lora">
+              "{message}"
+            </p>
+          </div>
         </div>
 
         {/* Sender info - Only show for non-sent messages (preview mode) */}

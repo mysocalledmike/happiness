@@ -29,14 +29,16 @@
                     </div>
                     <span><strong>{{ total_companies }}</strong> companies spreading smiles</span>
                 </div>
+                {% if featured_company %}
                 <div class="hero-stat-item">
                     <div class="hero-stat-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
                         </svg>
                     </div>
-                    <span><strong>847</strong> smiles spread at Google</span>
+                    <span><strong>{{ featured_company_smiles }}</strong> smiles spread at {{ featured_company_name }}</span>
                 </div>
+                {% endif %}
             </div>
         </div>
 
@@ -137,6 +139,7 @@
             </div>
 
             {# Top Senders Card #}
+            {% if featured_company %}
             <div class="stat-card">
                 <div class="stat-card-header">
                     <div class="stat-card-icon">
@@ -145,36 +148,116 @@
                         </svg>
                     </div>
                     <div>
-                        <div class="stat-card-title">847 Google smiles</div>
-                        <div class="stat-card-subtitle">from Google employees</div>
+                        <div class="stat-card-title">{{ featured_company_smiles }} {{ featured_company_name }} smiles</div>
+                        <div class="stat-card-subtitle">from {{ featured_company_name }} employees</div>
                     </div>
                 </div>
 
+                {% for sender in featured_company_top_senders|slice(0, 3) %}
                 <div class="leaderboard-item">
-                    <div class="leaderboard-rank">#1</div>
-                    <div class="leaderboard-avatar">👤</div>
+                    <div class="leaderboard-rank">#{{ loop.index }}</div>
+                    <div class="leaderboard-avatar">{{ sender.avatar }}</div>
                     <div class="leaderboard-info">
-                        <div class="leaderboard-name">Sarah Chen</div>
-                        <div class="leaderboard-count">42 smiles created</div>
+                        <div class="leaderboard-name">{{ sender.name }}</div>
+                        <div class="leaderboard-count">{{ sender.smile_count }} smiles created</div>
                     </div>
                 </div>
-                <div class="leaderboard-item">
-                    <div class="leaderboard-rank">#2</div>
-                    <div class="leaderboard-avatar">👤</div>
-                    <div class="leaderboard-info">
-                        <div class="leaderboard-name">Mike Rodriguez</div>
-                        <div class="leaderboard-count">38 smiles created</div>
-                    </div>
+                {% else %}
+                <div style="padding: 40px 20px; text-align: center; color: var(--text-gray);">
+                    No smile creators yet from {{ featured_company_name }}
                 </div>
-                <div class="leaderboard-item">
-                    <div class="leaderboard-rank">#3</div>
-                    <div class="leaderboard-avatar">👤</div>
-                    <div class="leaderboard-info">
-                        <div class="leaderboard-name">Priya Patel</div>
-                        <div class="leaderboard-count">34 smiles created</div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{# Global Smiles Modal #}
+<div id="global-modal" class="modal-overlay hidden">
+    <div class="modal">
+        <button class="modal-close" onclick="hideModal('global-modal')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+        <div class="modal-header">
+            <div class="modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+            </div>
+            <div>
+                <h2 class="modal-title">Global Smiles</h2>
+                <p class="modal-subtitle">Progress toward 1 trillion</p>
+            </div>
+        </div>
+        <div style="margin-bottom: 24px;">
+            <div style="font-size: 48px; font-weight: 700; color: var(--orange); margin-bottom: 8px;">{{ global_smiles|number_format }}</div>
+            <div style="font-size: 16px; color: var(--text-gray); margin-bottom: 16px;">{{ global_progress }}% of 1 trillion smiles</div>
+            <div class="stat-card-progress" style="height: 12px;">
+                <div class="stat-card-progress-bar" style="width: {{ global_progress }}%;"></div>
+            </div>
+        </div>
+        <p style="color: var(--text-gray); font-size: 14px; line-height: 1.6;">Every smile counts toward our mission to create 1 trillion smiles worldwide. Keep spreading happiness!</p>
+    </div>
+</div>
+
+{# Between-Company Modal #}
+<div id="company-modal" class="modal-overlay hidden">
+    <div class="modal">
+        <button class="modal-close" onclick="hideModal('company-modal')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+        <div class="modal-header">
+            <div class="modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                </svg>
+            </div>
+            <div>
+                <h2 class="modal-title">Company Leaderboard</h2>
+                <p class="modal-subtitle">{{ total_companies }} companies spreading smiles</p>
+            </div>
+        </div>
+        <div style="max-height: 400px; overflow-y: auto;">
+            {% for company in top_companies %}
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">#{{ loop.index }}</div>
+                    <div class="leaderboard-avatar">🏢</div>
+                    <div class="leaderboard-info">
+                        <div class="leaderboard-name">{{ company.company }}</div>
+                        <div class="leaderboard-count">{{ company.smile_count }} smiles created</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{# Within-Company Modal #}
+<div id="within-company-modal" class="modal-overlay hidden">
+    <div class="modal">
+        <button class="modal-close" onclick="hideModal('within-company-modal')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+        <div class="modal-header">
+            <div class="modal-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+                </svg>
+            </div>
+            <div>
+                <h2 class="modal-title" id="within-company-title">Company Leaderboard</h2>
+                <p class="modal-subtitle" id="within-company-subtitle">Top smile creators</p>
+            </div>
+        </div>
+        <div id="within-company-content" style="max-height: 400px; overflow-y: auto;">
+            {# Content loaded dynamically #}
         </div>
     </div>
 </div>
@@ -182,6 +265,71 @@
 
 {% block scripts %}
 <script>
+// Modal functions
+function showModal(modalId) {
+    document.getElementById(modalId).classList.remove('hidden');
+}
+
+function hideModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+}
+
+// Load within-company modal data
+async function showWithinCompanyModal(company) {
+    try {
+        const response = await fetch(`/api/company-stats/${company}`);
+        const data = await response.json();
+
+        const companyName = company.charAt(0).toUpperCase() + company.slice(0, company.indexOf('.')).slice(1);
+        document.getElementById('within-company-title').textContent = `${companyName} Leaderboard`;
+        document.getElementById('within-company-subtitle').textContent = `${data.smile_count} smiles created`;
+
+        const content = data.top_senders.map((sender, index) => `
+            <div class="leaderboard-item">
+                <div class="leaderboard-rank">#${index + 1}</div>
+                <div class="leaderboard-avatar">${sender.avatar}</div>
+                <div class="leaderboard-info">
+                    <div class="leaderboard-name">${sender.name}</div>
+                    <div class="leaderboard-count">${sender.smile_count} smiles created</div>
+                </div>
+            </div>
+        `).join('');
+
+        document.getElementById('within-company-content').innerHTML = content || '<div style="padding: 40px; text-align: center; color: var(--text-gray);">No smile creators yet</div>';
+        showModal('within-company-modal');
+    } catch (error) {
+        console.error('Error loading company stats:', error);
+    }
+}
+
+// Make stat cards clickable on homepage
+document.addEventListener('DOMContentLoaded', function() {
+    // Select only stat cards within the stats-grid section
+    const statCards = document.querySelectorAll('.stats-grid .stat-card');
+    console.log('Found stat cards in stats-grid:', statCards.length);
+
+    if (statCards[0]) {
+        statCards[0].style.cursor = 'pointer';
+        statCards[0].addEventListener('click', function() {
+            showModal('global-modal');
+        });
+    }
+    if (statCards[1]) {
+        statCards[1].style.cursor = 'pointer';
+        statCards[1].addEventListener('click', function() {
+            showModal('company-modal');
+        });
+    }
+    {% if featured_company %}
+    if (statCards[2]) {
+        statCards[2].style.cursor = 'pointer';
+        statCards[2].addEventListener('click', function() {
+            showWithinCompanyModal('{{ featured_company }}');
+        });
+    }
+    {% endif %}
+});
+
 // Avatar picker
 document.querySelectorAll('.avatar-option').forEach(btn => {
     btn.addEventListener('click', function(e) {
@@ -218,7 +366,13 @@ document.getElementById('signup-form').addEventListener('submit', async function
         const result = await response.json();
 
         if (result.success) {
-            window.location.href = `/dashboard/${result.dashboard_url}?first_visit=1`;
+            if (result.existing) {
+                // Email already exists - show message
+                alert(result.message);
+            } else {
+                // New user - redirect to dashboard
+                window.location.href = `/dashboard/${result.dashboard_url}?first_visit=1`;
+            }
         } else {
             alert(result.error || 'Signup failed. Please try again.');
         }

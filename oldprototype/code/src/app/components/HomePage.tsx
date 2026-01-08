@@ -56,7 +56,7 @@ export function HomePage({ onGetStarted }: HomePageProps) {
               {/* Tagline */}
               <div>
                 <p className="text-lg md:text-xl font-lora opacity-90">
-                  Smiles are heartfelt messages you send that create happiness and make people's day.
+                  Smiles are heartfelt messages you send that make you happier - just for making someone's day.
                 </p>
               </div>
               
@@ -191,7 +191,7 @@ export function HomePage({ onGetStarted }: HomePageProps) {
               Mission: Create 1 trillion smiles, one at a time.
             </h2>
             <p className="text-xl text-gray-600 mb-8 font-lora">
-              Send smiles to the people who make your day, workplace, or entire life better, and join the movement to make the Internet a little brighter.
+              Send smiles to people you care about, and join the movement to make the Internet a little brighter.
             </p>
 
             <div className="grid md:grid-cols-3 gap-6">

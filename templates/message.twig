@@ -4,23 +4,29 @@
 {# Gradient Header Bar #}
 <div class="gradient-header">
     <div class="gradient-header-content">
-        <a href="/" class="logo">1 Trillion Smiles</a>
+        <a href="/{% if company %}?company={{ company }}{% endif %}" class="logo">1 Trillion Smiles</a>
         <div class="header-stats">
-            <div class="header-stat">
+            <div class="header-stat" onclick="showModal('global-modal')" style="cursor: pointer;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                 </svg>
                 <span><strong>{{ global_smiles|number_format }}</strong> of 1T smiles</span>
             </div>
+            <div class="header-stat" onclick="showModal('company-modal')" style="cursor: pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                <span><strong>{{ total_companies }}</strong> companies</span>
+            </div>
             {% if company %}
-            <div class="header-stat">
+            <div class="header-stat" onclick="showWithinCompanyModal('{{ company }}')" style="cursor: pointer;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
                 </svg>
-                <span><strong>{{ company_smiles }}</strong> {{ company }} smiles</span>
+                <span><strong>{{ company_smiles }}</strong> {{ company_name }} smiles</span>
             </div>
             {% endif %}
-            <button class="btn btn-white btn-sm" onclick="window.location.href='/#signup'">Start Spreading Smiles</button>
+            <button class="btn btn-white btn-sm" onclick="showSignupModal()">Start Spreading Smiles</button>
         </div>
     </div>
 </div>
@@ -42,13 +48,43 @@
                 <div class="message-sender-avatar">{{ sender.avatar }}</div>
                 <div class="message-sender-info">
                     <h4>{{ sender.name }}</h4>
-                    <p>Has created {{ sender_smile_count }} smile{{ sender_smile_count != 1 ? 's' : '' }} ✨</p>
+                    <p id="sender-smile-count">Has created <span id="smile-count-number">{{ sender_smile_count }}</span> smile<span id="smile-plural">{{ sender_smile_count != 1 ? 's' : '' }}</span> ✨</p>
                 </div>
+            </div>
+
+            {# Made Me Smile Button #}
+            <div id="smile-button-container" style="margin-top: 24px; text-align: center;">
+                <button id="made-me-smile-btn" class="btn btn-primary btn-lg" onclick="recordSmile()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+                    </svg>
+                    {{ sender.name }} made me smile
+                </button>
+            </div>
+
+            {# Inline Signup Box (shown after clicking smile button) #}
+            <div id="inline-signup" class="hidden" style="margin-top: 32px; padding: 24px; background: var(--bg-light); border-radius: 12px; text-align: left;">
+                <h3 style="font-size: 20px; margin-bottom: 8px;">Your smile was counted! ✨</h3>
+                <p style="color: var(--text-gray); margin-bottom: 20px;">Want to spread smiles too? Create your own heartfelt messages.</p>
+                <form id="inline-signup-form" style="display: flex; flex-direction: column; gap: 12px;">
+                    <input type="text" name="name" class="form-input" placeholder="Your name" required>
+                    <input type="email" name="email" class="form-input" placeholder="Your email" required>
+                    <div class="avatar-grid" style="grid-template-columns: repeat(6, 1fr);">
+                        <button type="button" class="avatar-option" data-avatar="😊" onclick="selectInlineAvatar(this)">😊</button>
+                        <button type="button" class="avatar-option" data-avatar="😄" onclick="selectInlineAvatar(this)">😄</button>
+                        <button type="button" class="avatar-option" data-avatar="🎉" onclick="selectInlineAvatar(this)">🎉</button>
+                        <button type="button" class="avatar-option" data-avatar="✨" onclick="selectInlineAvatar(this)">✨</button>
+                        <button type="button" class="avatar-option" data-avatar="💛" onclick="selectInlineAvatar(this)">💛</button>
+                        <button type="button" class="avatar-option" data-avatar="🌟" onclick="selectInlineAvatar(this)">🌟</button>
+                    </div>
+                    <input type="hidden" name="avatar" required>
+                    <button type="submit" class="btn btn-primary">Start Spreading Smiles</button>
+                </form>
             </div>
         </div>
 
-        {# Treasure Hunt Section #}
-        <div class="treasure-hunt-card">
+        {# Treasure Hunt Section - Hidden for now #}
+        <div class="treasure-hunt-card" style="display: none;">
             <h3>Curious what else {{ sender.name }} said?</h3>
             <p>{{ sender.name }} sent Smiles to others too. Enter an email to peek at their Smile 👀</p>
             <div class="lookup-form">
@@ -70,8 +106,8 @@
             <div id="lookup-result" class="hidden lookup-result"></div>
         </div>
 
-        {# CTA Card #}
-        <div class="cta-card">
+        {# Bottom CTA - Hidden for now #}
+        <div class="cta-card" style="display: none;">
             <h2>What is One Trillion Smiles?</h2>
             <p>Smiles are heartfelt messages you send that create happiness and make people's day.</p>
             <button class="btn btn-white btn-lg" onclick="window.location.href='/'">
@@ -82,11 +118,232 @@
             </button>
         </div>
     </div>
+
+    {# Signup Modal (from header button) #}
+    <div id="signup-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <button class="modal-close" onclick="hideSignupModal()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="modal-title">Start Spreading Smiles</h2>
+                    <p class="modal-subtitle">Create an account to send heartfelt messages</p>
+                </div>
+            </div>
+            <form id="modal-signup-form">
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" name="name" class="form-input" placeholder="Your name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Choose your avatar</label>
+                    <div class="avatar-grid">
+                        <button type="button" class="avatar-option modal-avatar" data-avatar="😊" onclick="selectModalAvatar(this)">😊</button>
+                        <button type="button" class="avatar-option modal-avatar" data-avatar="😄" onclick="selectModalAvatar(this)">😄</button>
+                        <button type="button" class="avatar-option modal-avatar" data-avatar="🎉" onclick="selectModalAvatar(this)">🎉</button>
+                        <button type="button" class="avatar-option modal-avatar" data-avatar="✨" onclick="selectModalAvatar(this)">✨</button>
+                        <button type="button" class="avatar-option modal-avatar" data-avatar="💛" onclick="selectModalAvatar(this)">💛</button>
+                        <button type="button" class="avatar-option modal-avatar" data-avatar="🌟" onclick="selectModalAvatar(this)">🌟</button>
+                        <button type="button" class="avatar-option modal-avatar" data-avatar="🚀" onclick="selectModalAvatar(this)">🚀</button>
+                        <button type="button" class="avatar-option modal-avatar" data-avatar="🎈" onclick="selectModalAvatar(this)">🎈</button>
+                        <button type="button" class="avatar-option modal-avatar" data-avatar="🌈" onclick="selectModalAvatar(this)">🌈</button>
+                        <button type="button" class="avatar-option modal-avatar" data-avatar="⭐" onclick="selectModalAvatar(this)">⭐</button>
+                    </div>
+                    <input type="hidden" name="avatar" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+            </form>
+        </div>
+    </div>
 </div>
+
+{# Include stat modals #}
+{% include 'stats-modals.twig' %}
 {% endblock %}
 
 {% block scripts %}
 <script>
+let selectedAvatar = null;
+let selectedModalAvatar = null;
+let smileRecorded = false;
+
+// Show/hide signup modal
+function showSignupModal() {
+    document.getElementById('signup-modal').classList.remove('hidden');
+}
+
+function hideSignupModal() {
+    document.getElementById('signup-modal').classList.add('hidden');
+}
+
+// Select avatar in modal signup
+function selectModalAvatar(button) {
+    document.querySelectorAll('.modal-avatar').forEach(opt => opt.classList.remove('selected'));
+    button.classList.add('selected');
+    selectedModalAvatar = button.getAttribute('data-avatar');
+    document.querySelector('#modal-signup-form input[name="avatar"]').value = selectedModalAvatar;
+}
+
+// Record smile when button is clicked
+async function recordSmile() {
+    if (smileRecorded) return;
+
+    const btn = document.getElementById('made-me-smile-btn');
+    btn.disabled = true;
+    btn.textContent = 'Recording...';
+
+    try {
+        const messageUrl = window.location.pathname.split('/').pop();
+        const response = await fetch(`/api/messages/${messageUrl}/smile`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            smileRecorded = true;
+
+            // Update smile counts in UI
+            document.getElementById('smile-count-number').textContent = result.sender_smile_count;
+            document.getElementById('smile-plural').textContent = result.sender_smile_count != 1 ? 's' : '';
+
+            // Update header stats
+            document.querySelectorAll('.header-stat')[0].querySelector('strong').textContent = result.global_smiles.toLocaleString();
+
+            // Update company stats if present
+            if (result.company_smiles > 0) {
+                const companyStatElement = document.querySelectorAll('.header-stat')[1];
+                if (companyStatElement) {
+                    companyStatElement.querySelector('strong').textContent = result.company_smiles;
+                }
+            }
+
+            // Hide button and show inline signup
+            document.getElementById('smile-button-container').style.display = 'none';
+            document.getElementById('inline-signup').classList.remove('hidden');
+
+            // Scroll to signup box
+            setTimeout(() => {
+                document.getElementById('inline-signup').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        } else {
+            alert(result.error || 'Failed to record smile');
+            btn.disabled = false;
+            btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg> {{ sender.name }} made me smile';
+        }
+    } catch (error) {
+        console.error('Record smile error:', error);
+        alert('An error occurred. Please try again.');
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg> {{ sender.name }} made me smile';
+    }
+}
+
+// Select avatar in inline signup
+function selectInlineAvatar(button) {
+    document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
+    button.classList.add('selected');
+    selectedAvatar = button.getAttribute('data-avatar');
+    document.querySelector('input[name="avatar"]').value = selectedAvatar;
+}
+
+// Handle signup form submissions
+document.addEventListener('DOMContentLoaded', function() {
+    // Inline signup form (after clicking smile button)
+    document.getElementById('inline-signup-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const data = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            avatar: formData.get('avatar')
+        };
+
+        if (!data.avatar) {
+            alert('Please select an avatar');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                if (result.existing) {
+                    alert(result.message);
+                } else {
+                    window.location.href = `/dashboard/${result.dashboard_url}?first_visit=1`;
+                }
+            } else {
+                alert(result.error || 'Failed to sign up. Please try again.');
+            }
+        } catch (error) {
+            console.error('Signup error:', error);
+            alert('An error occurred. Please try again.');
+        }
+    });
+
+    // Modal signup form (from header button)
+    document.getElementById('modal-signup-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const data = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            avatar: formData.get('avatar')
+        };
+
+        if (!data.avatar) {
+            alert('Please select an avatar');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                if (result.existing) {
+                    alert(result.message);
+                    hideSignupModal();
+                } else {
+                    window.location.href = `/dashboard/${result.dashboard_url}?first_visit=1`;
+                }
+            } else {
+                alert(result.error || 'Failed to sign up. Please try again.');
+            }
+        } catch (error) {
+            console.error('Signup error:', error);
+            alert('An error occurred. Please try again.');
+        }
+    });
+});
+
 async function lookupMessage() {
     const email = document.getElementById('lookup-email').value.trim();
     if (!email) return;

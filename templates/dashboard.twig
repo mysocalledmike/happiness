@@ -4,20 +4,26 @@
 {# Gradient Header Bar #}
 <div class="gradient-header">
     <div class="gradient-header-content">
-        <a href="/" class="logo">1 Trillion Smiles</a>
+        <a href="/{% if company %}?company={{ company }}{% endif %}" class="logo">1 Trillion Smiles</a>
         <div class="header-stats">
-            <div class="header-stat">
+            <div class="header-stat" onclick="showModal('global-modal')" style="cursor: pointer;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                 </svg>
                 <span><strong>{{ global_smiles|number_format }}</strong> of 1T smiles</span>
             </div>
+            <div class="header-stat" onclick="showModal('company-modal')" style="cursor: pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                <span><strong>{{ total_companies }}</strong> companies</span>
+            </div>
             {% if company %}
-            <div class="header-stat">
+            <div class="header-stat" onclick="showWithinCompanyModal('{{ company }}')" style="cursor: pointer;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
                 </svg>
-                <span><strong>{{ company_smiles }}</strong> {{ company }} smiles</span>
+                <span><strong>{{ company_smiles }}</strong> {{ company_name }} smiles</span>
             </div>
             {% endif %}
         </div>
@@ -35,15 +41,43 @@
                 </svg>
             </button>
             <h4>Welcome to your Smile page!</h4>
-            <p>This page keeps track of Smiles you've sent and how many Smiles you've created on others. Check your email to confirm it's really you and to easily get back to this page.</p>
+            <p>This page keeps track of Smiles you've sent and how many Smiles you've created on others. Get started by sending your first smile.</p>
         </div>
         {% endif %}
 
-        {# Email Confirmation Banner #}
-        {% if not sender.email_confirmed %}
-        <div class="banner banner-warning">
-            <h4>📧 Confirm your email</h4>
-            <p>You can send {{ 3 - message_count }} more Smiles before confirming. Check your email to unlock unlimited Smiles!</p>
+        {# Email Confirmed Banner #}
+        {% if confirmed %}
+        <div class="banner banner-success">
+            <button class="banner-close" onclick="this.parentElement.remove()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <h4>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle;">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Your email was confirmed
+            </h4>
+            <p>You can now send unlimited Smiles!</p>
+        </div>
+        {% endif %}
+
+        {# Already Confirmed Banner #}
+        {% if already_confirmed %}
+        <div class="banner banner-info">
+            <button class="banner-close" onclick="this.parentElement.remove()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <h4>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle;">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Email already confirmed
+            </h4>
+            <p>Your email is confirmed. You're all set!</p>
         </div>
         {% endif %}
 
@@ -70,29 +104,88 @@
             </div>
         </div>
 
-        {# Send Smile Form #}
-        <div class="message-form-card">
-            <h3>Send smile</h3>
-            <form id="send-form">
-                <div class="form-group">
-                    <label class="form-label">Name</label>
-                    <input type="text" name="recipient_name" class="form-input" placeholder="Sarah" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" name="recipient_email" class="form-input" placeholder="sarah@example.com" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Your message</label>
-                    <textarea name="message" class="form-textarea" placeholder="Write something that will make them smile..." required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
+        {# Send Smile Form or Confirmation Banner #}
+        {% if not sender.email_confirmed and message_count >= 3 %}
+            {# Blue Banner for Unconfirmed Users at Limit #}
+            <div class="banner" style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: white; text-align: center;">
+                <h4 style="color: white; margin-bottom: 12px;">We need to know it's really you!</h4>
+                <p style="color: rgba(255, 255, 255, 0.9); margin-bottom: 16px;">Please check your email and confirm your address to send more smiles</p>
+                <button onclick="requestConfirmationEmail()" class="btn btn-white">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
                     </svg>
-                    Send smile
+                    Resend Confirmation Email
                 </button>
-            </form>
+            </div>
+        {% else %}
+            {# Regular Send Smile Form #}
+            <div class="message-form-card">
+                <h3>Send smile</h3>
+                <form id="send-form">
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" name="recipient_name" class="form-input" placeholder="Sarah" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="recipient_email" class="form-input" placeholder="sarah@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Your message</label>
+                        <textarea name="message" class="form-textarea" placeholder="Write something that will make them smile..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                        Send smile
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+
+        {# Preview Confirmation Modal #}
+        <div id="preview-modal" class="modal-overlay hidden">
+            <div class="modal">
+                <button class="modal-close" onclick="hidePreviewModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+                <div class="modal-header">
+                    <div class="modal-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="modal-title">Confirm Smile</h2>
+                        <p class="modal-subtitle">Review before sending</p>
+                    </div>
+                </div>
+                <div style="background: var(--bg-light); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                        <div style="background: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;">
+                            <span>✨</span> Hey <span id="preview-name"></span>
+                        </div>
+                    </div>
+                    <div style="font-size: 14px; color: var(--text-gray); margin-bottom: 8px;">
+                        To: <span id="preview-email" style="color: var(--text-dark);"></span>
+                    </div>
+                    <div style="background: white; border-radius: 8px; padding: 16px; font-style: italic; color: var(--text-dark);">
+                        💛 "<span id="preview-message"></span>"
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-white" style="flex: 1;" onclick="hidePreviewModal()">Cancel</button>
+                    <button class="btn btn-primary" style="flex: 1;" onclick="confirmSendSmile()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                        Send Smile
+                    </button>
+                </div>
+            </div>
         </div>
 
         {# Sent Messages #}
@@ -102,17 +195,24 @@
             {% for message in messages %}
                 <div class="message-item">
                     <div class="message-item-header">
-                        <div class="message-badge">
-                            <span>✨</span>
-                            Hey {{ message.recipient_name }}
+                        <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                            <div class="message-badge">
+                                <span>✨</span>
+                                Hey {{ message.recipient_name }}
+                            </div>
+                            {% if message.read_at %}
+                                <span style="font-size: 12px; color: #10B981; font-weight: 600;">Created</span>
+                            {% else %}
+                                <span style="font-size: 12px; color: var(--text-gray); font-weight: 600;">Sent</span>
+                            {% endif %}
                         </div>
                         <div class="message-actions">
-                            <span class="message-date">Smile created {{ message.sent_at|date('M j') }}</span>
-                            {% if message.read_at %}
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" title="Viewed">
-                                    <polyline points="20 6 9 17 4 12"/>
+                            <span class="message-date">{{ message.sent_at|date('M j') }}</span>
+                            <button class="message-action-btn" onclick="previewMessage('{{ message.message_url }}')" title="Preview">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                                 </svg>
-                            {% endif %}
+                            </button>
                             <button class="message-action-btn" onclick="deleteMessage({{ message.id }})" title="Delete">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -120,8 +220,11 @@
                             </button>
                         </div>
                     </div>
-                    <p class="message-text">💛 "{{ message.message }}"</p>
-                    <p style="font-size: 12px; color: var(--text-light); margin-top: 8px;">{{ message.recipient_email }}</p>
+                    <div style="margin-top: 12px; margin-bottom: 8px;">
+                        <span style="font-size: 12px; color: var(--text-gray);">To:</span>
+                        <span style="background: var(--bg-light); padding: 4px 12px; border-radius: 12px; font-size: 12px; color: var(--text-dark); margin-left: 8px;">{{ message.recipient_email }}</span>
+                    </div>
+                    <p class="message-text" style="background: var(--bg-light); padding: 16px; border-radius: 8px;">💛 "{{ message.message }}"</p>
                 </div>
             {% else %}
                 <p style="text-align: center; color: var(--text-gray); padding: 40px 0;">No Smiles sent yet. Send your first one above! ✨</p>
@@ -129,41 +232,121 @@
         </div>
     </div>
 </div>
+
+{# Include stat modals from homepage #}
+{% include 'stats-modals.twig' %}
 {% endblock %}
 
 {% block scripts %}
 <script>
-// Send form
-document.getElementById('send-form').addEventListener('submit', async function(e) {
+// Store form data for preview
+let pendingSmileData = null;
+
+// Send form - show preview modal first
+document.getElementById('send-form').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const formData = new FormData(this);
-    const data = {
+    pendingSmileData = {
         recipient_name: formData.get('recipient_name'),
         recipient_email: formData.get('recipient_email'),
         message: formData.get('message')
     };
 
+    // Show preview modal
+    document.getElementById('preview-name').textContent = pendingSmileData.recipient_name;
+    document.getElementById('preview-email').textContent = pendingSmileData.recipient_email;
+    document.getElementById('preview-message').textContent = pendingSmileData.message;
+    document.getElementById('preview-modal').classList.remove('hidden');
+});
+
+// Hide preview modal
+function hidePreviewModal() {
+    document.getElementById('preview-modal').classList.add('hidden');
+    pendingSmileData = null;
+}
+
+// Confirm and actually send the smile
+async function confirmSendSmile() {
+    if (!pendingSmileData) return;
+
     try {
-        const response = await fetch(window.location.pathname + '/send', {
+        const dashboardUrl = window.location.pathname.split('/').pop();
+        const response = await fetch(`/api/dashboard/${dashboardUrl}/send`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: JSON.stringify(pendingSmileData)
         });
 
         const result = await response.json();
 
         if (result.success) {
-            alert('Smile sent! ✨');
+            hidePreviewModal();
             location.reload();
         } else {
-            alert(result.error || 'Failed to send. Please try again.');
+            hidePreviewModal();
+            if (result.needs_confirmation) {
+                // Show confirmation prompt
+                if (confirm(result.error + '\n\nWould you like to send a confirmation email now?')) {
+                    await requestConfirmation();
+                }
+            } else {
+                alert(result.error || 'Failed to send. Please try again.');
+            }
         }
     } catch (error) {
         console.error('Send error:', error);
+        hidePreviewModal();
         alert('An error occurred. Please try again.');
     }
-});
+}
+
+// Request email confirmation
+async function requestConfirmation() {
+    try {
+        const dashboardUrl = window.location.pathname.split('/').pop();
+        const response = await fetch(`/api/dashboard/${dashboardUrl}/request-confirmation`, {
+            method: 'POST'
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Confirmation email sent! Check your inbox to unlock unlimited Smiles.');
+        } else {
+            alert('Failed to send confirmation email. Please try again.');
+        }
+    } catch (error) {
+        console.error('Request confirmation error:', error);
+        alert('An error occurred. Please try again.');
+    }
+}
+
+// Request email confirmation from banner button
+async function requestConfirmationEmail() {
+    try {
+        const dashboardUrl = window.location.pathname.split('/').pop();
+        const response = await fetch(`/api/dashboard/${dashboardUrl}/request-confirmation`, {
+            method: 'POST'
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Confirmation email sent! Check your inbox to unlock unlimited Smiles.');
+        } else {
+            alert('Failed to send confirmation email. Please try again.');
+        }
+    } catch (error) {
+        console.error('Request confirmation error:', error);
+        alert('An error occurred. Please try again.');
+    }
+}
+
+// Preview message
+function previewMessage(messageUrl) {
+    window.open(`/s/${messageUrl}`, '_blank');
+}
 
 // Delete message
 async function deleteMessage(id) {

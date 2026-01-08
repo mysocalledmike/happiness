@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Search, TrendingUp, X, Globe, Sparkles } from 'lucide-react';
@@ -7,6 +7,7 @@ import { GlobalProgressModal } from './GlobalProgressModal';
 import { CompanyLeaderboardModal } from './CompanyLeaderboardModal';
 import { MessageCard } from './MessageCard';
 import { GLOBAL_SMILES, GLOBAL_GOAL, COMPANY_NAME, COMPANY_SMILES } from '../constants';
+import { motion } from 'motion/react';
 
 interface HappinessPageProps {
   sender: {
@@ -44,6 +45,9 @@ export function HappinessPage({
   const [signupName, setSignupName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupCharacter, setSignupCharacter] = useState('');
+  const [hasSmiled, setHasSmiled] = useState(false);
+  const [senderSmileCount, setSenderSmileCount] = useState(sender.totalSmiles);
+  const signupBoxRef = useRef<HTMLDivElement>(null);
 
   const globalProgress = (GLOBAL_SMILES / GLOBAL_GOAL) * 100;
   const characters = ['🌟', '🌈', '☀️', '🎈', '🌸', '🎨', '🎪', '🎭', '🦋', '🌺'];
@@ -90,6 +94,27 @@ export function HappinessPage({
       onCreateOwn();
     }
   };
+
+  const handleSmileClick = () => {
+    if (!hasSmiled) {
+      setHasSmiled(true);
+      setSenderSmileCount(senderSmileCount + 1);
+      // In real app, this would increment the sender's smile counter
+      console.log('Smile count incremented for', sender.name);
+    }
+  };
+
+  // Scroll to signup box when it appears
+  useEffect(() => {
+    if (hasSmiled && signupBoxRef.current) {
+      setTimeout(() => {
+        signupBoxRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }, 100);
+    }
+  }, [hasSmiled]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-yellow-50">
@@ -218,76 +243,91 @@ export function HappinessPage({
           <MessageCard
             senderName={sender.name}
             senderCharacter={sender.character}
-            totalSmiles={sender.totalSmiles}
+            totalSmiles={senderSmileCount}
             message={message}
             recipientEmail={receiverEmail}
             recipientName={receiverName}
           />
         </div>
 
-        {/* Nosy Feature - See Other Messages */}
-        <div className="bg-white rounded-3xl p-8 shadow-lg mb-8">
-          <h3 className="text-xl font-bold text-gray-900 mb-4 font-poppins">
-            Curious what else {sender.name} said?
-          </h3>
-          <p className="text-gray-600 mb-6 font-lora">
-            {sender.name} sent Smiles to others too. Enter an email to peek at their Smile 👀
-          </p>
-          <div className="flex gap-3">
-            <Input
-              type="email"
-              value={lookupEmail}
-              onChange={(e) => {
-                setLookupEmail(e.target.value);
-                setLookupResult(null);
-              }}
-              placeholder="someone@example.com"
-              className="border-gray-200 focus:border-orange-400 focus:ring-orange-400"
-            />
+        {/* This Made Me Smile Button - PROMINENT */}
+        {!hasSmiled ? (
+          <div className="mb-12 flex justify-center">
             <Button
-              onClick={handleLookup}
-              disabled={!lookupEmail}
-              className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white"
+              onClick={handleSmileClick}
+              className="px-16 py-8 rounded-full text-2xl font-bold transition-all font-poppins bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white shadow-2xl hover:shadow-3xl hover:scale-110"
             >
-              <Search className="w-4 h-4 mr-2" />
-              Look up
+              <span className="mr-3 text-3xl">☺</span>
+              {sender.name} made me smile
             </Button>
           </div>
-
-          {lookupResult && (
-            <div className="mt-4 p-4 rounded-2xl bg-gradient-to-br from-orange-50 to-pink-50 border-2 border-orange-200">
-              {lookupResult === 'no-message' ? (
-                <p className="text-gray-600 text-center">
-                  No Smile found for this email 🤷‍♀️
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  <p className="text-sm font-semibold text-orange-900">
-                    Smile to {lookupEmail.split('@')[0]}:
-                  </p>
-                  <p className="text-gray-800 italic">"{lookupResult}"</p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* CTA Section - Gradient Bubble */}
-        <div className="bg-gradient-to-br from-orange-400 via-pink-500 to-orange-500 rounded-3xl p-12 text-center text-white shadow-2xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 font-poppins">
-            What is One Trillion Smiles?
-          </h2>
-          <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto font-lora">
-            Smiles are heartfelt messages you send that create happiness and make people's day.
-          </p>
-          <Button
-            onClick={() => setShowCreateModal(true)}
-            className="bg-white text-orange-600 hover:bg-orange-50 px-8 py-6 text-lg rounded-full"
+        ) : (
+          /* Signup Form - Shows after clicking the smile button */
+          <motion.div 
+            ref={signupBoxRef}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="bg-white rounded-3xl p-8 shadow-2xl mb-12"
           >
-            <Sparkles className="w-5 h-5 mr-2" />
-            Start Spreading Smiles
-          </Button>
-        </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2 font-poppins">Smile counted, now keep spreading the love!</h2>
+            <p className="text-gray-600 mb-6 font-lora">
+              Send heartfelt, personalized messages that spread genuine joy. It takes just 2 minutes.
+            </p>
+            <form onSubmit={handleCreateSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm text-gray-700 mb-2 font-lora">Your name</label>
+                <Input
+                  value={signupName}
+                  onChange={(e) => setSignupName(e.target.value)}
+                  placeholder="Alex"
+                  className="border-gray-200 focus:border-orange-400 focus:ring-orange-400 font-lora"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-700 mb-2 font-lora">Your email</label>
+                <Input
+                  type="email"
+                  value={signupEmail}
+                  onChange={(e) => setSignupEmail(e.target.value)}
+                  placeholder="alex@example.com"
+                  className="border-gray-200 focus:border-orange-400 focus:ring-orange-400 font-lora"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-700 mb-2 font-lora">Pick your vibe</label>
+                <div className="grid grid-cols-5 gap-2">
+                  {characters.map((char) => (
+                    <button
+                      key={char}
+                      type="button"
+                      onClick={() => setSignupCharacter(char)}
+                      className={`text-3xl p-3 rounded-xl transition-all ${
+                        signupCharacter === char
+                          ? 'bg-gradient-to-br from-orange-400 to-pink-500 scale-110 shadow-lg'
+                          : 'bg-gray-50 hover:bg-gray-100'
+                      }`}
+                    >
+                      {char}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={!signupName || !signupEmail || !signupCharacter}
+                className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white py-3 rounded-full font-poppins"
+              >
+                Start Spreading Smiles
+              </Button>
+            </form>
+          </motion.div>
+        )}
       </div>
     </div>
   );

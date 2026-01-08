@@ -31,7 +31,7 @@ class MessageService
         if ($messageCount['count'] >= self::UNCONFIRMED_MESSAGE_LIMIT) {
             return [
                 'can_send' => false,
-                'reason' => 'Please confirm your email to send more Smiles'
+                'reason' => 'You\'ve sent 3 Smiles! Please confirm your email to keep spreading smiles.'
             ];
         }
 
@@ -49,6 +49,19 @@ class MessageService
         // Check if user can send
         $canSend = self::canSendMessage($senderId);
         if (!$canSend['can_send']) {
+            // Get sender info to auto-send confirmation email
+            $sender = $db->fetchOne('SELECT name, email, email_confirmed, email_confirmation_token, dashboard_url FROM senders WHERE id = ?', [$senderId]);
+
+            // Auto-send confirmation email if they hit the limit
+            if ($sender && !$sender['email_confirmed']) {
+                \App\Services\SignupService::sendConfirmationOnlyEmail(
+                    $sender['name'],
+                    $sender['email'],
+                    $sender['email_confirmation_token'],
+                    $sender['dashboard_url']
+                );
+            }
+
             throw new \Exception($canSend['reason']);
         }
 

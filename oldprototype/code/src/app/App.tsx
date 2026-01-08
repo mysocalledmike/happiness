@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { HomePage } from './components/HomePage';
 import { SenderDashboard } from './components/SenderDashboard';
 import { HappinessPage } from './components/HappinessPage';
+import { AdminDashboard } from './components/AdminDashboard';
 
-type Page = 'home' | 'dashboard' | 'happiness';
+type Page = 'home' | 'dashboard' | 'happiness' | 'admin';
 
 interface User {
   name: string;
@@ -42,6 +43,10 @@ export default function App() {
     setCurrentPage('home');
   };
 
+  const handleAdminAccess = () => {
+    setCurrentPage('admin');
+  };
+
   return (
     <div className="min-h-screen">
       {/* Pages */}
@@ -70,6 +75,8 @@ export default function App() {
           onCreateOwn={handleCreateOwn}
         />
       )}
+
+      {currentPage === 'admin' && <AdminDashboard onNavigateHome={handleNavigateHome} />}
     </div>
   );
 }
