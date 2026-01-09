@@ -7,12 +7,12 @@ class Config
     // Domain configuration - change this once to update everywhere
     public static function getDomain(): string
     {
-        return 'happiness.mikesorvillo.com';
+        return 'onetrillionsmiles.com';
     }
-    
+
     public static function getEmailDomain(): string
     {
-        return 'happiness.mikesorvillo.com';
+        return 'onetrillionsmiles.com';
     }
     
     public static function getEmailSender(): string
@@ -37,9 +37,9 @@ class Config
     // Application settings
     public static function getAppName(): string
     {
-        return 'Happiness';
+        return 'One Trillion Smiles';
     }
-    
+
     public static function getAppDescription(): string
     {
         return 'Bring a smile to 1 billion faces';
