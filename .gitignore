@@ -41,6 +41,9 @@ Thumbs.db
 # Deployment configuration (keep deploy.sh tracked, only ignore config with credentials)
 .deploy-config
 
+# Resend API configuration (keep example file, ignore actual config)
+config/resend.php
+
 # Cache files
 cache/
 tmp/
