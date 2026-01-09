@@ -469,7 +469,7 @@ $app->post('/api/admin/{action}', function ($request, $response, $args) {
 // Development email viewer (localhost only)
 $app->get('/dev/emails', function ($request, $response, $args) {
     $host = $_SERVER['HTTP_HOST'] ?? '';
-    if (!in_array($host, ['localhost', '127.0.0.1', 'localhost:8080'])) {
+    if (!in_array($host, ['localhost', '127.0.0.1', 'localhost:8080', 'happiness.mikesorvillo.com'])) {
         $response->getBody()->write('Access denied');
         return $response->withStatus(403);
     }
