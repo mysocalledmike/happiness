@@ -499,7 +499,7 @@ $app->get('/dev/emails', function ($request, $response, $args) {
 // Clear development emails (localhost only)
 $app->post('/api/dev/clear-emails', function ($request, $response, $args) {
     $host = $_SERVER['HTTP_HOST'] ?? '';
-    if (!in_array($host, ['localhost', '127.0.0.1', 'localhost:8080'])) {
+    if (!in_array($host, ['localhost', '127.0.0.1', 'localhost:8080', 'happiness.mikesorvillo.com'])) {
         $response->getBody()->write(json_encode(['success' => false]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
     }
