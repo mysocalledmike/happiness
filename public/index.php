@@ -15,6 +15,9 @@ $twig = Twig::create(__DIR__ . '/../templates', ['cache' => false]);
 // Add Twig-View Middleware
 $app->add(TwigMiddleware::create($app, $twig));
 
+// Add routing middleware (required in Slim 4)
+$app->addRoutingMiddleware();
+
 // Add error middleware
 $app->addErrorMiddleware(true, true, true);
 
