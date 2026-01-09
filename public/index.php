@@ -141,7 +141,8 @@ $app->get('/dashboard/{dashboard_url}', function ($request, $response, $args) {
     $sender = $db->fetchOne('SELECT * FROM senders WHERE dashboard_url = ?', [$dashboardUrl]);
     
     if (!$sender) {
-        return $response->withStatus(404)->write('Dashboard not found');
+        $response->getBody()->write('Dashboard not found');
+        return $response->withStatus(404);
     }
     
     $messages = \App\Services\MessageService::getMessagesBySender($sender['id']);
@@ -272,7 +273,8 @@ $app->get('/s/{message_url}', function ($request, $response, $args) {
     $messageData = \App\Services\MessageService::getMessageByUrl($messageUrl);
 
     if (!$messageData) {
-        return $response->withStatus(404)->write('Message not found');
+        $response->getBody()->write('Message not found');
+        return $response->withStatus(404);
     }
 
     // Don't auto-increment smile count anymore - user must click the button
@@ -468,7 +470,8 @@ $app->post('/api/admin/{action}', function ($request, $response, $args) {
 $app->get('/dev/emails', function ($request, $response, $args) {
     $host = $_SERVER['HTTP_HOST'] ?? '';
     if (!in_array($host, ['localhost', '127.0.0.1', 'localhost:8080'])) {
-        return $response->withStatus(403)->write('Access denied');
+        $response->getBody()->write('Access denied');
+        return $response->withStatus(403);
     }
     
     $view = Twig::fromRequest($request);
