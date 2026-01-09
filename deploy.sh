@@ -75,23 +75,32 @@ echo "📦 Step 2: Installing dependencies..."
 ssh "$SSH_USER@$SSH_HOST" << ENDSSH
     cd $REMOTE_PATH
 
-    # Check if composer exists
-    if ! command -v composer &> /dev/null; then
-        echo "⚠️  Composer not found in PATH, trying common locations..."
-        if [ -f ~/composer.phar ]; then
-            alias composer='php ~/composer.phar'
-        elif [ -f composer.phar ]; then
-            alias composer='php composer.phar'
+    # Determine which composer command to use
+    COMPOSER_CMD=""
+    if command -v composer &> /dev/null; then
+        COMPOSER_CMD="composer"
+        echo "Using system composer"
+    elif [ -f ~/composer.phar ]; then
+        COMPOSER_CMD="php ~/composer.phar"
+        echo "Using ~/composer.phar"
+    elif [ -f composer.phar ]; then
+        COMPOSER_CMD="php composer.phar"
+        echo "Using local composer.phar"
+    else
+        echo "Installing composer locally..."
+        curl -sS https://getcomposer.org/installer | php
+        if [ -f composer.phar ]; then
+            COMPOSER_CMD="php composer.phar"
+            echo "Composer installed successfully"
         else
-            echo "❌ Composer not found. Installing composer locally..."
-            curl -sS https://getcomposer.org/installer | php
-            alias composer='php composer.phar'
+            echo "❌ Failed to install composer"
+            exit 1
         fi
     fi
 
     # Install dependencies
     echo "Installing PHP dependencies..."
-    composer install --no-dev --optimize-autoloader
+    \$COMPOSER_CMD install --no-dev --optimize-autoloader
 
     if [ \$? -eq 0 ]; then
         echo "✅ Dependencies installed"
