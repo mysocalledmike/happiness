@@ -63,9 +63,18 @@
             </div>
 
             {# Inline Signup Box (shown after clicking smile button) #}
-            <div id="inline-signup" class="hidden" style="margin-top: 32px; padding: 24px; background: var(--bg-light); border-radius: 12px; text-align: left;">
-                <h3 style="font-size: 20px; margin-bottom: 8px;">Your smile was counted! ✨</h3>
-                <p style="color: var(--text-gray); margin-bottom: 20px;">Want to spread smiles too? Create your own heartfelt messages.</p>
+            <div id="inline-signup" class="hidden" style="margin-top: 32px;">
+                {# Explanatory text above signup box #}
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <p style="color: var(--text-dark); font-size: 16px; line-height: 1.6;">
+                        <strong>{{ sender.name }}</strong> made you smile, so we added to their smile count.
+                    </p>
+                </div>
+
+                {# Signup box #}
+                <div style="padding: 24px; background: var(--bg-light); border-radius: 12px; text-align: left;">
+                    <h3 style="font-size: 20px; margin-bottom: 8px;">Make work a little happier</h3>
+                    <p style="color: var(--text-gray); margin-bottom: 20px;">Bring a smile to a coworker's face by sending kind messages - it'll make their day and make you happier, too.</p>
                 <form id="inline-signup-form" style="display: flex; flex-direction: column; gap: 12px;">
                     <input type="text" name="name" class="form-input" placeholder="Your name" required>
                     <input type="email" name="email" class="form-input" placeholder="Your email" required>
@@ -80,6 +89,7 @@
                     <input type="hidden" name="avatar" required>
                     <button type="submit" class="btn btn-primary">Start Spreading Smiles</button>
                 </form>
+                </div>
             </div>
         </div>
 
@@ -134,8 +144,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h2 class="modal-title">Start Spreading Smiles</h2>
-                    <p class="modal-subtitle">Create an account to send heartfelt messages</p>
+                    <h2 class="modal-title">Make work a little happier</h2>
+                    <p class="modal-subtitle">Bring a smile to a coworker's face by sending kind messages - it'll make their day and make you happier, too.</p>
                 </div>
             </div>
             <form id="modal-signup-form">
@@ -163,7 +173,7 @@
                     </div>
                     <input type="hidden" name="avatar" required>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Start Spreading Smiles</button>
             </form>
         </div>
     </div>

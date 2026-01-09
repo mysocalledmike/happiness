@@ -14,6 +14,7 @@ interface MessageCardProps {
   message: string;
   recipientEmail: string;
   recipientName?: string;
+  messageEmoji?: string; // Make it customizable
   // Optional overlay props for sent messages
   sentDate?: string;
   read?: boolean;
@@ -29,6 +30,7 @@ export function MessageCard({
   message,
   recipientEmail,
   recipientName,
+  messageEmoji = "💛", // Default emoji
   sentDate,
   read,
   readDate,
@@ -36,9 +38,6 @@ export function MessageCard({
   onDelete,
 }: MessageCardProps) {
   const isSentMessage = !!(sentDate || onPreview || onDelete);
-
-  // Get emoji to display next to message
-  const messageEmoji = "💛";
 
   return (
     <div className="relative bg-white rounded-3xl p-8 md:p-12 shadow-lg">

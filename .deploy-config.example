@@ -1,0 +1,15 @@
+# Deployment Configuration for Dreamhost
+# Copy this file to .deploy-config and fill in your actual values
+# DO NOT commit .deploy-config to git (it's in .gitignore)
+
+# SSH connection details
+SSH_USER="your-dreamhost-username"
+SSH_HOST="your-server.dreamhost.com"
+
+# Remote path where the application will be deployed
+# For Dreamhost, this is typically: /home/username/domain.com
+REMOTE_PATH="/home/your-username/happiness.mikesorvillo.com"
+
+# Git branch to deploy (optional, defaults to 'main')
+# Current working branch: trillion-refactor
+GIT_BRANCH="trillion-refactor"

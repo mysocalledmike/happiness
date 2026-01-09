@@ -38,6 +38,9 @@ Thumbs.db
 .env.local
 .env.production
 
+# Deployment configuration (keep deploy.sh tracked, only ignore config with credentials)
+.deploy-config
+
 # Cache files
 cache/
 tmp/
