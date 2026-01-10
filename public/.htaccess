@@ -1,5 +1,13 @@
 RewriteEngine On
 
+# Protect /admin with HTTP Basic Authentication
+<If "%{REQUEST_URI} =~ m#^/admin#">
+    AuthType Basic
+    AuthName "Admin Access"
+    AuthUserFile /home/msorvillo/onetrillionsmiles.com/config/.htpasswd
+    Require valid-user
+</If>
+
 # Handle Angular, React, Vue Router, etc. - forward all requests to index.php
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
