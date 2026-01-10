@@ -61,6 +61,8 @@ rsync -avz --delete \
     --exclude '*.temp' \
     --exclude 'deploy.sh' \
     --exclude '.deploy-config' \
+    --exclude 'config/.htpasswd' \
+    --exclude 'config/resend.php' \
     ./ "$SSH_USER@$SSH_HOST:$REMOTE_PATH/"
 
 if [ $? -eq 0 ]; then
