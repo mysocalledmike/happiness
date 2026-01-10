@@ -12,6 +12,12 @@ if ($_SERVER['REQUEST_URI'] === '/' || $_SERVER['REQUEST_URI'] === '') {
     exit;
 }
 
+// Redirect /test to /test/ to handle trailing slash
+if ($_SERVER['REQUEST_URI'] === '/test') {
+    header('Location: /test/');
+    exit;
+}
+
 // Create App
 $app = AppFactory::create();
 
