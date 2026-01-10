@@ -79,6 +79,9 @@
                         <input type="text" name="recipient_name" class="form-input" placeholder="Their name" required>
                         <input type="email" name="recipient_email" class="form-input" placeholder="Their email" required>
                         <textarea name="message" class="form-input" placeholder="Your message to them..." rows="4" required style="resize: vertical;"></textarea>
+                        <p style="color: var(--text-gray); font-size: 14px; margin: 0 0 8px 0;">
+                            We'll send this from <strong style="color: var(--text-dark);">{{ message.recipient_name }}</strong> ({{ message.recipient_email }})
+                        </p>
                         <button type="submit" class="btn btn-primary">Send Smile</button>
                     </form>
                 </div>
