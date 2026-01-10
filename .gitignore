@@ -1,10 +1,15 @@
 # Composer dependencies
 /vendor/
+composer.phar
 
 # Development files
 development_emails.log
 debug_admin_actions.php
 create_test_*.php
+
+# Reference/prototype files (not part of the application)
+oldprototype/
+debug/
 
 # Database files (you may want to include schema.sql but exclude actual data)
 database/happiness.db
