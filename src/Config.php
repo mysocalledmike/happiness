@@ -12,7 +12,7 @@ class Config
 
     public static function getEmailDomain(): string
     {
-        return 'onetrillionsmiles.com';
+        return 'send.mail.onetrillionsmiles.com';
     }
     
     public static function getEmailSender(): string
