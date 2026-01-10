@@ -6,8 +6,17 @@ use Slim\Views\TwigMiddleware;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+// TEMPORARY: Show "Coming soon" for root domain, actual site is at /test
+if ($_SERVER['REQUEST_URI'] === '/' || $_SERVER['REQUEST_URI'] === '') {
+    echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Coming Soon</title></head><body style="margin:0;padding:20px;font-family:system-ui,-apple-system,sans-serif;"><p style="margin:0;color:#000;">Coming soon</p></body></html>';
+    exit;
+}
+
 // Create App
 $app = AppFactory::create();
+
+// Set base path to /test (temporary while in development)
+$app->setBasePath('/test');
 
 // Create Twig
 $twig = Twig::create(__DIR__ . '/../templates', ['cache' => false]);

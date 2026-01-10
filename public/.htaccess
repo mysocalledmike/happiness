@@ -1,7 +1,7 @@
 RewriteEngine On
 
-# Protect /admin with HTTP Basic Authentication
-<If "%{REQUEST_URI} =~ m#^/admin#">
+# Protect /admin with HTTP Basic Authentication (updated for /test base path)
+<If "%{REQUEST_URI} =~ m#^/test/admin#">
     AuthType Basic
     AuthName "Admin Access"
     AuthUserFile /home/msorvillo/onetrillionsmiles.com/config/.htpasswd

@@ -24,9 +24,10 @@ class Config
     {
         // Automatically detect protocol
         $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-        return $protocol . '://' . self::getDomain();
+        // TEMPORARY: Add /test base path while in development
+        return $protocol . '://' . self::getDomain() . '/test';
     }
-    
+
     public static function getFullUrl(string $path = ''): string
     {
         $baseUrl = self::getBaseUrl();
