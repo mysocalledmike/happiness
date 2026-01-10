@@ -13,9 +13,9 @@ else
     echo "Please create .deploy-config with your server details:"
     echo ""
     echo "SSH_USER=\"your-username\""
-    echo "SSH_HOST=\"your-host.dreamhost.com\""
-    echo "REMOTE_PATH=\"/home/your-username/happiness.mikesorvillo.com\""
-    echo "GIT_BRANCH=\"trillion-refactor\"  # or main"
+    echo "SSH_HOST=\"your-domain.com\""
+    echo "REMOTE_PATH=\"/home/your-username/your-domain.com\""
+    echo "GIT_BRANCH=\"main\"  # or your feature branch"
     exit 1
 fi
 
@@ -189,7 +189,7 @@ echo "✅ Deployment completed successfully!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "🌐 Your site should now be live at:"
-echo "   https://happiness.mikesorvillo.com"
+echo "   https://$SSH_HOST"
 echo ""
 echo "📋 Next steps:"
 echo "   1. Visit your site to verify it's working"
