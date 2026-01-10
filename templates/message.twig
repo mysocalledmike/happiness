@@ -62,33 +62,25 @@
                 </button>
             </div>
 
-            {# Inline Signup Box (shown after clicking smile button) #}
-            <div id="inline-signup" class="hidden" style="margin-top: 32px;">
-                {# Explanatory text above signup box #}
+            {# Quick Send Form (shown after clicking smile button) #}
+            <div id="quick-send-form" class="hidden" style="margin-top: 32px;">
+                {# Explanatory text #}
                 <div style="text-align: center; margin-bottom: 24px;">
                     <p style="color: var(--text-dark); font-size: 16px; line-height: 1.6;">
                         <strong>{{ sender.name }}</strong> made you smile, so we added to their smile count.
                     </p>
                 </div>
 
-                {# Signup box #}
+                {# Send message box #}
                 <div style="padding: 24px; background: var(--bg-light); border-radius: 12px; text-align: left;">
-                    <h3 style="font-size: 20px; margin-bottom: 8px;">Make work a little happier</h3>
-                    <p style="color: var(--text-gray); margin-bottom: 20px;">Bring a smile to a coworker's face by telling them why you love working with them - it'll make their day and make you a little happier, too.</p>
-                <form id="inline-signup-form" style="display: flex; flex-direction: column; gap: 12px;">
-                    <input type="text" name="name" class="form-input" placeholder="Your name" required>
-                    <input type="email" name="email" class="form-input" placeholder="Your email" required>
-                    <div class="avatar-grid" style="grid-template-columns: repeat(6, 1fr);">
-                        <button type="button" class="avatar-option" data-avatar="😊" onclick="selectInlineAvatar(this)">😊</button>
-                        <button type="button" class="avatar-option" data-avatar="😄" onclick="selectInlineAvatar(this)">😄</button>
-                        <button type="button" class="avatar-option" data-avatar="🎉" onclick="selectInlineAvatar(this)">🎉</button>
-                        <button type="button" class="avatar-option" data-avatar="✨" onclick="selectInlineAvatar(this)">✨</button>
-                        <button type="button" class="avatar-option" data-avatar="💛" onclick="selectInlineAvatar(this)">💛</button>
-                        <button type="button" class="avatar-option" data-avatar="🌟" onclick="selectInlineAvatar(this)">🌟</button>
-                    </div>
-                    <input type="hidden" name="avatar" required>
-                    <button type="submit" class="btn btn-primary">Start Spreading Smiles</button>
-                </form>
+                    <h3 style="font-size: 20px; margin-bottom: 8px;">Pass it on - send a smile to someone</h3>
+                    <p style="color: var(--text-gray); margin-bottom: 20px;">Bring a smile to a coworker's face by telling them why you love working with them.</p>
+                    <form id="quick-send-message-form" style="display: flex; flex-direction: column; gap: 12px;">
+                        <input type="text" name="recipient_name" class="form-input" placeholder="Their name" required>
+                        <input type="email" name="recipient_email" class="form-input" placeholder="Their email" required>
+                        <textarea name="message" class="form-input" placeholder="Your message to them..." rows="4" required style="resize: vertical;"></textarea>
+                        <button type="submit" class="btn btn-primary">Send Smile</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -185,7 +177,6 @@
 
 {% block scripts %}
 <script>
-let selectedAvatar = null;
 let selectedModalAvatar = null;
 let smileRecorded = false;
 
@@ -241,13 +232,13 @@ async function recordSmile() {
                 }
             }
 
-            // Hide button and show inline signup
+            // Hide button and show quick send form
             document.getElementById('smile-button-container').style.display = 'none';
-            document.getElementById('inline-signup').classList.remove('hidden');
+            document.getElementById('quick-send-form').classList.remove('hidden');
 
-            // Scroll to signup box
+            // Scroll to form
             setTimeout(() => {
-                document.getElementById('inline-signup').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                document.getElementById('quick-send-form').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }, 100);
         } else {
             alert(result.error || 'Failed to record smile');
@@ -262,53 +253,54 @@ async function recordSmile() {
     }
 }
 
-// Select avatar in inline signup
-function selectInlineAvatar(button) {
-    document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
-    button.classList.add('selected');
-    selectedAvatar = button.getAttribute('data-avatar');
-    document.querySelector('input[name="avatar"]').value = selectedAvatar;
-}
-
-// Handle signup form submissions
+// Handle form submissions
 document.addEventListener('DOMContentLoaded', function() {
-    // Inline signup form (after clicking smile button)
-    document.getElementById('inline-signup-form').addEventListener('submit', async function(e) {
+    // Quick send form (after clicking smile button)
+    document.getElementById('quick-send-message-form').addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const formData = new FormData(this);
-        const data = {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            avatar: formData.get('avatar')
-        };
+        const recipientName = formData.get('recipient_name');
+        const recipientEmail = formData.get('recipient_email');
+        const message = formData.get('message');
 
-        if (!data.avatar) {
-            alert('Please select an avatar');
-            return;
-        }
+        // Show confirmation dialog
+        const confirmed = confirm(`Send your smile to ${recipientName}?`);
+        if (!confirmed) return;
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
 
         try {
-            const response = await fetch('/api/signup', {
+            // Call the quick send API endpoint
+            const response = await fetch('/api/messages/quick-send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify({
+                    sender_name: '{{ message.recipient_name }}',
+                    sender_email: '{{ message.recipient_email }}',
+                    recipient_name: recipientName,
+                    recipient_email: recipientEmail,
+                    message: message
+                })
             });
 
             const result = await response.json();
 
             if (result.success) {
-                if (result.existing) {
-                    alert(result.message);
-                } else {
-                    window.location.href = `/dashboard/${result.dashboard_url}?first_visit=1`;
-                }
+                // Redirect to dashboard with smile_sent flag
+                window.location.href = `/dashboard/${result.dashboard_url}?smile_sent=1&recipient_name=${encodeURIComponent(recipientName)}`;
             } else {
-                alert(result.error || 'Failed to sign up. Please try again.');
+                alert(result.error || 'Failed to send smile. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Smile';
             }
         } catch (error) {
-            console.error('Signup error:', error);
+            console.error('Quick send error:', error);
             alert('An error occurred. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Smile';
         }
     });
 

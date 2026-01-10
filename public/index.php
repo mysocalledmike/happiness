@@ -161,6 +161,8 @@ $app->get('/dashboard/{dashboard_url}', function ($request, $response, $args) {
     $firstVisit = isset($params['first_visit']) && $params['first_visit'] == '1';
     $confirmed = isset($params['confirmed']) && $params['confirmed'] == '1';
     $alreadyConfirmed = isset($params['already_confirmed']) && $params['already_confirmed'] == '1';
+    $smileSent = isset($params['smile_sent']) && $params['smile_sent'] == '1';
+    $recipientName = $params['recipient_name'] ?? null;
 
     $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
@@ -175,6 +177,8 @@ $app->get('/dashboard/{dashboard_url}', function ($request, $response, $args) {
         'first_visit' => $firstVisit,
         'confirmed' => $confirmed,
         'already_confirmed' => $alreadyConfirmed,
+        'smile_sent' => $smileSent,
+        'recipient_name' => $recipientName,
         'dashboard_url' => $fullDashboardUrl,
         'global_smiles' => $globalSmiles,
         'global_progress' => number_format(($globalSmiles / 1000000000000) * 100, 7),
@@ -359,6 +363,54 @@ $app->post('/api/messages/{message_url}/smile', function ($request, $response, $
             'error' => $e->getMessage()
         ]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+    }
+});
+
+// Quick send - Create account and send message in one step (from message page)
+$app->post('/api/messages/quick-send', function ($request, $response, $args) {
+    $data = $request->getParsedBody();
+
+    // Handle JSON body if getParsedBody returns null
+    if ($data === null) {
+        $body = (string) $request->getBody();
+        $data = json_decode($body, true);
+    }
+
+    $senderName = trim($data['sender_name'] ?? '');
+    $senderEmail = trim($data['sender_email'] ?? '');
+    $recipientName = trim($data['recipient_name'] ?? '');
+    $recipientEmail = trim($data['recipient_email'] ?? '');
+    $message = trim($data['message'] ?? '');
+
+    if (!$senderName || !$senderEmail || !$recipientName || !$recipientEmail || !$message) {
+        $response->getBody()->write(json_encode(['success' => false, 'error' => 'All fields required']));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+
+    if (!filter_var($senderEmail, FILTER_VALIDATE_EMAIL) || !filter_var($recipientEmail, FILTER_VALIDATE_EMAIL)) {
+        $response->getBody()->write(json_encode(['success' => false, 'error' => 'Valid emails required']));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+
+    try {
+        // Use QuickSendService to handle account creation and message sending
+        $result = \App\Services\QuickSendService::quickSend(
+            $senderName,
+            $senderEmail,
+            $recipientName,
+            $recipientEmail,
+            $message
+        );
+
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'dashboard_url' => $result['dashboard_url'],
+            'existing_user' => $result['existing_user']
+        ]));
+        return $response->withHeader('Content-Type', 'application/json');
+    } catch (\Exception $e) {
+        $response->getBody()->write(json_encode(['success' => false, 'error' => $e->getMessage()]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
 

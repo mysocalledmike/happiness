@@ -81,6 +81,19 @@
         </div>
         {% endif %}
 
+        {# Smile Sent Banner (from quick send) #}
+        {% if smile_sent %}
+        <div class="banner banner-success">
+            <button class="banner-close" onclick="this.parentElement.remove()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <h4>✨ Your smile was sent{% if recipient_name %} to {{ recipient_name }}{% endif %}!</h4>
+            <p>This is your dashboard - save this link to send more smiles and track your impact. We also sent you an email with this link.</p>
+        </div>
+        {% endif %}
+
         {# Profile Header #}
         <div class="profile-header">
             <div class="profile-info">
