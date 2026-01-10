@@ -121,6 +121,49 @@
         </div>
     </div>
 
+    {# Quick Send Confirmation Modal #}
+    <div id="quick-send-confirm-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <button class="modal-close" onclick="hideQuickSendConfirmModal()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="modal-title">Confirm Smile</h2>
+                    <p class="modal-subtitle">Review before sending</p>
+                </div>
+            </div>
+            <div style="background: var(--bg-light); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                    <div style="font-size: 32px;">{{ message.recipient_name.split(' ')[0].charAt(0) }}💛</div>
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-dark);">To: <span id="confirm-recipient-name"></span></div>
+                        <div style="font-size: 14px; color: var(--text-gray);"><span id="confirm-recipient-email"></span></div>
+                    </div>
+                </div>
+                <div style="color: var(--text-dark); font-style: italic; line-height: 1.6;">
+                    💛 "<span id="confirm-message"></span>"
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-white" style="flex: 1;" onclick="hideQuickSendConfirmModal()">Cancel</button>
+                <button class="btn btn-primary" style="flex: 1;" onclick="confirmQuickSend()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                    </svg>
+                    Send Smile
+                </button>
+            </div>
+        </div>
+    </div>
+
     {# Signup Modal (from header button) #}
     <div id="signup-modal" class="modal-overlay hidden">
         <div class="modal">
@@ -253,6 +296,58 @@ async function recordSmile() {
     }
 }
 
+let pendingQuickSendData = null;
+
+// Show/hide quick send confirmation modal
+function showQuickSendConfirmModal(recipientName, recipientEmail, message) {
+    document.getElementById('confirm-recipient-name').textContent = recipientName;
+    document.getElementById('confirm-recipient-email').textContent = recipientEmail;
+    document.getElementById('confirm-message').textContent = message;
+    document.getElementById('quick-send-confirm-modal').classList.remove('hidden');
+}
+
+function hideQuickSendConfirmModal() {
+    document.getElementById('quick-send-confirm-modal').classList.add('hidden');
+    pendingQuickSendData = null;
+}
+
+// Confirm and actually send the quick smile
+async function confirmQuickSend() {
+    if (!pendingQuickSendData) return;
+
+    const submitBtn = document.querySelector('#quick-send-message-form button[type="submit"]');
+    const modalBtn = document.querySelector('#quick-send-confirm-modal .btn-primary');
+
+    modalBtn.disabled = true;
+    modalBtn.textContent = 'Sending...';
+
+    try {
+        const response = await fetch('/api/messages/quick-send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(pendingQuickSendData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Redirect to dashboard with smile_sent flag
+            window.location.href = `/dashboard/${result.dashboard_url}?smile_sent=1&recipient_name=${encodeURIComponent(pendingQuickSendData.recipient_name)}`;
+        } else {
+            hideQuickSendConfirmModal();
+            alert(result.error || 'Failed to send smile. Please try again.');
+            modalBtn.disabled = false;
+            modalBtn.textContent = 'Send Smile';
+        }
+    } catch (error) {
+        console.error('Quick send error:', error);
+        hideQuickSendConfirmModal();
+        alert('An error occurred. Please try again.');
+        modalBtn.disabled = false;
+        modalBtn.textContent = 'Send Smile';
+    }
+}
+
 // Handle form submissions
 document.addEventListener('DOMContentLoaded', function() {
     // Quick send form (after clicking smile button)
@@ -264,44 +359,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const recipientEmail = formData.get('recipient_email');
         const message = formData.get('message');
 
-        // Show confirmation dialog
-        const confirmed = confirm(`Send your smile to ${recipientName}?`);
-        if (!confirmed) return;
+        // Store the data and show confirmation modal
+        pendingQuickSendData = {
+            sender_name: '{{ message.recipient_name }}',
+            sender_email: '{{ message.recipient_email }}',
+            recipient_name: recipientName,
+            recipient_email: recipientEmail,
+            message: message
+        };
 
-        const submitBtn = this.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Sending...';
-
-        try {
-            // Call the quick send API endpoint
-            const response = await fetch('/api/messages/quick-send', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    sender_name: '{{ message.recipient_name }}',
-                    sender_email: '{{ message.recipient_email }}',
-                    recipient_name: recipientName,
-                    recipient_email: recipientEmail,
-                    message: message
-                })
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                // Redirect to dashboard with smile_sent flag
-                window.location.href = `/dashboard/${result.dashboard_url}?smile_sent=1&recipient_name=${encodeURIComponent(recipientName)}`;
-            } else {
-                alert(result.error || 'Failed to send smile. Please try again.');
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Send Smile';
-            }
-        } catch (error) {
-            console.error('Quick send error:', error);
-            alert('An error occurred. Please try again.');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Send Smile';
-        }
+        showQuickSendConfirmModal(recipientName, recipientEmail, message);
     });
 
     // Modal signup form (from header button)

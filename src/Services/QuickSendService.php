@@ -59,13 +59,13 @@ class QuickSendService
             $dashboardUrl = bin2hex(random_bytes(16)); // 32 character URL
             $emailConfirmationToken = bin2hex(random_bytes(16));
 
-            $db->execute(
+            $db->query(
                 'INSERT INTO senders (name, email, avatar, dashboard_url, email_confirmed, email_confirmation_token, created_at, last_activity)
                  VALUES (?, ?, ?, ?, 0, ?, datetime("now"), datetime("now"))',
                 [$senderName, $senderEmail, $avatar, $dashboardUrl, $emailConfirmationToken]
             );
 
-            $senderId = $db->lastInsertId();
+            $senderId = $db->getPdo()->lastInsertId();
             $existingUser = false;
 
             // Send welcome email with dashboard link
