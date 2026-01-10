@@ -469,6 +469,12 @@ $app->post('/api/admin/{action}', function ($request, $response, $args) {
 // DEV ROUTES
 // ========================================
 
+// Simple test route
+$app->get('/test', function ($request, $response, $args) {
+    $response->getBody()->write('Test route works!');
+    return $response;
+});
+
 // Development email viewer (localhost only)
 $app->get('/dev/emails', function ($request, $response, $args) {
     $host = $_SERVER['HTTP_HOST'] ?? '';
