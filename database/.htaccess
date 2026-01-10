@@ -1,0 +1,14 @@
+# Deny all HTTP access to database files
+# This is an extra security layer - the database directory should already be
+# outside the web root, but this provides defense in depth
+
+# Apache 2.4+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+# Apache 2.2
+<IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+</IfModule>
