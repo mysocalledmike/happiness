@@ -1,16 +1,19 @@
 {% extends "layout.twig" %}
 
 {% block body %}
-{# Hero Section with Gradient #}
+{# Hero Section with Gradient - Matching Figma prototype #}
 <div class="hero-section">
     <div class="hero-grid">
         {# Left Side - Content #}
         <div class="hero-content">
-            <div class="logo mb-4" style="font-size: 20px;">1 Trillion Smiles</div>
+            <div class="logo">
+                1 Trillion Smiles
+                <span class="logo-sparkle">✨</span>
+            </div>
 
             <h1>Make work<br>a little happier</h1>
 
-            <p>Bring a smile to a coworker's face by telling them why you love working with them - it'll make their day and make you a little happier, too.</p>
+            <p>Bring a smile to a coworker's face telling them why you love working with them - it'll make their day and make you a little happier, too.</p>
 
             <div class="hero-stats">
                 <div class="hero-stat-item">
@@ -57,7 +60,7 @@
                 <div class="form-group">
                     <label class="form-label">Your avatar</label>
                     <div class="avatar-grid">
-                        {% set avatars = ['🌟', '🌈', '☀️', '🎈', '🌸', '🎨', '🎪', '🎭', '🦋', '🌺'] %}
+                        {% set avatars = ['🌟', '🌈', '☀️', '🎈', '🌸', '🎨', '🎪', '🎭', '🦄', '🌺'] %}
                         {% for avatar in avatars %}
                             <button type="button" class="avatar-option" data-avatar="{{ avatar }}">{{ avatar }}</button>
                         {% endfor %}
@@ -72,56 +75,64 @@
     </div>
 </div>
 
-{# Examples Section #}
-<div class="content-section" style="background: white; padding: 60px 0;">
-    <div class="container">
-        <h2 class="section-title" style="margin-bottom: 48px;">Here's what people are saying...</h2>
+{# Combined Section - Examples + Mission (matching Figma prototype structure) #}
+<div class="content-section bg-gradient">
+    <div class="container section-inner-spacing">
+        {# Examples subsection #}
+        <div class="subsection">
+            <h2 class="section-title">Here's what people are saying...</h2>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; max-width: 1000px; margin: 0 auto;">
-            {# Example 1 #}
-            <div style="background: var(--bg-light); border-radius: 12px; padding: 24px; border: 1px solid rgba(0,0,0,0.05);">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #FF6B6B, #FFE66D); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                        🌸
+            <div class="message-example-grid">
+                {# Example Message 1 #}
+                <div class="message-example-card">
+                    <div class="message-example-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 3l1.5 4.5H18l-3.7 2.7 1.4 4.3L12 12l-3.7 2.5 1.4-4.3L6 7.5h4.5z"/>
+                        </svg>
+                        <span>Hey Alex</span>
                     </div>
-                    <div>
-                        <div style="font-weight: 600; color: var(--text-dark);">Jessica Martinez</div>
-                        <div style="font-size: 13px; color: var(--text-gray);">To Alex</div>
+                    <div class="message-example-content">
+                        <div class="message-example-emoji">🙏</div>
+                        <p class="message-example-text">"Thank you for covering for me in that meeting, I would have been fired without you."</p>
+                    </div>
+                    <div class="message-example-sender">
+                        <div class="message-example-avatar">🌸</div>
+                        <div class="message-example-sender-info">
+                            <div class="message-example-sender-name">Jessica Martinez</div>
+                            <div class="message-example-sender-count">Has created 12 smiles ✨</div>
+                        </div>
                     </div>
                 </div>
-                <div style="font-size: 32px; margin-bottom: 12px; text-align: center;">🙏</div>
-                <p style="color: var(--text-dark); font-style: italic; line-height: 1.6;">
-                    "Thank you for covering for me in that meeting, I would have been fired without you."
-                </p>
-            </div>
 
-            {# Example 2 #}
-            <div style="background: var(--bg-light); border-radius: 12px; padding: 24px; border: 1px solid rgba(0,0,0,0.05);">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #4ECDC4, #44A08D); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                        🎨
+                {# Example Message 2 #}
+                <div class="message-example-card">
+                    <div class="message-example-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 3l1.5 4.5H18l-3.7 2.7 1.4 4.3L12 12l-3.7 2.5 1.4-4.3L6 7.5h4.5z"/>
+                        </svg>
+                        <span>Hey Jordan</span>
                     </div>
-                    <div>
-                        <div style="font-weight: 600; color: var(--text-dark);">Priya Patel</div>
-                        <div style="font-size: 13px; color: var(--text-gray);">To Jordan</div>
+                    <div class="message-example-content">
+                        <div class="message-example-emoji">⚡</div>
+                        <p class="message-example-text">"You are one of my favorite people to brainstorm with - you always have good energy and ideas."</p>
+                    </div>
+                    <div class="message-example-sender">
+                        <div class="message-example-avatar">🎨</div>
+                        <div class="message-example-sender-info">
+                            <div class="message-example-sender-name">Priya Patel</div>
+                            <div class="message-example-sender-count">Has created 45 smiles ✨</div>
+                        </div>
                     </div>
                 </div>
-                <div style="font-size: 32px; margin-bottom: 12px; text-align: center;">⚡</div>
-                <p style="color: var(--text-dark); font-style: italic; line-height: 1.6;">
-                    "You are one of my favorite people to brainstorm with - you always have good energy and ideas."
-                </p>
             </div>
         </div>
-    </div>
-</div>
 
-{# Mission Section #}
-<div class="content-section">
-    <div class="container">
-        <h2 class="section-title mb-3">Mission: Create 1 trillion smiles at work, one at a time.</h2>
-        <p class="section-subtitle">Send smiles to people you care about, and join the movement to make the workplace a little brighter.</p>
+        {# Mission subsection #}
+        <div class="subsection">
+            <h2 class="section-title">Mission: Create 1 trillion smiles at work, one at a time.</h2>
+            <p class="section-subtitle">Send smiles to people you care about, and join the movement to make the workplace a little brighter.</p>
 
-        <div class="stats-grid">
+            <div class="stats-grid">
             {# Total Smiles Card #}
             <div class="stat-card">
                 <div class="stat-card-header">
@@ -159,7 +170,11 @@
                 {% for company in top_companies %}
                     <div class="leaderboard-item">
                         <div class="leaderboard-rank">#{{ loop.index }}</div>
-                        <div class="leaderboard-avatar">🏢</div>
+                        <div class="leaderboard-avatar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                            </svg>
+                        </div>
                         <div class="leaderboard-info">
                             <div class="leaderboard-name">{{ company.company }}</div>
                             <div class="leaderboard-count">{{ company.smile_count }} smiles created</div>
@@ -199,6 +214,7 @@
                 {% endfor %}
             </div>
             {% endif %}
+            </div>
         </div>
     </div>
 </div>
@@ -222,14 +238,14 @@
                 <p class="modal-subtitle">Progress toward 1 trillion</p>
             </div>
         </div>
-        <div style="margin-bottom: 24px;">
-            <div style="font-size: 48px; font-weight: 700; color: var(--orange); margin-bottom: 8px;">{{ global_smiles|number_format }}</div>
-            <div style="font-size: 16px; color: var(--text-gray); margin-bottom: 16px;">{{ global_progress }}% of 1 trillion smiles</div>
-            <div class="stat-card-progress" style="height: 12px;">
+        <div style="margin-bottom: 1.5rem;">
+            <div class="stat-card-number">{{ global_smiles|number_format }}</div>
+            <div class="stat-card-label">{{ global_progress }}% of 1 trillion smiles</div>
+            <div class="stat-card-progress">
                 <div class="stat-card-progress-bar" style="width: {{ global_progress }}%;"></div>
             </div>
         </div>
-        <p style="color: var(--text-gray); font-size: 14px; line-height: 1.6;">Every smile counts toward our mission to create 1 trillion smiles worldwide. Keep spreading happiness!</p>
+        <p style="color: var(--gray-600); font-size: 0.875rem; line-height: 1.6; font-family: 'Lora', serif;">Every smile counts toward our mission to create 1 trillion smiles worldwide. Keep spreading happiness!</p>
     </div>
 </div>
 
@@ -256,7 +272,11 @@
             {% for company in top_companies %}
                 <div class="leaderboard-item">
                     <div class="leaderboard-rank">#{{ loop.index }}</div>
-                    <div class="leaderboard-avatar">🏢</div>
+                    <div class="leaderboard-avatar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                    </div>
                     <div class="leaderboard-info">
                         <div class="leaderboard-name">{{ company.company }}</div>
                         <div class="leaderboard-count">{{ company.smile_count }} smiles created</div>
@@ -336,7 +356,6 @@ async function showWithinCompanyModal(company) {
 document.addEventListener('DOMContentLoaded', function() {
     // Select only stat cards within the stats-grid section
     const statCards = document.querySelectorAll('.stats-grid .stat-card');
-    console.log('Found stat cards in stats-grid:', statCards.length);
 
     if (statCards[0]) {
         statCards[0].style.cursor = 'pointer';
