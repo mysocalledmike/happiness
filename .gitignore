@@ -60,8 +60,6 @@ tmp/
 *.bak
 *-old.*
 original/
-templates/creation-old.twig
-
 # SSH keys (in case accidentally generated in project directory)
 key
 key.pub

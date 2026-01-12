@@ -1,6 +1,6 @@
 # Deployment Guide - Dreamhost
 
-This guide explains how to deploy the Happiness application to your Dreamhost server.
+This guide explains how to deploy One Trillion Smiles to your Dreamhost server.
 
 ## Prerequisites
 
@@ -27,7 +27,7 @@ Edit `.deploy-config` with your actual server details:
 # Example for Dreamhost
 SSH_USER="your-dreamhost-username"
 SSH_HOST="iad1-shared-a1-12.dreamhost.com"  # Your Dreamhost server
-REMOTE_PATH="/home/your-username/happiness.mikesorvillo.com"
+REMOTE_PATH="/home/your-username/onetrillionsmiles.com"
 GIT_BRANCH="trillion-refactor"  # or "main"
 ```
 
@@ -49,7 +49,7 @@ ssh-copy-id your-username@your-server.dreamhost.com
 
 1. Log into Dreamhost Panel
 2. Navigate to **Domains** → **Manage Domains**
-3. Ensure `happiness.mikesorvillo.com` points to the correct directory
+3. Ensure `onetrillionsmiles.com` points to the correct directory
 4. Verify PHP 8.0+ is enabled for the domain
 
 ## Deploying
@@ -88,7 +88,7 @@ The script will:
 🚀 Deploying Happiness to Dreamhost...
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📍 Server: username@server.dreamhost.com
-📁 Path: /home/username/happiness.mikesorvillo.com
+📁 Path: /home/username/onetrillionsmiles.com
 🌿 Branch: trillion-refactor
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -117,9 +117,9 @@ The script will:
 
 After deploying, verify your site is working:
 
-1. **Homepage**: https://happiness.mikesorvillo.com
+1. **Homepage**: https://onetrillionsmiles.com
 2. **Test signup**: Create a test account
-3. **Admin panel**: https://happiness.mikesorvillo.com/admin
+3. **Admin panel**: https://onetrillionsmiles.com/admin
 4. **Check email functionality**: Emails should be sent (not logged like in development)
 
 ## Troubleshooting
@@ -133,7 +133,7 @@ If Composer isn't available on your server, the script will attempt to install i
 ssh your-username@your-server.dreamhost.com
 
 # Navigate to your app directory
-cd happiness.mikesorvillo.com
+cd onetrillionsmiles.com
 
 # Install Composer locally
 curl -sS https://getcomposer.org/installer | php
@@ -149,7 +149,7 @@ php composer.phar install --no-dev --optimize-autoloader
 3. Check error logs:
    ```bash
    ssh your-username@your-server.dreamhost.com
-   cd happiness.mikesorvillo.com
+   cd onetrillionsmiles.com
    tail -f error.log
    ```
 
@@ -158,7 +158,7 @@ php composer.phar install --no-dev --optimize-autoloader
 ```bash
 # SSH into your server
 ssh your-username@your-server.dreamhost.com
-cd happiness.mikesorvillo.com
+cd onetrillionsmiles.com
 
 # Fix database permissions
 chmod 755 database
@@ -174,7 +174,7 @@ If you've updated `database/schema.sql` and need to reset the production databas
 ```bash
 # SSH into your server
 ssh your-username@your-server.dreamhost.com
-cd happiness.mikesorvillo.com
+cd onetrillionsmiles.com
 
 # Backup existing database
 cp database/happiness.db database/happiness.db.backup
@@ -203,7 +203,7 @@ git checkout <previous-commit>
 
 # Option 2: SSH and restore from backup
 ssh your-username@your-server.dreamhost.com
-cd happiness.mikesorvillo.com
+cd onetrillionsmiles.com
 # Restore database if needed
 cp database/happiness.db.backup database/happiness.db
 ```

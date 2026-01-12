@@ -1,47 +1,44 @@
-# Happiness - Multi-User Goodbye Message Platform
+# One Trillion Smiles
 
-A heartwarming web application that allows people to create personalized goodbye pages when leaving their company, school, or organization. Recipients can look up their personalized farewell messages using their email address.
+A web application that enables anyone to spread happiness by sending personalized, heartfelt messages to people they appreciate.
 
-## 🎯 What It Does
+## Vision
 
-**Happiness** transforms the traditional goodbye email into an interactive, memorable experience. Instead of sending a mass farewell email, users create a personalized goodbye page where colleagues can discover their own custom message by entering their email address.
+Bring a smile to 1 trillion faces.
 
-### Key Features
+## The Problem
 
-- **Personalized Messages**: Each recipient gets a unique, heartfelt message
-- **Email Lookup**: Recipients find their message by entering their email
-- **Squishmallow Themes**: 8 adorable character themes with matching color schemes
-- **Instant Signup**: Create your happiness page immediately with smart defaults
-- **Admin Dashboard**: Complete user management and oversight tools
-- **Mobile Responsive**: Works beautifully on all devices
+The Internet and social media have made connecting easier, but have had an adverse effect on the depth of our relationships. Social media changes our perception of what real life and relationships look like, leading people to chase things that don't make us happier (status, vanity). This negativity is causing widespread unhappiness.
 
-## 🏗️ How It Works
+## Our Hypothesis
 
-### For Message Creators
+People feel happier by knowing they made other people happy.
 
-1. **Sign Up**: Enter your email to create a page instantly
-2. **Get Creation Link**: Receive your unique creation link via email
-3. **Customize Page**: Edit your URL slug, main message, and choose a squishmallow theme
-4. **Add Messages**: Create personalized messages for specific email addresses
-5. **Go Live**: Page becomes publicly accessible at your chosen URL
+## How It Works
 
-### For Message Recipients
+### For Senders
 
-1. **Visit Page**: Access the goodbye page via the creator's custom URL
-2. **Enter Email**: Type their email address in the lookup form
-3. **Discover Message**: Receive their personalized farewell message
-4. **Feel Loved**: Experience a moment of joy and connection
+1. **Sign Up**: Enter your name and email to create an account
+2. **Access Dashboard**: Receive your unique dashboard link via email
+3. **Create Messages**: Write personalized messages for people you appreciate
+4. **Send**: Each recipient gets a direct link to their personal message
+
+### For Receivers
+
+1. **Get Link**: Receive an email with a link to your personal message
+2. **View Message**: See the heartfelt message someone wrote just for you
+3. **Smile**: Click the smile button to acknowledge you received joy
+4. **Pay It Forward**: Optionally send your own messages to spread the happiness
 
 ### For Administrators
 
-1. **Monitor Users**: View all user accounts and their statuses
-2. **Track Activity**: See time spent in each status and engagement metrics
-3. **Send Reminders**: Nudge inactive users to complete their pages
-4. **User Management**: Reset creation URLs, delete users, activate pages
+1. **Monitor Users**: View all user accounts and their activity
+2. **Send Reminders**: Nudge users to send more smiles
+3. **Manage Accounts**: Reset dashboard links, delete users as needed
 
-## 🎨 Squishmallow Themes
+## Character Themes
 
-The platform features 8 adorable squishmallow character themes:
+Messages feature adorable Squishmallow character themes:
 
 - **Rosie the Unicorn** - Magical and sweet (pink)
 - **Hooty the Owl** - Wise and peaceful (teal)
@@ -52,45 +49,40 @@ The platform features 8 adorable squishmallow character themes:
 - **Buzzy the Bee** - Sunny and energetic (yellow)
 - **Panda the Panda** - Classic and timeless (black/white)
 
-Each theme includes a prominent character display and matching background gradient.
-
-## 🛠️ Technical Architecture
+## Technical Stack
 
 ### Frontend
-- **Twig Templates**: Server-side rendering with clean separation
-- **Vanilla JavaScript**: No frameworks, just clean, fast interactions
-- **CSS Grid/Flexbox**: Modern responsive layout techniques
-- **AJAX**: Smooth form submissions and auto-save functionality
+- **Twig Templates**: Server-side rendering
+- **Vanilla JavaScript**: No frameworks, clean DOM manipulation
+- **CSS Grid/Flexbox**: Modern responsive layouts
 
 ### Backend
-- **PHP 8+**: Modern PHP with Slim Framework 4
-- **Slim Framework**: Lightweight, fast routing and middleware
-- **SQLite Database**: Simple, file-based database for easy deployment
-- **Email Service**: Development logging + production email delivery
+- **PHP 8+**: With Slim Framework 4
+- **SQLite**: File-based database
+- **Resend**: Email delivery service (production)
 
-### Database Schema
-- `senders`: User accounts and page settings
-- `messages`: Personalized messages for recipients
-- `email_notifications`: Tracking sent notification emails
-- `stats`: Usage analytics and metrics
+### Database Tables
+- `senders`: User accounts and settings
+- `messages`: Individual messages with unique URLs
+- `email_notifications`: Tracking sent notifications
+- `stats`: Global smile count and metrics
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - PHP 8.0 or higher
-- Composer (for dependencies)
-- Web server (Apache/Nginx) or PHP built-in server
+- Composer
 
 ### Installation
 
-1. **Clone and Setup**
+1. **Clone and install dependencies**
    ```bash
    git clone <repository-url>
    cd happiness
    composer install
    ```
 
-2. **Initialize Database**
+2. **Initialize database**
    ```bash
    php -r "
    require 'vendor/autoload.php';
@@ -98,192 +90,110 @@ Each theme includes a prominent character display and matching background gradie
    "
    ```
 
-3. **Start Development Server**
+3. **Start development server**
    ```bash
    php -S localhost:8080 -t public
    ```
 
-4. **Access Application**
+4. **Access the app**
    - Homepage: http://localhost:8080
    - Admin: http://localhost:8080/admin
    - Dev Emails: http://localhost:8080/dev/emails
 
 ### Development Features
 
-#### Email Testing
-- All emails are logged to `development_emails.log` in development
-- View emails at `/dev/emails` with clickable URLs
-- Clear all development emails with one click
+**Email Testing**
+- All emails logged to `development_emails.log` in development mode
+- View at `/dev/emails` with clickable links
+- Clear all test emails with one click
 
-#### Admin Tools
-- Complete user management dashboard
-- Filter users by status (inactive, active)
-- Individual user controls and actions
-- Real-time status updates
+**Admin Tools**
+- User management dashboard
+- Send reminder emails
+- Reset dashboard URLs
+- Delete users
 
-## 🎯 User Journey & Status Flow
-
-### User Statuses
-1. **Inactive**: User signed up, creation link sent, but page not yet published
-2. **Active**: Page is live and publicly accessible
-
-### Admin Actions
-- **Activate User**: Manually activate an inactive user's page
-- **Send Reminder**: Nudge inactive users to complete their page
-- **Reset Creation URL**: Generate new creation link (invalidates old)
-- **Delete User**: Permanently remove user and all data
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 happiness/
 ├── public/                 # Web-accessible files
-│   ├── index.php          # Main application entry point
+│   ├── index.php          # Application routes
 │   └── assets/            # CSS, JS, images
-│       ├── css/style.css  # Main stylesheet
-│       ├── js/main.js     # Shared JavaScript
-│       └── themes/        # Squishmallow character images
+│       ├── css/style.css
+│       ├── js/main.js
+│       └── themes/        # Character images
 ├── src/                   # PHP application code
-│   ├── Database.php       # Database abstraction layer
-│   └── Services/          # Business logic services
+│   ├── Database.php       # Database layer
+│   ├── Config.php         # Configuration
+│   └── Services/          # Business logic
 │       ├── AdminService.php
 │       ├── EmailService.php
-│       ├── SenderService.php
-│       ├── ThemeService.php
-│       └── SignupService.php
-├── templates/             # Twig template files
-│   ├── layout.twig        # Base layout template
+│       ├── MessageService.php
+│       ├── QuickSendService.php
+│       ├── SignupService.php
+│       ├── StatsService.php
+│       └── ThemeService.php
+├── templates/             # Twig templates
+│   ├── layout.twig        # Base layout
 │   ├── homepage.twig      # Landing page
+│   ├── dashboard.twig     # Sender dashboard
+│   ├── message.twig       # Message view page
 │   ├── admin.twig         # Admin dashboard
-│   ├── creation.twig      # Message creation interface
-│   ├── goodbye.twig       # Public goodbye pages
-│   └── dev-emails.twig    # Development email viewer
-├── database/              # Database files and schema
-│   └── schema.sql         # Database structure definition
-└── vendor/                # Composer dependencies
+│   ├── dev-emails.twig    # Dev email viewer
+│   └── stats-modals.twig  # Stats components
+└── database/
+    └── schema.sql         # Database schema
 ```
 
-## 🔌 API Endpoints
+## API Endpoints
 
-### Public Endpoints
-- `GET /` - Homepage with signup form
-- `GET /{slug}` - Public happiness page
-- `POST /api/signup` - Create new page instantly
-- `POST /api/{slug}/lookup` - Find personalized message
+### Public
+- `GET /` - Homepage
+- `POST /api/signup` - Create account
+- `GET /confirm/{token}` - Confirm email
+- `GET /s/{message_url}` - View message
+- `POST /api/messages/{message_url}/smile` - Record smile
 
-### Creation Flow
-- `GET /create/{creation_url}` - Message creation interface
-- `POST /api/create/{creation_url}` - Save messages and settings
+### Dashboard
+- `GET /dashboard/{dashboard_url}` - Sender dashboard
+- `POST /api/dashboard/{dashboard_url}/send` - Send message
+- `DELETE /api/messages/{message_id}` - Delete message
 
-### Admin Endpoints
+### Admin
 - `GET /admin` - Admin dashboard
-- `POST /api/admin/allow-user` - Activate user page
-- `POST /api/admin/send-reminder` - Send reminder email
-- `POST /api/admin/reset-creation` - Reset creation URL
-- `POST /api/admin/delete-user` - Delete user account
+- `POST /api/admin/send-reminder` - Send reminder
+- `POST /api/admin/reset-creation` - Reset dashboard URL
+- `POST /api/admin/delete-user` - Delete user
 
-### Development Endpoints
-- `GET /dev/emails` - View development emails (localhost only)
-- `POST /api/dev/clear-emails` - Clear email log (localhost only)
+### Development
+- `GET /dev/emails` - View sent emails
+- `POST /api/dev/clear-emails` - Clear email log
 
-## ⚙️ Configuration
+## Configuration
 
-### Domain Configuration
-To change the domain name, edit `src/Config.php`:
+Edit `src/Config.php` to customize:
 
 ```php
 public static function getDomain(): string
 {
-    return 'your-domain.com';  // Change this
+    return 'onetrillionsmiles.com';
 }
 
-public static function getEmailDomain(): string
-{
-    return 'your-domain.com';  // Change this for emails
-}
-```
-
-This will automatically update:
-- URL previews in the creation interface
-- Email sender addresses 
-- All generated links and references
-
-### Application Settings
-You can also customize:
-```php
 public static function getAppName(): string
 {
-    return 'Your App Name';
-}
-
-public static function getAppDescription(): string
-{
-    return 'Your tagline here';
+    return 'One Trillion Smiles';
 }
 ```
 
-## 🎨 Customization
+## Security
 
-### Adding New Themes
-1. Add character images to `public/assets/themes/characters/`
-2. Update `ThemeService::getAllThemes()` with new theme data
-3. Character images automatically display in theme selector
-
-### Email Templates
-Email content is defined in service classes:
-- `SignupService::sendCreationEmail()` - Welcome email with creation link
-- `AdminService::sendReminderEmail()` - Reminder to complete page
-- `AdminService::sendResetCreationEmail()` - New creation URL
-
-### Styling
-- Main styles in `public/assets/css/style.css`
-- Responsive design with mobile-first approach
-- CSS Grid for complex layouts, Flexbox for alignment
-
-## 📊 Analytics & Monitoring
-
-### Built-in Metrics
-- User status distribution
-- Time spent in each status
-- Page creation completion rates
-- Message lookup activity
-
-### Development Monitoring
-- All emails logged with timestamps
-- Admin action tracking
-- Error logging and debugging tools
-
-## 🔒 Security Considerations
-
-### Access Control
-- Creation URLs are cryptographically secure (32-character hex)
-- Admin endpoints require proper authentication context
-- Development features only accessible on localhost
-
-### Data Protection
-- No sensitive data stored in plain text
-- Email addresses are the only PII collected
-- Users can be completely removed with all data
-
-### Email Security
-- Development mode prevents accidental email sending
-- Production mode uses proper email headers
-- All email content is logged for debugging
-
-## 🚧 Future Enhancement Ideas
-
-- **Analytics Dashboard**: Detailed usage metrics and insights
-- **Bulk Import**: CSV upload for large message lists
-- **Custom Themes**: User-uploaded character images
-- **Message Templates**: Pre-written message suggestions
-- **Social Sharing**: Share goodbye pages on social media
-- **Message Scheduling**: Send time-delayed farewell messages
-- **Team Pages**: Collaborative goodbye pages for groups
-
-## 📝 License
-
-This project is a custom application for creating personalized goodbye experiences. All squishmallow character images are used for educational/demonstration purposes.
+- Dashboard URLs are cryptographically secure (32-character hex)
+- Message URLs are unique per recipient
+- Admin endpoints require authentication
+- Development endpoints restricted to localhost
+- Email confirmation required for unlimited messaging
 
 ---
 
-*Built with ❤️ to spread happiness and meaningful connections during life transitions.*
+*Spreading happiness, one smile at a time.*
