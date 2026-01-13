@@ -10,23 +10,44 @@
         </div>
         <div class="admin-stats">
             <div class="admin-stat">
+                <div class="admin-stat-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span>Total</span>
+                </div>
                 <div class="admin-stat-number">{{ users|length }}</div>
-                <div class="admin-stat-label">Total Users</div>
             </div>
+            <div class="admin-stat-divider"></div>
+            <div class="admin-stat">
+                {% set confirmed_count = users|filter(u => u.email_confirmed)|length %}
+                <div class="admin-stat-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>Confirmed</span>
+                </div>
+                <div class="admin-stat-number">{{ confirmed_count }}</div>
+            </div>
+            <div class="admin-stat-divider"></div>
             <div class="admin-stat">
                 {% set active_count = users|filter(u => u.message_count > 0)|length %}
+                <div class="admin-stat-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                    <span>Active</span>
+                </div>
                 <div class="admin-stat-number">{{ active_count }}</div>
-                <div class="admin-stat-label">Active Users</div>
             </div>
+            <div class="admin-stat-divider"></div>
             <div class="admin-stat">
                 {% set total_sent = users|reduce((carry, u) => carry + u.message_count, 0) %}
+                <div class="admin-stat-icon">
+                    <span>✨</span>
+                    <span>Smiles</span>
+                </div>
                 <div class="admin-stat-number">{{ total_sent }}</div>
-                <div class="admin-stat-label">Total Smiles Sent</div>
-            </div>
-            <div class="admin-stat">
-                {% set total_created = users|reduce((carry, u) => carry + u.smiles_created, 0) %}
-                <div class="admin-stat-number">{{ total_created }}</div>
-                <div class="admin-stat-label">Total Smiles Created</div>
             </div>
         </div>
     </div>
@@ -37,43 +58,29 @@
     <div class="admin-container">
         {# Filters #}
         <div class="filters-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 32px;">
-                <div style="display: flex; gap: 32px; align-items: center; flex: 1;">
-                    <div class="filter-group">
-                        <label class="filter-label">User Status</label>
-                        <div style="display: flex; gap: 16px; align-items: center;">
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px;">
-                                <input type="radio" name="user-status" value="all" checked onchange="applyFilters()">
-                                All users
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px;">
-                                <input type="radio" name="user-status" value="confirmed" onchange="applyFilters()">
-                                Confirmed
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px;">
-                                <input type="radio" name="user-status" value="unconfirmed" onchange="applyFilters()">
-                                Unconfirmed
-                            </label>
-                        </div>
-                    </div>
-                    <div class="filter-group">
-                        <label class="filter-label">Smiles Sent</label>
-                        <div style="display: flex; gap: 12px; align-items: center;">
-                            <input type="number" id="min-smiles" class="form-input" placeholder="0" min="0" value="0" onchange="applyFilters()" style="width: 80px;">
-                            <span style="color: var(--text-gray);">to</span>
-                            {% set max_smiles = 0 %}
-                            {% for user in users %}
-                                {% if user.message_count > max_smiles %}
-                                    {% set max_smiles = user.message_count %}
-                                {% endif %}
-                            {% endfor %}
-                            <input type="number" id="max-smiles" class="form-input" placeholder="{{ max_smiles }}" min="0" value="{{ max_smiles }}" onchange="applyFilters()" style="width: 80px;">
-                        </div>
+            <h2>Filters</h2>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="filter-label">Email Status</label>
+                    <div class="filter-buttons">
+                        <button type="button" class="filter-btn active" data-filter="all" onclick="setEmailFilter('all', this)">All</button>
+                        <button type="button" class="filter-btn" data-filter="confirmed" onclick="setEmailFilter('confirmed', this)">Confirmed</button>
+                        <button type="button" class="filter-btn" data-filter="unconfirmed" onclick="setEmailFilter('unconfirmed', this)">Unconfirmed</button>
                     </div>
                 </div>
-                <div class="filter-results" style="white-space: nowrap; color: var(--text-gray); font-size: 14px;">
-                    Showing <strong id="visible-count">{{ users|length }}</strong> of <strong>{{ users|length }}</strong> users
+                <div class="filter-group">
+                    <label class="filter-label">Minimum Smiles Sent</label>
+                    <select id="min-smiles" class="filter-select" onchange="applyFilters()">
+                        <option value="0">0+</option>
+                        <option value="1">1+</option>
+                        <option value="3">3+</option>
+                        <option value="5">5+</option>
+                        <option value="10">10+</option>
+                    </select>
                 </div>
+            </div>
+            <div class="filter-results">
+                Showing <span class="highlight" id="visible-count">{{ users|length }}</span> of <strong>{{ users|length }}</strong> users
             </div>
         </div>
 
@@ -144,19 +151,20 @@
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
                                     </svg>
-                                    Send Reminder
+                                    Send reminder email
                                 </button>
                                 <button onclick="resetDashboard('{{ user.email }}')">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
                                     </svg>
-                                    Reset Dashboard
+                                    Reset dashboard URL
                                 </button>
-                                <button onclick="deleteUser('{{ user.email }}')" style="color: #EF4444;">
+                                <div class="divider"></div>
+                                <button class="danger" onclick="deleteUser('{{ user.email }}')">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                                     </svg>
-                                    Delete User
+                                    Delete user
                                 </button>
                             </div>
                         </td>
@@ -207,10 +215,24 @@ document.addEventListener('click', function(event) {
     }
 });
 
+// Current email filter state
+let currentEmailFilter = 'all';
+
+// Set email filter and update button states
+function setEmailFilter(filter, button) {
+    currentEmailFilter = filter;
+
+    // Update button active states
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    button.classList.add('active');
+
+    applyFilters();
+}
+
 function applyFilters() {
-    const userStatus = document.querySelector('input[name="user-status"]:checked').value;
     const minVal = parseInt(document.getElementById('min-smiles').value) || 0;
-    const maxVal = parseInt(document.getElementById('max-smiles').value) || 999999;
 
     const rows = document.querySelectorAll('#users-tbody tr[data-smiles]');
     let visibleCount = 0;
@@ -221,12 +243,12 @@ function applyFilters() {
 
         let show = true;
 
-        // Apply user status filter
-        if (userStatus === 'confirmed' && !confirmed) show = false;
-        if (userStatus === 'unconfirmed' && confirmed) show = false;
+        // Apply email status filter
+        if (currentEmailFilter === 'confirmed' && !confirmed) show = false;
+        if (currentEmailFilter === 'unconfirmed' && confirmed) show = false;
 
-        // Apply smiles range filter
-        if (smiles < minVal || smiles > maxVal) show = false;
+        // Apply minimum smiles filter
+        if (smiles < minVal) show = false;
 
         row.style.display = show ? '' : 'none';
         if (show) visibleCount++;
