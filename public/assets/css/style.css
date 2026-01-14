@@ -187,11 +187,13 @@ h1, h2, h3, h4, h5, h6 {
 .logo {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
-    font-size: 1.5rem; /* text-2xl */
+    font-size: 1.125rem; /* text-lg on mobile */
     text-decoration: none;
     position: relative;
     display: inline-block;
     padding-bottom: 0.75rem; /* pb-3 */
+    transform: scale(0.75); /* scale-75 on mobile */
+    transform-origin: left center;
     color: white;
 }
 
@@ -254,6 +256,13 @@ h1, h2, h3, h4, h5, h6 {
 
 .header-stat strong {
     font-weight: 700; /* font-bold */
+}
+
+@media (min-width: 768px) {
+    .logo {
+        font-size: 1.5rem; /* text-2xl on desktop */
+        transform: scale(1); /* md:scale-100 */
+    }
 }
 
 /* ========================================
@@ -956,7 +965,7 @@ h1, h2, h3, h4, h5, h6 {
 .profile-header {
     background: white;
     border-radius: var(--radius-3xl);
-    padding: 2.5rem; /* p-10 = 40px */
+    padding: 1.5rem; /* p-6 on mobile = 24px */
     margin-bottom: 2rem;
     box-shadow: var(--shadow-lg);
     display: flex;
@@ -972,14 +981,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .profile-avatar {
-    width: 6rem; /* w-24 = 96px */
-    height: 6rem; /* h-24 = 96px */
+    width: 4rem; /* w-16 on mobile = 64px */
+    height: 4rem; /* h-16 on mobile = 64px */
     border-radius: var(--radius-full);
     background: linear-gradient(to bottom right, var(--orange-400), var(--pink-500));
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3rem; /* text-5xl */
+    font-size: 2.25rem; /* text-4xl on mobile */
     flex-shrink: 0;
 }
 
@@ -991,7 +1000,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .profile-details h2 {
     font-family: 'Poppins', sans-serif;
-    font-size: 2.25rem; /* text-4xl */
+    font-size: 1.5rem; /* text-2xl on mobile */
     font-weight: 700;
     margin-bottom: 0;
     line-height: 1.2;
@@ -1043,7 +1052,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .profile-stats-number {
     font-family: 'Poppins', sans-serif;
-    font-size: 3.75rem; /* text-6xl = 60px */
+    font-size: 3rem; /* text-5xl on mobile = 48px */
     font-weight: 700;
     background: linear-gradient(to right, var(--orange-600), var(--pink-600));
     -webkit-background-clip: text;
@@ -1054,7 +1063,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .profile-stats-label {
     font-family: 'Lora', serif;
-    font-size: 1.125rem; /* text-lg */
+    font-size: 1rem; /* text-base on mobile */
     color: var(--gray-600);
     margin-top: 0.5rem;
 }
@@ -1146,9 +1155,30 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 1.5rem; /* space-y-6 = 24px */
 }
 
+/* Desktop actions - Top right, hidden on mobile */
+.message-actions-desktop {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: none; /* hidden on mobile */
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Mobile actions - Bottom with border, hidden on desktop */
+.message-actions-mobile {
+    display: flex; /* flex on mobile */
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 1rem; /* pt-4 */
+    margin-top: 1rem;
+    border-top: 1px solid var(--gray-200); /* border-t border-gray-200 */
+}
+
 .message-text {
     font-family: 'Lora', serif;
-    font-size: 1.875rem; /* text-3xl on mobile */
+    font-size: 1.5rem; /* text-2xl on mobile */
     line-height: 1.4;
     color: var(--gray-900);
     flex: 1;
@@ -1156,7 +1186,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .message-emoji {
-    font-size: 1.875rem; /* text-3xl on mobile */
+    font-size: 2.25rem; /* text-4xl - consistent */
     line-height: 1;
     flex-shrink: 0;
     margin-top: 0.5rem;
@@ -1171,8 +1201,34 @@ h1, h2, h3, h4, h5, h6 {
         font-size: 2.25rem !important; /* md:text-4xl */
     }
 
-    .message-emoji {
-        font-size: 2.25rem !important; /* md:text-4xl */
+    .message-actions-desktop {
+        display: flex; /* md:flex - show on desktop */
+    }
+
+    .message-actions-mobile {
+        display: none; /* md:hidden - hide on desktop */
+    }
+
+    .profile-header {
+        padding: 2.5rem; /* md:p-10 = 40px */
+    }
+
+    .profile-avatar {
+        width: 5rem; /* md:w-20 = 80px */
+        height: 5rem; /* md:h-20 = 80px */
+        font-size: 3rem; /* md:text-5xl */
+    }
+
+    .profile-details h2 {
+        font-size: 2.25rem; /* md:text-4xl */
+    }
+
+    .profile-stats-number {
+        font-size: 3.75rem; /* md:text-6xl = 60px */
+    }
+
+    .profile-stats-label {
+        font-size: 1.125rem; /* md:text-lg */
     }
 }
 
