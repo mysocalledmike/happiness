@@ -73,71 +73,40 @@ class SignupService
 
     private static function sendConfirmationEmail(string $name, string $email, string $token, string $dashboardUrl): void
     {
-        $subject = 'Welcome to One Trillion Smiles!';
+        $subject = '🎉 Welcome to One Trillion Smiles!';
 
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
         $dashboardLink = "{$protocol}://{$host}/dashboard/{$dashboardUrl}";
 
-        $message = "
-Hey {$name}!
+        $htmlMessage = \App\Services\EmailService::generateWelcomeEmailHtml($name, $dashboardLink);
 
-Welcome to One Trillion Smiles! Your Smile dashboard is ready.
-
-Here's your dashboard link:
-{$dashboardLink}
-
-Bookmark this link to get back anytime!
-
-Happy creating!
-        ";
-
-        \App\Services\EmailService::sendEmail($email, $subject, $message);
+        \App\Services\EmailService::sendHtmlEmail($email, $subject, $htmlMessage);
     }
 
     public static function sendConfirmationOnlyEmail(string $name, string $email, string $token, string $dashboardUrl): void
     {
-        $subject = 'Confirm your email for One Trillion Smiles';
+        $subject = '✅ Confirm your email for One Trillion Smiles';
 
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
         $confirmUrl = "{$protocol}://{$host}/confirm/{$token}";
 
-        $message = "
-Hey {$name}!
+        $htmlMessage = \App\Services\EmailService::generateConfirmationEmailHtml($confirmUrl);
 
-Please confirm your email address to unlock unlimited Smiles:
-{$confirmUrl}
-
-This will verify it's really you and let you keep spreading smiles!
-
-Thanks!
-        ";
-
-        \App\Services\EmailService::sendEmail($email, $subject, $message);
+        \App\Services\EmailService::sendHtmlEmail($email, $subject, $htmlMessage);
     }
 
     public static function sendDashboardAccessEmail(string $name, string $email, string $dashboardUrl): void
     {
-        $subject = 'Your One Trillion Smiles Dashboard';
+        $subject = '🎉 Welcome to One Trillion Smiles!';
 
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
         $dashboardLink = "{$protocol}://{$host}/dashboard/{$dashboardUrl}";
 
-        $message = "
-Hey {$name}!
+        $htmlMessage = \App\Services\EmailService::generateWelcomeEmailHtml($name, $dashboardLink);
 
-Someone tried to create an account with your email, but you're already spreading smiles!
-
-Here's your dashboard link:
-{$dashboardLink}
-
-Bookmark this link to get back anytime!
-
-Happy creating!
-        ";
-
-        \App\Services\EmailService::sendEmail($email, $subject, $message);
+        \App\Services\EmailService::sendHtmlEmail($email, $subject, $htmlMessage);
     }
 }

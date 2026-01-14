@@ -18,7 +18,21 @@
         {% if emails|length > 0 %}
             {% for email in emails %}
                 <div class="email-card">
-                    <div class="email-content">{{ email|raw }}</div>
+                    {% if 'HTML EMAIL' in email %}
+                        {# Extract just the HTML part for HTML emails #}
+                        {% set parts = email|split('Message:\n') %}
+                        {% if parts|length > 1 %}
+                            {# Hide metadata, only show rendered HTML #}
+                            <div class="email-html-preview">
+                                {{ parts[1]|raw }}
+                            </div>
+                        {% else %}
+                            <div class="email-html-preview">{{ email|raw }}</div>
+                        {% endif %}
+                    {% else %}
+                        {# Plain text email #}
+                        <div class="email-content plain-text">{{ email|raw }}</div>
+                    {% endif %}
                 </div>
             {% endfor %}
         {% else %}
@@ -90,25 +104,40 @@
 }
 
 .email-card {
-    background: white;
+    background: #f4f4f4;
     border: 1px solid #e1e5e9;
     border-radius: 8px;
     padding: 1.5rem;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: center;
 }
 
 .email-content {
+    /* Let HTML render naturally */
+    text-align: left;
+    width: 100%;
+    max-width: 100%;
+}
+
+.email-content.plain-text {
     white-space: pre-wrap;
     font-family: 'Courier New', monospace;
     font-size: 14px;
     line-height: 1.6;
     color: #333;
+    word-break: break-all;
+}
+
+.email-html-preview {
+    /* Clean container for rendered HTML emails */
+    width: 100%;
+    max-width: 100%;
     text-align: left;
 }
 
-/* Make URLs clickable */
-.email-content {
-    word-break: break-all;
+.email-metadata {
+    display: none;
 }
 
 .no-emails {
@@ -175,16 +204,21 @@ document.getElementById('clearEmails').addEventListener('click', function() {
     });
 });
 
-// Make URLs in emails clickable
+// Make URLs in plain text emails clickable
 document.addEventListener('DOMContentLoaded', function() {
     const emailContents = document.querySelectorAll('.email-content');
-    
+
     emailContents.forEach(function(content) {
-        // Replace URLs with clickable links
-        content.innerHTML = content.innerHTML.replace(
-            /(https?:\/\/[^\s]+)/g,
-            '<a href="$1" target="_blank" style="color: #667eea; text-decoration: underline;">$1</a>'
-        );
+        // Check if this is a plain text email (contains "EMAIL SENT AT:")
+        if (content.textContent.includes('EMAIL SENT AT:')) {
+            content.classList.add('plain-text');
+            // Replace URLs with clickable links for plain text emails
+            content.innerHTML = content.innerHTML.replace(
+                /(https?:\/\/[^\s]+)/g,
+                '<a href="$1" target="_blank" style="color: #667eea; text-decoration: underline;">$1</a>'
+            );
+        }
+        // HTML emails will render naturally with their own links
     });
 });
 

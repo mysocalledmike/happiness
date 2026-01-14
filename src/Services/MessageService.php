@@ -194,25 +194,19 @@ class MessageService
             return;
         }
 
-        $subject = "{$sender['name']} sent you a Smile!";
+        $subject = "🎉 {$sender['name']} sent you a Smile!";
 
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
         $messageLink = "{$protocol}://{$host}/s/{$messageUrl}";
 
-        $message = "
-Hey {$recipientName}!
+        $htmlMessage = \App\Services\EmailService::generateSmileNotificationEmailHtml(
+            $recipientName,
+            $sender['name'],
+            $messageLink
+        );
 
-{$sender['name']} sent you a heartfelt Smile. Click below to read it:
-
-{$messageLink}
-
-Smiles are heartfelt messages that create happiness and make people's day.
-
-✨ One Trillion Smiles
-        ";
-
-        \App\Services\EmailService::sendEmail($recipientEmail, $subject, $message);
+        \App\Services\EmailService::sendHtmlEmail($recipientEmail, $subject, $htmlMessage);
 
         // Track that we sent this email
         $db->insert('email_notifications', [
