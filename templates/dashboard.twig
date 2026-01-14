@@ -101,26 +101,27 @@
         </div>
         {% endif %}
 
-        {# Profile Header #}
-        <div class="profile-header">
-            <div class="profile-info">
-                <div class="profile-avatar">{{ sender.avatar }}</div>
-                <div class="profile-details">
-                    <h2>{{ sender.name }}</h2>
-                    <p class="profile-email">{{ sender.email }}</p>
-                    <div class="profile-url">
-                        <span>{{ dashboard_url }}</span>
-                        <button onclick="copyToClipboard('{{ dashboard_url }}')" title="Copy URL">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+        {# Masthead - Two Section Layout matching prototype exactly #}
+        <div class="masthead">
+            {# Top Section - Smiles Count (gray background, centered) #}
+            <div class="masthead-stats">
+                <div class="masthead-stats-number">{{ smile_count }}</div>
+                <p class="masthead-stats-label">smile{% if smile_count != 1 %}s{% endif %} created</p>
             </div>
-            <div class="profile-stats">
-                <div class="profile-stats-number">{{ smile_count }}</div>
-                <div class="profile-stats-label">smiles created</div>
+
+            {# Bottom Section - Profile Info (white background, flex layout) #}
+            <div class="masthead-profile">
+                <div class="masthead-avatar">{{ sender.avatar }}</div>
+                <div class="masthead-info">
+                    <h1 class="masthead-name">{{ sender.name }}</h1>
+                    <span class="masthead-email">{{ sender.email }}</span>
+                    <button onclick="copyToClipboard('{{ dashboard_url }}')" class="masthead-url">
+                        <span class="masthead-url-text">{{ dashboard_url }}</span>
+                        <svg class="masthead-url-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
 

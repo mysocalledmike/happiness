@@ -959,30 +959,53 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ========================================
-   PROFILE HEADER
+   MASTHEAD - Two Section Layout (matching prototype exactly)
    ======================================== */
-/* Profile Header - matching prototype Masthead */
-.profile-header {
+.masthead {
     background: white;
     border-radius: var(--radius-3xl);
-    padding: 1.5rem; /* p-6 on mobile = 24px */
-    margin-bottom: 2rem;
     box-shadow: var(--shadow-lg);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    margin-bottom: 2rem;
+    overflow: hidden;
 }
 
-.profile-info {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem; /* gap-6 = 24px */
-    flex: 1;
+/* Top Section - Smiles Count (gray background, centered) */
+.masthead-stats {
+    background: var(--gray-50); /* bg-gray-50 */
+    padding: 1.5rem 0; /* py-6 */
+    text-align: center;
+    border-bottom: 1px solid var(--gray-100); /* border-b border-gray-100 */
 }
 
-.profile-avatar {
-    width: 4rem; /* w-16 on mobile = 64px */
-    height: 4rem; /* h-16 on mobile = 64px */
+.masthead-stats-number {
+    font-family: 'Poppins', sans-serif;
+    font-size: 3rem; /* text-5xl on mobile */
+    font-weight: 700; /* font-bold */
+    background: linear-gradient(to right, var(--orange-600), var(--pink-600));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+.masthead-stats-label {
+    font-family: 'Lora', serif;
+    font-size: 1rem; /* text-base on mobile */
+    color: var(--gray-600);
+    margin-top: 0.25rem; /* mt-1 */
+}
+
+/* Bottom Section - Profile Info (white background, flex layout) */
+.masthead-profile {
+    padding: 1.5rem; /* p-6 on mobile */
+    display: flex;
+    align-items: flex-start; /* items-start */
+    gap: 1rem; /* gap-4 on mobile */
+}
+
+.masthead-avatar {
+    width: 4rem; /* w-16 on mobile */
+    height: 4rem; /* h-16 on mobile */
     border-radius: var(--radius-full);
     background: linear-gradient(to bottom right, var(--orange-400), var(--pink-500));
     display: flex;
@@ -992,80 +1015,68 @@ h1, h2, h3, h4, h5, h6 {
     flex-shrink: 0;
 }
 
-.profile-details {
+.masthead-info {
+    flex: 1;
+    min-width: 0; /* min-w-0 */
     display: flex;
     flex-direction: column;
-    gap: 0.25rem; /* space-y-1 */
+    gap: 0.5rem; /* space-y-2 */
 }
 
-.profile-details h2 {
+.masthead-name {
     font-family: 'Poppins', sans-serif;
     font-size: 1.5rem; /* text-2xl on mobile */
-    font-weight: 700;
-    margin-bottom: 0;
+    font-weight: 700; /* font-bold */
+    color: var(--gray-900);
     line-height: 1.2;
+    margin: 0;
 }
 
-.profile-email {
+.masthead-email {
     font-family: 'Lora', serif;
     font-size: 0.875rem; /* text-sm */
     color: var(--gray-600);
+    display: block;
 }
 
-.profile-url {
+.masthead-url {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.5rem; /* gap-2 */
     font-family: 'Lora', serif;
-    font-size: 0.875rem;
+    font-size: 0.75rem; /* text-xs on mobile */
     color: var(--gray-600);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
     transition: color 0.2s;
 }
 
-.profile-url:hover {
+.masthead-url:hover {
     color: var(--gray-900);
 }
 
-.profile-url span {
+.masthead-url-text {
     font-family: monospace;
     background: var(--gray-100);
-    padding: 0.25rem 0.75rem;
+    padding: 0.25rem 0.5rem; /* px-2 py-1 on mobile */
     border-radius: var(--radius-full);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px; /* max-w-[180px] on mobile */
+    font-size: 0.75rem; /* text-xs on mobile */
 }
 
-.profile-url button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.25rem;
+.masthead-url-icon {
+    flex-shrink: 0;
+    width: 0.875rem; /* w-3.5 on mobile */
+    height: 0.875rem; /* h-3.5 on mobile */
+}
+
+.masthead-url:hover .masthead-url-icon {
     color: var(--orange-500);
-    transition: color 0.2s;
-}
-
-.profile-url button:hover {
-    color: var(--orange-600);
-}
-
-.profile-stats {
-    text-align: right;
-}
-
-.profile-stats-number {
-    font-family: 'Poppins', sans-serif;
-    font-size: 3rem; /* text-5xl on mobile = 48px */
-    font-weight: 700;
-    background: linear-gradient(to right, var(--orange-600), var(--pink-600));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1;
-}
-
-.profile-stats-label {
-    font-family: 'Lora', serif;
-    font-size: 1rem; /* text-base on mobile */
-    color: var(--gray-600);
-    margin-top: 0.5rem;
 }
 
 /* ========================================
@@ -1209,26 +1220,43 @@ h1, h2, h3, h4, h5, h6 {
         display: none; /* md:hidden - hide on desktop */
     }
 
-    .profile-header {
-        padding: 2.5rem; /* md:p-10 = 40px */
+    /* Masthead desktop sizes */
+    .masthead-stats-number {
+        font-size: 3.75rem; /* md:text-6xl */
     }
 
-    .profile-avatar {
-        width: 5rem; /* md:w-20 = 80px */
-        height: 5rem; /* md:h-20 = 80px */
+    .masthead-stats-label {
+        font-size: 1.125rem; /* md:text-lg */
+    }
+
+    .masthead-profile {
+        padding: 2.5rem; /* md:p-10 */
+        gap: 1.5rem; /* md:gap-6 */
+    }
+
+    .masthead-avatar {
+        width: 5rem; /* md:w-20 */
+        height: 5rem; /* md:h-20 */
         font-size: 3rem; /* md:text-5xl */
     }
 
-    .profile-details h2 {
+    .masthead-name {
         font-size: 2.25rem; /* md:text-4xl */
     }
 
-    .profile-stats-number {
-        font-size: 3.75rem; /* md:text-6xl = 60px */
+    .masthead-url {
+        font-size: 0.875rem; /* md:text-sm */
     }
 
-    .profile-stats-label {
-        font-size: 1.125rem; /* md:text-lg */
+    .masthead-url-text {
+        padding: 0.25rem 0.75rem; /* md:px-3 py-1 */
+        max-width: none; /* md:max-w-none */
+        font-size: 0.875rem; /* md:text-sm */
+    }
+
+    .masthead-url-icon {
+        width: 1rem; /* md:w-4 */
+        height: 1rem; /* md:h-4 */
     }
 }
 
