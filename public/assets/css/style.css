@@ -270,23 +270,25 @@ h1, h2, h3, h4, h5, h6 {
    ======================================== */
 .hero-section {
     background: linear-gradient(to right, #f97316, #ec4899, #f97316);
-    padding: 3rem 0 4rem;
+    padding: 3rem 1.5rem; /* py-12 px-6 on mobile */
     position: relative;
     overflow: hidden;
 }
 
 .hero-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
+    grid-template-columns: 1fr; /* Single column on mobile */
+    gap: 3rem; /* gap-12 */
     align-items: center;
-    max-width: 72rem;
+    max-width: 72rem; /* max-w-6xl */
     margin: 0 auto;
-    padding: 0 1.5rem;
 }
 
 .hero-content {
     color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* space-y-6 */
 }
 
 .hero-content .logo {
@@ -317,14 +319,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (min-width: 768px) {
+    .hero-section {
+        padding: 4rem 1.5rem; /* md:py-16 */
+    }
+
+    .hero-grid {
+        grid-template-columns: repeat(2, 1fr); /* md:grid-cols-2 */
+    }
+
     .hero-content h1 {
-        font-size: 3rem; /* text-5xl = 48px */
+        font-size: 3rem; /* md:text-5xl = 48px */
     }
 }
 
 @media (min-width: 1024px) {
     .hero-content h1 {
-        font-size: 3.75rem; /* text-6xl = 60px */
+        font-size: 3.75rem; /* lg:text-6xl = 60px */
     }
 }
 
@@ -2137,30 +2147,8 @@ h1, h2, h3, h4, h5, h6 {
    RESPONSIVE
    ======================================== */
 @media (max-width: 768px) {
-    .hero-section {
-        padding: 2rem 0 3rem;
-    }
-
-    .hero-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
-
-    .hero-content h1 {
-        font-size: 2.5rem;
-    }
-
     .stats-grid {
         grid-template-columns: 1fr;
-    }
-
-    .profile-header {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .profile-info {
-        flex-direction: column;
     }
 
     .avatar-grid {
