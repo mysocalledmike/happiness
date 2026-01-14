@@ -282,6 +282,7 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     max-width: 72rem; /* max-w-6xl */
     margin: 0 auto;
+    width: 100%; /* Ensure it doesn't exceed viewport */
 }
 
 .hero-content {
@@ -289,24 +290,43 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     flex-direction: column;
     gap: 1.5rem; /* space-y-6 */
+    word-wrap: break-word; /* Ensure long words wrap */
+    overflow-wrap: break-word;
+    min-width: 0; /* Allow flex item to shrink below content size */
 }
 
 .hero-content .logo {
     font-size: 1.5rem; /* text-2xl */
     font-weight: 700; /* font-bold */
-    margin-bottom: 1.5rem;
+    margin-bottom: 0; /* Remove margin, using space-y-6 from parent */
     display: inline-block;
+    padding-bottom: 0.75rem; /* Keep pb-3 for underline spacing */
+    transform: none; /* Reset the scale transform from global .logo */
+    transform-origin: initial;
+    position: relative;
     /* Yellow to orange gradient text - matching prototype */
     background: linear-gradient(to bottom right, #fde047, #fdba74); /* from-yellow-300 to-orange-300 */
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    color: transparent; /* Fallback for non-webkit browsers */
 }
 
-/* Sparkle should remain white on homepage */
+/* Underline container - reset text effects */
+.hero-content .logo-underline {
+    /* Reset gradient text effects for underline elements */
+    -webkit-text-fill-color: initial;
+    color: initial;
+}
+
+/* Sparkle and lines should be white on homepage */
 .hero-content .logo-sparkle {
     -webkit-text-fill-color: white;
     color: white;
+}
+
+.hero-content .logo-underline-line {
+    background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.6), rgba(255,255,255,0));
 }
 
 .hero-content h1 {
@@ -315,7 +335,11 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
     color: white;
     line-height: 1.1;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0; /* Remove margin, using space-y-6 from parent */
+}
+
+.hero-content > p {
+    margin-bottom: 0; /* Remove margin, using space-y-6 from parent */
 }
 
 @media (min-width: 768px) {
@@ -399,6 +423,8 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: var(--radius-3xl);
     padding: 2rem;
     box-shadow: var(--shadow-2xl);
+    width: 100%; /* Ensure it doesn't exceed grid column */
+    min-width: 0; /* Allow it to shrink below content size */
 }
 
 .signup-card h3 {
@@ -529,11 +555,11 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 1.125rem;
 }
 
-/* Smile button - large CTA matching prototype */
+/* Smile button - large CTA matching prototype (mobile-first) */
 .btn-smile {
-    padding: 2rem 4rem; /* py-8 px-16 */
+    padding: 1.5rem 3rem; /* py-6 px-12 on mobile */
     font-family: 'Poppins', sans-serif;
-    font-size: 1.5rem; /* text-2xl */
+    font-size: 1.25rem; /* text-xl on mobile */
     font-weight: 700; /* font-bold */
     border-radius: var(--radius-full); /* rounded-full */
     background: linear-gradient(to right, var(--orange-500), var(--pink-500));
@@ -546,6 +572,23 @@ h1, h2, h3, h4, h5, h6 {
     gap: 0.5rem; /* gap-2 from base Button */
     border: none;
     cursor: pointer;
+}
+
+.btn-smile-emoji {
+    font-size: 1.5rem; /* text-2xl on mobile */
+    margin-right: 0.5rem; /* mr-2 on mobile */
+}
+
+@media (min-width: 768px) {
+    .btn-smile {
+        padding: 2rem 4rem; /* md:py-8 md:px-16 */
+        font-size: 1.5rem; /* md:text-2xl */
+    }
+
+    .btn-smile-emoji {
+        font-size: 1.875rem; /* md:text-3xl */
+        margin-right: 0.75rem; /* md:mr-3 */
+    }
 }
 
 .btn-smile:hover {
@@ -2153,10 +2196,6 @@ h1, h2, h3, h4, h5, h6 {
 
     .avatar-grid {
         grid-template-columns: repeat(5, 1fr);
-    }
-
-    .header-stats {
-        display: none;
     }
 
     .section-title {
