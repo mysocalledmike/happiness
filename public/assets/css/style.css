@@ -2137,7 +2137,7 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 1rem; /* rounded-2xl */
     box-shadow: var(--shadow-xl);
     min-width: 14rem; /* w-56 = 224px */
-    z-index: 20;
+    z-index: 1000; /* High z-index to ensure it appears above table rows */
     padding: 0.5rem 0;
 }
 
