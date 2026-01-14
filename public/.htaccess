@@ -1,10 +1,10 @@
 RewriteEngine On
 
-# Protect entire site with HTTP Basic Authentication (temporary)
-# Exclude static assets (css, js, images)
-<If "%{REQUEST_URI} !~ m#\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$#">
+# Protect /admin routes with HTTP Basic Authentication
+# Only protect admin URLs, not the entire site
+<If "%{REQUEST_URI} =~ m#^/admin#">
     AuthType Basic
-    AuthName "Site Access"
+    AuthName "Admin Access"
     AuthUserFile /home/msorvillo/onetrillionsmiles.com/config/.htpasswd
     Require valid-user
 </If>
