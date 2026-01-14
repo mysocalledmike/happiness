@@ -17,7 +17,12 @@ class Config
     
     public static function getEmailSender(): string
     {
-        return 'noreply@' . self::getEmailDomain();
+        return 'hello@' . self::getEmailDomain();
+    }
+
+    public static function getEmailSenderName(): string
+    {
+        return 'One Trillion Smiles';
     }
     
     public static function getBaseUrl(): string

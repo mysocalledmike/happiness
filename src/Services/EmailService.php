@@ -36,7 +36,9 @@ class EmailService
     {
         // Use configured email sender if not specified
         if ($from === null) {
-            $from = \App\Config::getEmailSender();
+            $senderName = \App\Config::getEmailSenderName();
+            $senderEmail = \App\Config::getEmailSender();
+            $from = "{$senderName} <{$senderEmail}>";
         }
 
         if (self::isDevelopment()) {
@@ -82,7 +84,9 @@ class EmailService
     {
         // Use configured email sender if not specified
         if ($from === null) {
-            $from = \App\Config::getEmailSender();
+            $senderName = \App\Config::getEmailSenderName();
+            $senderEmail = \App\Config::getEmailSender();
+            $from = "{$senderName} <{$senderEmail}>";
         }
 
         // Generate plain text version if not provided
