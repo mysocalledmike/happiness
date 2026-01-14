@@ -7,8 +7,12 @@
         {# Left Side - Content #}
         <div class="hero-content">
             <div class="logo">
-                1 Trillion Smiles
-                <span class="logo-sparkle">✨</span>
+                One Trillion Smiles
+                <div class="logo-underline">
+                    <div class="logo-underline-line"></div>
+                    <div class="logo-sparkle">✨</div>
+                    <div class="logo-underline-line"></div>
+                </div>
             </div>
 
             <h1>Make work<br>a little happier</h1>
@@ -167,7 +171,7 @@
                     </div>
                 </div>
 
-                {% for company in top_companies %}
+                {% for company in top_companies|slice(0, 3) %}
                     <div class="leaderboard-item">
                         <div class="leaderboard-rank">#{{ loop.index }}</div>
                         <div class="leaderboard-avatar">
