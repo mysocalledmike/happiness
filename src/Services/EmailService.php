@@ -218,7 +218,7 @@ class EmailService
   <div style="background: linear-gradient(to right, #f97316, #ec4899, #f97316); padding: 40px 24px; text-align: center;">
     <div style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 16px;">
       <span style="font-size: 20px;">✨</span>
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: white;">One Trillion Smiles</div>
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: #fbbf24;">One Trillion Smiles</div>
     </div>
     <h1 style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: white; font-size: 36px; font-weight: 700; margin: 0 0 12px 0; line-height: 1.2;">Welcome to One Trillion Smiles!</h1>
     <p style="font-family: Georgia, 'Times New Roman', Times, serif; color: rgba(255, 255, 255, 0.95); font-size: 18px; margin: 0; line-height: 1.6;">Your dashboard is ready to spread happiness</p>
@@ -304,7 +304,7 @@ HTML;
   <div style="background: linear-gradient(to right, #f97316, #ec4899, #f97316); padding: 40px 24px; text-align: center;">
     <div style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 16px;">
       <span style="font-size: 20px;">✨</span>
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: white;">One Trillion Smiles</div>
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: #fbbf24;">One Trillion Smiles</div>
     </div>
     <h1 style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: white; font-size: 36px; font-weight: 700; margin: 0 0 12px 0; line-height: 1.2;">{$senderName} sent you a Smile!</h1>
     <p style="font-family: Georgia, 'Times New Roman', Times, serif; color: rgba(255, 255, 255, 0.95); font-size: 18px; margin: 0; line-height: 1.6;">A coworker took the time to brighten your day</p>
@@ -365,7 +365,7 @@ HTML;
   <div style="background: linear-gradient(to right, #f97316, #ec4899, #f97316); padding: 40px 24px; text-align: center;">
     <div style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 16px;">
       <span style="font-size: 20px;">✨</span>
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: white;">One Trillion Smiles</div>
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: #fbbf24;">One Trillion Smiles</div>
     </div>
     <h1 style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: white; font-size: 36px; font-weight: 700; margin: 0 0 12px 0; line-height: 1.2;">One quick step!</h1>
     <p style="font-family: Georgia, 'Times New Roman', Times, serif; color: rgba(255, 255, 255, 0.95); font-size: 18px; margin: 0; line-height: 1.6;">Confirm your email to start spreading smiles</p>
