@@ -289,6 +289,7 @@ h1, h2, h3, h4, h5, h6 {
     color: white;
     display: flex;
     flex-direction: column;
+    align-items: flex-start; /* Prevent children from stretching */
     gap: 1.5rem; /* space-y-6 */
     word-wrap: break-word; /* Ensure long words wrap */
     overflow-wrap: break-word;
@@ -2000,7 +2001,7 @@ h1, h2, h3, h4, h5, h6 {
     background: white;
     border-radius: var(--radius-3xl);
     box-shadow: var(--shadow-lg);
-    overflow: hidden;
+    overflow: visible; /* Allow dropdown to overflow table */
 }
 
 .users-table {
