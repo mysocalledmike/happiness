@@ -225,7 +225,7 @@ class EmailService
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: #fbbf24;">One Trillion Smiles</div>
     </div>
     <h1 style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: white; font-size: 36px; font-weight: 700; margin: 0 0 12px 0; line-height: 1.2;">Welcome to One Trillion Smiles!</h1>
-    <p style="font-family: Georgia, 'Times New Roman', Times, serif; color: rgba(255, 255, 255, 0.95); font-size: 18px; margin: 0; line-height: 1.6;">Your dashboard is ready to spread happiness</p>
+    <p style="font-family: Georgia, 'Times New Roman', Times, serif; color: rgba(255, 255, 255, 0.95); font-size: 18px; margin: 0; line-height: 1.6;">Your private profile is ready to spread happiness</p>
   </div>
 
   <!-- Body content -->
@@ -233,13 +233,13 @@ class EmailService
     <p style="font-family: Georgia, 'Times New Roman', Times, serif; color: #374151; font-size: 16px; line-height: 1.8; margin: 0 0 24px 0;">Hey {$name}!</p>
 
     <p style="font-family: Georgia, 'Times New Roman', Times, serif; color: #374151; font-size: 16px; line-height: 1.8; margin: 0 0 32px 0;">
-      You're all set to start spreading smiles! Your personal dashboard is ready, where you can send heartfelt messages to coworkers and track all the happiness you create. 🎉
+      You're all set to start spreading smiles! Your private profile is ready, where you can send heartfelt messages to coworkers and track all the happiness you create. 🎉
     </p>
 
     <!-- CTA Button -->
     <div style="text-align: center; margin: 40px 0;">
       <a href="{$dashboardUrl}" style="display: inline-block; background: linear-gradient(to right, #f97316, #ec4899); color: white; text-decoration: none; padding: 18px 48px; border-radius: 9999px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: 600; font-size: 18px; box-shadow: 0 10px 25px rgba(249, 115, 22, 0.3);">
-        Open My Dashboard 🚀
+        Open My Private Profile 🚀
       </a>
     </div>
 
@@ -250,7 +250,7 @@ class EmailService
       <div style="margin: 12px 0;">
         <p style="font-family: Georgia, 'Times New Roman', Times, serif; color: #374151; font-size: 15px; line-height: 1.6; margin: 0;">
           <span style="color: #f97316; font-size: 20px; margin-right: 8px;">💌</span>
-          <strong>Send Smiles</strong> - Tell coworkers why you love working with them
+          <strong>Make people smile</strong> - Tell coworkers why you love working with them
         </p>
       </div>
 
@@ -272,7 +272,7 @@ class EmailService
     <!-- Tip box -->
     <div style="background: linear-gradient(to right, #fed7aa, #fbcfe8); border-left: 4px solid #f97316; padding: 20px; border-radius: 12px; margin: 32px 0;">
       <p style="font-family: Georgia, 'Times New Roman', Times, serif; color: #78350f; font-size: 14px; line-height: 1.6; margin: 0;">
-        <strong>💡 Pro tip:</strong> Bookmark your dashboard link to get back anytime! We'll never ask for a password - just use this special link.
+        <strong>💡 Pro tip:</strong> Bookmark your private profile link to get back anytime! We'll never ask for a password - just use this special link.
       </p>
     </div>
 
@@ -310,7 +310,7 @@ HTML;
       <span style="font-size: 20px;">✨</span>
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 700; color: #fbbf24;">One Trillion Smiles</div>
     </div>
-    <h1 style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: white; font-size: 36px; font-weight: 700; margin: 0 0 12px 0; line-height: 1.2;">{$senderName} sent you a Smile!</h1>
+    <h1 style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: white; font-size: 36px; font-weight: 700; margin: 0 0 12px 0; line-height: 1.2;">{$senderName} wants to make you smile</h1>
     <p style="font-family: Georgia, 'Times New Roman', Times, serif; color: rgba(255, 255, 255, 0.95); font-size: 18px; margin: 0; line-height: 1.6;">A coworker took the time to brighten your day</p>
   </div>
 
@@ -325,15 +325,15 @@ HTML;
     <!-- CTA Button -->
     <div style="text-align: center; margin: 40px 0;">
       <a href="{$messageUrl}" style="display: inline-block; background: linear-gradient(to right, #f97316, #ec4899); color: white; text-decoration: none; padding: 18px 48px; border-radius: 9999px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: 600; font-size: 18px; box-shadow: 0 10px 25px rgba(249, 115, 22, 0.3);">
-        Read Your Smile ☺
+        Read Your Message
       </a>
     </div>
 
     <!-- Info box -->
     <div style="background: linear-gradient(to right, #fed7aa, #fbcfe8); border-left: 4px solid #f97316; padding: 20px; border-radius: 12px; margin: 32px 0;">
       <p style="font-family: Georgia, 'Times New Roman', Times, serif; color: #78350f; font-size: 14px; line-height: 1.6; margin: 0;">
-        <strong>💡 What are Smiles?</strong><br/>
-        Smiles are heartfelt messages that create happiness and brighten someone's workday. They're sent from coworkers who appreciate you!
+        <strong>💡 What is this?</strong><br/>
+        A coworker is using One Trillion Smiles to send heartfelt messages that create happiness and brighten your workday!
       </p>
     </div>
 
@@ -400,7 +400,7 @@ HTML;
         What happens next?
       </p>
       <p style="font-family: Georgia, 'Times New Roman', Times, serif; color: #78350f; font-size: 14px; line-height: 1.6; margin: 0;">
-        After confirming, you'll get instant access to your personal dashboard where you can start sending heartfelt messages to coworkers and join thousands of people making work a little brighter! 🌟
+        After confirming, you'll get instant access to your private profile where you can start sending heartfelt messages to coworkers and join thousands of people making work a little brighter! 🌟
       </p>
     </div>
 

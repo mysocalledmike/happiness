@@ -295,8 +295,8 @@ $app->get('/s/{message_url}', function ($request, $response, $args) {
     $db = \App\Database::getInstance();
     $sender = $db->fetchOne('SELECT * FROM senders WHERE id = ?', [$messageData['sender_id']]);
 
-    // Detect company from recipient email
-    $company = \App\Services\StatsService::getCompanyFromEmail($messageData['recipient_email']);
+    // Detect company from sender email (stats show sender's company impact)
+    $company = \App\Services\StatsService::getCompanyFromEmail($sender['email']);
 
     $data = [
         'title' => 'A Smile from ' . $messageData['sender_name'],
@@ -336,7 +336,9 @@ $app->post('/api/messages/{message_url}/smile', function ($request, $response, $
             $senderSmileCount = \App\Services\StatsService::getSenderSmileCount($messageData['sender_id']);
             $globalSmiles = \App\Services\StatsService::getSmileCount();
 
-            $company = \App\Services\StatsService::getCompanyFromEmail($messageData['recipient_email']);
+            // Get sender info to determine company
+            $senderData = \App\Database::getInstance()->fetchOne('SELECT email FROM senders WHERE id = ?', [$messageData['sender_id']]);
+            $company = $senderData ? \App\Services\StatsService::getCompanyFromEmail($senderData['email']) : null;
             $companySmiles = 0;
             if ($company) {
                 $companyStats = \App\Services\StatsService::getCompanyStats($company);

@@ -2188,6 +2188,17 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ========================================
+   ANIMATIONS
+   ======================================== */
+@keyframes rotate-smile {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(10deg); }
+    50% { transform: rotate(-10deg); }
+    75% { transform: rotate(10deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* ========================================
    RESPONSIVE
    ======================================== */
 @media (max-width: 768px) {

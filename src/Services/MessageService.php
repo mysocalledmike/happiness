@@ -194,7 +194,9 @@ class MessageService
             return;
         }
 
-        $subject = "🎉 {$sender['name']} sent you a Smile!";
+        // Add short unique ID to prevent Gmail threading multiple messages from same sender
+        $uniqueId = substr(md5($messageUrl . time()), 0, 6);
+        $subject = "{$sender['name']} sent you a message [{$uniqueId}]";
 
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';

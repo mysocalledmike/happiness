@@ -73,7 +73,7 @@ class SignupService
 
     private static function sendConfirmationEmail(string $name, string $email, string $token, string $dashboardUrl): void
     {
-        $subject = '🎉 Welcome to One Trillion Smiles!';
+        $subject = 'Welcome to One Trillion Smiles';
 
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
@@ -86,7 +86,7 @@ class SignupService
 
     public static function sendConfirmationOnlyEmail(string $name, string $email, string $token, string $dashboardUrl): void
     {
-        $subject = '✅ Confirm your email for One Trillion Smiles';
+        $subject = 'Confirm your email for One Trillion Smiles';
 
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';
@@ -99,7 +99,7 @@ class SignupService
 
     public static function sendDashboardAccessEmail(string $name, string $email, string $dashboardUrl): void
     {
-        $subject = '🎉 Welcome to One Trillion Smiles!';
+        $subject = 'Welcome to One Trillion Smiles';
 
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost:8080';

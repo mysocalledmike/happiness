@@ -33,7 +33,7 @@
                 <span><strong>{{ company_smiles }}</strong> {{ company_name }} smiles</span>
             </button>
             {% endif %}
-            <button class="btn btn-white btn-sm" onclick="showSignupModal()">Start Spreading Smiles</button>
+            {# User identity and get started button removed from message page #}
         </div>
     </div>
 </div>
@@ -71,26 +71,54 @@
             </button>
         </div>
 
-        {# Confirmation text and form (shown after clicking smile button) #}
-        <div id="quick-send-section" class="hidden">
-            {# Confirmation text - orange-50 background with border #}
-            <div style="text-align: center; margin-bottom: 1.5rem;">
-                <div style="display: inline-block; background: var(--orange-50); padding: 1rem 1.5rem; border-radius: 1rem; border: 1px solid var(--orange-100);">
-                    <p style="font-family: 'Lora', serif; font-size: 1.125rem; color: var(--gray-800); margin: 0;">
-                        <span style="font-weight: 600; color: var(--orange-600);">{{ sender.name }}</span> made you smile, so we added to their smile count.
-                    </p>
+        {# Celebration Section (shown after clicking smile button) #}
+        <div id="smile-celebration" class="hidden" style="background: linear-gradient(to right, #fefce8, #fff7ed); border: 2px solid #fde047; border-radius: 1.5rem; padding: 2rem; text-align: center; margin-bottom: 2rem;">
+            <div style="font-size: 4.5rem; margin-bottom: 1rem; animation: rotate-smile 0.5s ease-in-out 2;">
+                😊
+            </div>
+            <h2 style="font-family: 'Poppins', sans-serif; font-size: 1.875rem; font-weight: 700; color: var(--gray-900); margin-bottom: 1.5rem;">
+                You're smiling, which makes {% if company %}{{ company_name }}{% else %}work{% endif %} a happier place!
+            </h2>
+            <div style="font-size: 3.75rem; font-weight: 700; background: linear-gradient(to right, #ea580c, #db2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-family: 'Poppins', sans-serif; margin-bottom: 1rem;" id="celebration-count">
+                0
+            </div>
+            <p style="font-family: 'Lora', serif; font-size: 1.25rem; color: var(--gray-700);">
+                We've created <span id="celebration-count-text">0</span> smiles at {% if company %}{{ company_name }}{% else %}your company{% endif %} so far! 🎉
+            </p>
+        </div>
+
+        {# Stats Card (shown after clicking smile button) - Hidden for now, using celebration instead #}
+        <div id="smile-stats" class="stats-card hidden" style="display: none;">
+            <h3 class="stats-card-title">{{ sender.name }} made you smile, which made your work a little happier</h3>
+            <div class="stats-card-grid">
+                <div class="stats-card-item">
+                    <div class="stats-card-label">Global Smiles</div>
+                    <div class="stats-card-number" id="stats-global-count">{{ global_smiles|number_format }}</div>
+                    <div class="stats-card-subtitle">worldwide</div>
+                </div>
+                <div class="stats-card-item">
+                    <div class="stats-card-label">{% if company %}{{ company_name }}{% else %}Company{% endif %} Smiles</div>
+                    <div class="stats-card-number" id="stats-company-count">{{ company_smiles|default(0) }}</div>
+                    <div class="stats-card-subtitle">{% if company %}from {{ sender.name }}'s org{% else %}company total{% endif %}</div>
+                </div>
+                <div class="stats-card-item">
+                    <div class="stats-card-label">{{ sender.name }}'s Impact</div>
+                    <div class="stats-card-number" id="stats-sender-count">{{ sender_smile_count }}</div>
+                    <div class="stats-card-subtitle">smile{% if sender_smile_count != 1 %}s{% endif %} created</div>
                 </div>
             </div>
+        </div>
 
-            {# Form card #}
+        {# Form card (shown after clicking smile button) #}
+        <div id="quick-send-section" class="hidden">
             <div class="message-hero" style="padding: 2rem;">
-                <h3 style="font-family: 'Poppins', sans-serif; font-size: 1.875rem; font-weight: 700; color: var(--gray-900); margin-bottom: 0.25rem;">Make work a little happier</h3>
+                <h3 style="font-family: 'Poppins', sans-serif; font-size: 1.875rem; font-weight: 700; color: var(--gray-900); margin-bottom: 0.25rem;">Now pass it along</h3>
                 <p style="font-family: 'Lora', serif; font-size: 0.9375rem; color: var(--gray-600); margin-bottom: 1.25rem;">Bring a smile to a coworker's face by telling them why you love working with them.</p>
 
                 <form id="quick-send-message-form" style="display: flex; flex-direction: column; gap: 0.875rem;">
                     <div>
-                        <label style="display: block; font-family: 'Lora', serif; font-size: 0.875rem; color: var(--gray-700); margin-bottom: 0.375rem; font-weight: 400;">Recipient's name</label>
-                        <input type="text" name="recipient_name" class="form-input" placeholder="Jordan" required style="background: var(--gray-200);">
+                        <label style="display: block; font-family: 'Lora', serif; font-size: 0.875rem; color: var(--gray-700); margin-bottom: 0.375rem; font-weight: 400;">Recipient's full name</label>
+                        <input type="text" name="recipient_name" class="form-input" placeholder="Jordan Kennedy" required style="background: var(--gray-200);">
                     </div>
                     <div>
                         <label style="display: block; font-family: 'Lora', serif; font-size: 0.875rem; color: var(--gray-700); margin-bottom: 0.375rem; font-weight: 400;">Recipient's email</label>
@@ -98,7 +126,7 @@
                     </div>
                     <div>
                         <label style="display: block; font-family: 'Lora', serif; font-size: 0.875rem; color: var(--gray-700); margin-bottom: 0.375rem; font-weight: 400;">Your message</label>
-                        <textarea name="message" class="form-textarea" placeholder="Tell them why you appreciate them..." rows="4" required style="background: var(--gray-200);"></textarea>
+                        <textarea name="message" class="form-textarea" placeholder="Tell them why you appreciate them..." rows="6" required style="background: var(--gray-200);"></textarea>
                     </div>
                     <p style="font-family: 'Lora', serif; color: var(--gray-600); font-size: 0.875rem; margin: 0.5rem 0 0.25rem 0;">
                         We'll send this from {{ message.recipient_name }} ({{ message.recipient_email }})
@@ -107,7 +135,7 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
                         </svg>
-                        Send Smile
+                        Send message
                     </button>
                 </form>
             </div>
@@ -164,8 +192,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h2 class="modal-title">Confirm Smile</h2>
-                    <p class="modal-subtitle">Review before sending</p>
+                    <h2 class="modal-title">Confirm Message</h2>
+                    <p class="modal-subtitle">Private message to <span id="confirm-recipient-name-privacy"></span></p>
                 </div>
             </div>
             <div style="background: var(--bg-light); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
@@ -186,7 +214,7 @@
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
                     </svg>
-                    Send Smile
+                    Send message
                 </button>
             </div>
         </div>
@@ -247,6 +275,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 <script>
 let selectedModalAvatar = null;
 let smileRecorded = false;
@@ -292,24 +321,44 @@ async function recordSmile() {
             document.getElementById('smile-count-number').textContent = result.sender_smile_count;
             document.getElementById('smile-plural').textContent = result.sender_smile_count != 1 ? 's' : '';
 
-            // Update header stats
-            document.querySelectorAll('.header-stat')[0].querySelector('strong').textContent = result.global_smiles.toLocaleString();
+            // Trigger confetti
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#FF6B6B', '#FFD93D', '#6BCF7F', '#4ECDC4', '#95E1D3']
+            });
 
-            // Update company stats if present
-            if (result.company_smiles > 0) {
-                const companyStatElement = document.querySelectorAll('.header-stat')[1];
-                if (companyStatElement) {
-                    companyStatElement.querySelector('strong').textContent = result.company_smiles;
+            // Show celebration section
+            const celebrationSection = document.getElementById('smile-celebration');
+            celebrationSection.classList.remove('hidden');
+
+            // Animate counter from 0 to company_smiles
+            const companySmiles = {{ company_smiles|default(0) }};
+            let current = 0;
+            const duration = 2000; // 2 seconds
+            const increment = companySmiles / (duration / 16); // 60fps
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= companySmiles) {
+                    document.getElementById('celebration-count').textContent = companySmiles.toLocaleString();
+                    document.getElementById('celebration-count-text').textContent = companySmiles.toLocaleString();
+                    clearInterval(timer);
+                } else {
+                    const rounded = Math.floor(current);
+                    document.getElementById('celebration-count').textContent = rounded.toLocaleString();
+                    document.getElementById('celebration-count-text').textContent = rounded.toLocaleString();
                 }
-            }
+            }, 16);
 
             // Hide button and show quick send section
             document.getElementById('smile-button-container').style.display = 'none';
             document.getElementById('quick-send-section').classList.remove('hidden');
 
-            // Scroll to confirmation
+            // Scroll to the celebration section
             setTimeout(() => {
-                document.getElementById('quick-send-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                celebrationSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 100);
         } else {
             alert(result.error || 'Failed to record smile');
@@ -329,6 +378,7 @@ let pendingQuickSendData = null;
 // Show/hide quick send confirmation modal
 function showQuickSendConfirmModal(recipientName, recipientEmail, message) {
     document.getElementById('confirm-recipient-name').textContent = recipientName;
+    document.getElementById('confirm-recipient-name-privacy').textContent = recipientName;
     document.getElementById('confirm-recipient-email').textContent = recipientEmail;
     document.getElementById('confirm-message').textContent = message;
     document.getElementById('quick-send-confirm-modal').classList.remove('hidden');
@@ -474,5 +524,7 @@ async function lookupMessage() {
         alert('An error occurred. Please try again.');
     }
 }
+
+// User identity removed from message page header
 </script>
 {% endblock %}

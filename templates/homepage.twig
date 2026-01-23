@@ -49,13 +49,13 @@
             </div>
         </div>
 
-        {# Right Side - Signup Card #}
-        <div class="signup-card">
+        {# Right Side - Signup Card (hidden when signed in) #}
+        <div class="signup-card" id="signup-card">
             <h3>Get Started</h3>
             <form id="signup-form">
                 <div class="form-group">
                     <label class="form-label">Your name</label>
-                    <input type="text" name="name" class="form-input" placeholder="Alex" required>
+                    <input type="text" name="name" class="form-input" placeholder="Alex Smith" required>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Your email</label>
@@ -72,9 +72,24 @@
                     <input type="hidden" name="avatar" id="avatar-input" required>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    Start Spreading Smiles
+                    Start making people smile
                 </button>
             </form>
+        </div>
+
+        {# Right Side - Signed In Card (shown when signed in) #}
+        <div class="signup-card" id="signed-in-card" style="display: none;">
+            <div style="text-align: center; padding: 1rem 0;">
+                <div id="signed-in-avatar" style="width: 5rem; height: 5rem; border-radius: 50%; background: linear-gradient(to bottom right, var(--orange-400), var(--pink-500)); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1rem;"></div>
+                <h3 id="signed-in-name" style="margin-bottom: 0.25rem;"></h3>
+                <p id="signed-in-email" style="font-family: 'Lora', serif; font-size: 0.875rem; color: var(--gray-600); margin-bottom: 1.5rem;"></p>
+                <a id="continue-dashboard-btn" href="#" class="btn btn-primary" style="width: 100%; margin-bottom: 0.75rem;">
+                    Go to your private profile
+                </a>
+                <button onclick="signOut()" class="btn btn-white" style="width: 100%; font-size: 0.875rem;">
+                    Sign out
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -134,7 +149,7 @@
         {# Mission subsection #}
         <div class="subsection">
             <h2 class="section-title">Mission: Create 1 trillion smiles at work, one at a time.</h2>
-            <p class="section-subtitle">Send smiles to people you care about, and join the movement to make the workplace a little brighter.</p>
+            <p class="section-subtitle">Tell people you care about why you love working with them, and join the movement to make the workplace a little brighter.</p>
 
             <div class="stats-grid">
             {# Total Smiles Card #}
@@ -399,7 +414,7 @@ document.getElementById('signup-form').addEventListener('submit', async function
 
     const formData = new FormData(this);
     const data = {
-        name: formData.get('name'),
+        name: formData.get('name').trim(),
         email: formData.get('email'),
         avatar: formData.get('avatar')
     };
@@ -434,5 +449,32 @@ document.getElementById('signup-form').addEventListener('submit', async function
         alert('An error occurred. Please try again.');
     }
 });
+
+// Sign out function
+function signOut() {
+    localStorage.removeItem('myDashboardUrl');
+    localStorage.removeItem('myName');
+    localStorage.removeItem('myEmail');
+    localStorage.removeItem('myAvatar');
+    window.location.reload();
+}
+
+// Check if user is signed in and show appropriate card
+(function() {
+    const dashboardUrl = localStorage.getItem('myDashboardUrl');
+    const userName = localStorage.getItem('myName');
+    const userEmail = localStorage.getItem('myEmail');
+    const userAvatar = localStorage.getItem('myAvatar');
+
+    if (dashboardUrl && userName) {
+        // Show signed-in card
+        document.getElementById('signup-card').style.display = 'none';
+        document.getElementById('signed-in-card').style.display = 'block';
+        document.getElementById('signed-in-avatar').textContent = userAvatar || '😊';
+        document.getElementById('signed-in-name').textContent = userName;
+        document.getElementById('signed-in-email').textContent = userEmail || '';
+        document.getElementById('continue-dashboard-btn').href = dashboardUrl;
+    }
+})();
 </script>
 {% endblock %}
