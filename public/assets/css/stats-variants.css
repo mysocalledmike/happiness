@@ -383,3 +383,268 @@
 .number-pop {
     animation: numberPop 0.4s ease-out;
 }
+
+/* ========================================
+   Message Compose Card - New Design
+   ======================================== */
+.compose-card {
+    background: white;
+    border-radius: var(--radius-3xl);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-lg);
+}
+
+@media (min-width: 768px) {
+    .compose-card {
+        padding: 3rem;
+    }
+}
+
+.compose-recipient-bubble {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: linear-gradient(to right, var(--orange-100), var(--pink-100));
+    padding: 1rem 1.25rem;
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+    min-width: 280px;
+}
+
+@media (min-width: 768px) {
+    .compose-recipient-bubble {
+        min-width: 320px;
+    }
+}
+
+.compose-input {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid var(--orange-200);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-family: 'Lora', serif;
+    font-size: 0.875rem;
+    color: var(--orange-900);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.compose-input:first-child {
+    font-weight: 600;
+}
+
+.compose-input::placeholder {
+    color: var(--gray-400);
+}
+
+.compose-input:focus {
+    border-color: var(--orange-400);
+}
+
+.compose-message-area {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.compose-emoji {
+    font-size: 3rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+@media (min-width: 768px) {
+    .compose-emoji {
+        font-size: 3.5rem;
+    }
+}
+
+.compose-textarea {
+    flex: 1;
+    font-family: 'Lora', serif;
+    font-size: 1.5rem;
+    line-height: 1.4;
+    color: var(--gray-900);
+    border: none;
+    outline: none;
+    resize: none;
+    min-height: 120px;
+    overflow: hidden;
+}
+
+@media (min-width: 768px) {
+    .compose-textarea {
+        font-size: 2rem;
+        line-height: 1.5;
+    }
+}
+
+.compose-textarea::placeholder {
+    color: var(--gray-400);
+}
+
+.compose-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .compose-actions {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.compose-ideas-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    font-family: 'Lora', serif;
+    font-size: 1rem;
+    color: var(--orange-600);
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.compose-ideas-btn:hover {
+    color: var(--pink-600);
+    background: var(--orange-50);
+}
+
+.compose-ideas-btn:hover svg {
+    stroke: var(--pink-600);
+}
+
+.compose-ideas-btn svg {
+    flex-shrink: 0;
+}
+
+.compose-send-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(to right, var(--orange-500), var(--pink-500));
+    border: none;
+    border-radius: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.compose-send-btn:hover {
+    background: linear-gradient(to right, var(--orange-600), var(--pink-600));
+    transform: translateY(-1px);
+}
+
+.compose-send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.compose-send-btn svg {
+    flex-shrink: 0;
+}
+
+/* ========================================
+   Traits Modal Grid
+   ======================================== */
+.traits-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.trait-btn {
+    padding: 0.75rem 1rem;
+    font-family: 'Lora', serif;
+    font-size: 1rem;
+    color: var(--gray-700);
+    background: var(--gray-100);
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.trait-btn:hover {
+    background: linear-gradient(to right, var(--orange-100), var(--pink-100));
+    color: var(--gray-900);
+}
+
+/* ========================================
+   Toast Notification
+   ======================================== */
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(to right, #10b981, #059669);
+    color: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease-out;
+}
+
+.toast.hidden {
+    display: none;
+}
+
+.toast-icon {
+    width: 2rem;
+    height: 2rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* ========================================
+   Pass It Along Heading (Message Page)
+   ======================================== */
+.pass-it-along-heading {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .pass-it-along-heading {
+        font-size: 1.75rem;
+    }
+}

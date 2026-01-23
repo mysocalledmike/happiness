@@ -2,7 +2,6 @@
 
 {% block body %}
 {# Gradient Header Bar #}
-{# Gradient Header Bar - Simplified to match prototype #}
 <div class="gradient-header">
     <div class="gradient-header-content">
         <a href="/{% if company %}?company={{ company }}{% endif %}" class="logo">
@@ -13,7 +12,7 @@
                 <div class="logo-underline-line"></div>
             </div>
         </a>
-        {# User dropdown - matching prototype exactly #}
+        {# User dropdown #}
         <div style="position: relative;">
             <button onclick="toggleUserDropdown()" style="display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 9999px; border: none; color: white; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
                 <span style="width: 2rem; height: 2rem; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">{{ sender.avatar }}</span>
@@ -40,90 +39,7 @@
 
 <div class="page-gradient-bg">
     <div class="dashboard-container">
-        {# Welcome Banner (First Visit) #}
-        {% if first_visit %}
-        <div class="banner banner-success">
-            <button class="banner-close" onclick="this.parentElement.remove()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-            </button>
-            <div style="display: flex; align-items: flex-start; gap: 1rem;">
-                <div style="width: 3rem; height: 3rem; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
-                    </svg>
-                </div>
-                <div style="flex: 1;">
-                    <h4 style="font-family: 'Poppins', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Welcome to your private profile!</h4>
-                    <p style="font-family: 'Lora', serif; color: var(--gray-700); margin-bottom: 0.75rem;">This page keeps track of the messages you've sent and how many people you've made smile. Check your email to confirm it's really you and to easily get back to this page.</p>
-                    <p style="font-family: 'Lora', serif; font-size: 0.875rem; color: var(--gray-700); background: rgba(255,255,255,0.6); border-radius: 0.5rem; padding: 0.75rem; border: 1px solid #86efac;">
-                        🔒 <strong>This is your private profile.</strong> Don't share this page's URL with others—it's only for you!
-                    </p>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        {# Email Confirmed Banner #}
-        {% if confirmed %}
-        <div class="banner banner-success">
-            <button class="banner-close" onclick="this.parentElement.remove()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-            </button>
-            <h4>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle;">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
-                Your email was confirmed
-            </h4>
-            <p>You can now send unlimited Smiles!</p>
-        </div>
-        {% endif %}
-
-        {# Already Confirmed Banner #}
-        {% if already_confirmed %}
-        <div class="banner banner-info">
-            <button class="banner-close" onclick="this.parentElement.remove()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-            </button>
-            <h4>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle;">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
-                Email already confirmed
-            </h4>
-            <p>Your email is confirmed. You're all set!</p>
-        </div>
-        {% endif %}
-
-        {# Smile Sent Banner (from quick send) #}
-        {% if smile_sent %}
-        <div class="banner banner-success">
-            <button class="banner-close" onclick="this.parentElement.remove()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-            </button>
-            <div style="display: flex; align-items: flex-start; gap: 1rem;">
-                <div style="width: 3rem; height: 3rem; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
-                    </svg>
-                </div>
-                <div style="flex: 1;">
-                    <h4 style="font-family: 'Poppins', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Your message was sent! 🎉</h4>
-                    <p style="font-family: 'Lora', serif; color: var(--gray-700);">Use this private page to make more people smile - a link was also sent to your email.</p>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        {# Dashboard Stats Card - Matching React Prototype #}
+        {# Dashboard Stats Card - Masthead #}
         <div class="dashboard-stats">
             {# Profile Section #}
             <div class="dashboard-stats-header">
@@ -177,28 +93,90 @@
             </div>
         </div>
 
-        {# Masthead - Two Section Layout matching prototype exactly (Hidden in Variant B via CSS) #}
-        <div class="masthead">
-            {# Top Section - Smiles Count (gray background, centered) #}
-            <div class="masthead-stats">
-                <div class="masthead-stats-number">{{ smile_count }}</div>
-                <p class="masthead-stats-label">smile{% if smile_count != 1 %}s{% endif %} created</p>
-            </div>
-
-            {# Bottom Section - Profile Info (white background, flex layout) #}
-            <div class="masthead-profile">
-                <div class="masthead-avatar">{{ sender.avatar }}</div>
-                <div class="masthead-info">
-                    <h1 class="masthead-name">{{ sender.name }}</h1>
-                    <span class="masthead-email">{{ sender.email }}</span>
+        {# Green Banners - Below Masthead #}
+        {% if smile_sent %}
+        <div class="banner banner-success" style="background: linear-gradient(to right, #f0fdf4, #ecfdf5); border: 2px solid #86efac;">
+            <button class="banner-close" onclick="this.parentElement.remove()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                <div style="width: 3rem; height: 3rem; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+                    </svg>
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="font-family: 'Poppins', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--gray-900);">Your message was sent! 🎉</h4>
+                    <p style="font-family: 'Lora', serif; color: var(--gray-700);">Use this private page to keep track of messages and make more people smile - we emailed you a link to this page.</p>
                 </div>
             </div>
         </div>
+        {% endif %}
 
-        {# Send Smile Form or Confirmation Banner #}
+        {% if first_visit %}
+        <div class="banner banner-success" style="background: linear-gradient(to right, #f0fdf4, #ecfdf5); border: 2px solid #86efac;">
+            <button class="banner-close" onclick="this.parentElement.remove()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                <div style="width: 3rem; height: 3rem; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="font-family: 'Poppins', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--gray-900);">Welcome to your private profile!</h4>
+                    <p style="font-family: 'Lora', serif; color: var(--gray-700); margin-bottom: 0.75rem;">Your profile keeps track of the messages you've sent and how many people you've made smile. We also emailed you a link to your profile.</p>
+                    <p style="font-family: 'Lora', serif; font-size: 0.875rem; color: var(--gray-700); background: rgba(255,255,255,0.6); border-radius: 0.5rem; padding: 0.75rem; border: 1px solid #86efac;">
+                        🔒 <strong>This is your private profile.</strong> Don't share this page's URL with others—it's only for you!
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if confirmed %}
+        <div class="banner banner-success" style="background: linear-gradient(to right, #f0fdf4, #ecfdf5); border: 2px solid #86efac;">
+            <button class="banner-close" onclick="this.parentElement.remove()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <h4>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle;">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Your email was confirmed
+            </h4>
+            <p>You can now send unlimited Smiles!</p>
+        </div>
+        {% endif %}
+
+        {% if already_confirmed %}
+        <div class="banner banner-info">
+            <button class="banner-close" onclick="this.parentElement.remove()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <h4>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle;">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Email already confirmed
+            </h4>
+            <p>Your email is confirmed. You're all set!</p>
+        </div>
+        {% endif %}
+
+        {# Message Compose Card or Confirmation Required Banner #}
         {% if not sender.email_confirmed and message_count >= 3 %}
             {# Blue Banner for Unconfirmed Users at Limit #}
-            <div class="banner" style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: white; text-align: center;">
+            <div class="banner" style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: white; text-align: center; border-radius: 1.5rem;">
                 <h4 style="color: white; margin-bottom: 12px;">We need to know it's really you!</h4>
                 <p style="color: rgba(255, 255, 255, 0.9); margin-bottom: 16px;">Please check your email and confirm your address to send more smiles</p>
                 <button onclick="requestConfirmationEmail()" class="btn btn-white">
@@ -209,170 +187,161 @@
                 </button>
             </div>
         {% else %}
-            {# Regular Send Message Form #}
-            <h3 class="section-heading">Make someone smile</h3>
-            <div class="message-form-card">
+            {# New Message Compose Card #}
+            <div class="compose-card">
                 <form id="send-form">
-                    <div class="form-group">
-                        <label class="form-label">Name</label>
-                        <input type="text" name="recipient_name" class="form-input" placeholder="Sarah" required>
+                    {# Pink bubble with Name and Email inputs #}
+                    <div class="compose-recipient-bubble">
+                        <input type="text" name="recipient_name" placeholder="Full name" class="compose-input" required>
+                        <input type="email" name="recipient_email" placeholder="Email address" class="compose-input" required>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="recipient_email" class="form-input" placeholder="sarah@example.com" required>
+
+                    {# Large Message area with emoji #}
+                    <div class="compose-message-area">
+                        <div class="compose-emoji">💛</div>
+                        <textarea name="message" id="compose-message" class="compose-textarea" placeholder="Write something that will make them smile..." required></textarea>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Your message</label>
-                        <textarea name="message" class="form-textarea" placeholder="Write something that will make them smile..." required></textarea>
+
+                    {# Bottom action bar #}
+                    <div class="compose-actions">
+                        <button type="button" onclick="handleNeedIdeas()" class="compose-ideas-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18h6M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.5-3 5.7V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.3C6.2 13.5 5 11.4 5 9a7 7 0 0 1 7-7z"/>
+                            </svg>
+                            Need ideas?
+                        </button>
+                        <button type="submit" class="compose-send-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                            </svg>
+                            Send message
+                        </button>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-                        </svg>
-                        Send smile
-                    </button>
                 </form>
             </div>
         {% endif %}
 
-        {# Preview Confirmation Modal #}
-        <div id="preview-modal" class="modal-overlay hidden">
-            <div class="modal">
-                <button class="modal-close" onclick="hidePreviewModal()">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
-                </button>
-                <div class="modal-header">
-                    <div class="modal-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        {# Sent Messages - Single Stream #}
+        {% for message in messages %}
+            <div class="message-item">
+                {# Desktop Actions - Top Right #}
+                <div class="message-actions-desktop">
+                    {% if message.read_at %}
+                        <span style="display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; background: var(--gray-100); color: var(--gray-600); padding: 0.375rem 0.75rem; border-radius: 9999px; font-weight: 600; font-family: 'Lora', serif;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--gray-500);">
+                                <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+                            </svg>
+                            Smile created {{ message.sent_at|date('M j') }}
+                        </span>
+                    {% else %}
+                        <span style="display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; background: var(--gray-100); color: var(--gray-600); padding: 0.375rem 0.75rem; border-radius: 9999px; font-weight: 600; font-family: 'Lora', serif;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--gray-500);">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                            </svg>
+                            Sent {{ message.sent_at|date('M j') }}
+                        </span>
+                    {% endif %}
+                    <button class="message-action-btn delete" onclick="deleteMessage({{ message.id }})" title="Delete">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                         </svg>
-                    </div>
-                    <div>
-                        <h2 class="modal-title">Confirm Message</h2>
-                        <p class="modal-subtitle">Private message to <span id="preview-name-privacy"></span></p>
-                    </div>
-                </div>
-                <div style="background: var(--bg-light); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                        <div style="background: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;">
-                            <span>✨</span> Hey <span id="preview-name"></span>
-                        </div>
-                    </div>
-                    <div style="font-size: 14px; color: var(--text-gray); margin-bottom: 8px;">
-                        To: <span id="preview-email" style="color: var(--text-dark);"></span>
-                    </div>
-                    <div style="background: white; border-radius: 8px; padding: 16px; font-style: italic; color: var(--text-dark);">
-                        💛 "<span id="preview-message"></span>"
-                    </div>
-                </div>
-                <div style="display: flex; gap: 12px;">
-                    <button class="btn btn-white" style="flex: 1;" onclick="hidePreviewModal()">Cancel</button>
-                    <button class="btn btn-primary" style="flex: 1;" onclick="confirmSendSmile()">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-                        </svg>
-                        Send Smile
                     </button>
                 </div>
-            </div>
-        </div>
 
-        {# Sent Messages #}
-        <div class="messages-section">
-            <h3>Messages sent</h3>
+                <div style="position: relative; margin-bottom: 1.5rem;">
+                    <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(to right, var(--orange-100), var(--pink-100)); padding: 0.5rem 1rem; border-radius: 9999px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--orange-600);">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: var(--orange-900);">
+                            Hey {{ message.recipient_name }}
+                            <span style="color: var(--gray-500); font-weight: 400; margin-left: 0.25rem;">· {{ message.recipient_email }}</span>
+                        </span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                    <div class="message-emoji">💛</div>
+                    <p class="message-text">"{{ message.message }}"</p>
+                </div>
 
-            {% for message in messages %}
-                <div class="message-item">
-                    {# Desktop Actions - Top Right (hidden on mobile) #}
-                    <div class="message-actions-desktop">
-                        {# Read/Sent Status Badge with date inside #}
-                        {% if message.read_at %}
-                            <span style="display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; background: var(--gray-100); color: var(--gray-600); padding: 0.375rem 0.75rem; border-radius: 9999px; font-weight: 600; font-family: 'Lora', serif;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--gray-500);">
-                                    <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
-                                </svg>
-                                Smile created {{ message.sent_at|date('M j') }}
-                            </span>
-                        {% else %}
-                            <span style="display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; background: var(--gray-100); color: var(--gray-600); padding: 0.375rem 0.75rem; border-radius: 9999px; font-weight: 600; font-family: 'Lora', serif;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--gray-500);">
-                                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-                                </svg>
-                                Sent {{ message.sent_at|date('M j') }}
-                            </span>
-                        {% endif %}
-
-                        {# Preview button hidden for now - users were clicking to increment smile count #}
-                        <button class="message-action-btn preview" onclick="previewMessage('{{ message.message_url }}')" title="Preview" style="display: none;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                {# Mobile Actions - Bottom #}
+                <div class="message-actions-mobile">
+                    {% if message.read_at %}
+                        <span style="display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; background: var(--gray-100); color: var(--gray-600); padding: 0.375rem 0.75rem; border-radius: 9999px; font-weight: 600; font-family: 'Lora', serif;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--gray-500);">
+                                <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
                             </svg>
-                        </button>
+                            Smile created {{ message.sent_at|date('M j') }}
+                        </span>
+                    {% else %}
+                        <span style="display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; background: var(--gray-100); color: var(--gray-600); padding: 0.375rem 0.75rem; border-radius: 9999px; font-weight: 600; font-family: 'Lora', serif;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--gray-500);">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                            </svg>
+                            Sent {{ message.sent_at|date('M j') }}
+                        </span>
+                    {% endif %}
+                    <div style="display: flex; gap: 0.5rem; margin-left: auto;">
                         <button class="message-action-btn delete" onclick="deleteMessage({{ message.id }})" title="Delete">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                             </svg>
                         </button>
                     </div>
-
-                    <div style="position: relative; margin-bottom: 1.5rem;">
-                        <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(to right, var(--orange-100), var(--pink-100)); padding: 0.5rem 1rem; border-radius: 9999px;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--orange-600);">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                            </svg>
-                            <span style="font-size: 0.875rem; font-weight: 600; color: var(--orange-900);">
-                                Hey {{ message.recipient_name }}
-                                <span style="color: var(--gray-500); font-weight: 400; margin-left: 0.25rem;">· {{ message.recipient_email }}</span>
-                            </span>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
-                        <div class="message-emoji">💛</div>
-                        <p class="message-text">"{{ message.message }}"</p>
-                    </div>
-
-                    {# Mobile Actions - Bottom with Border (hidden on desktop) #}
-                    <div class="message-actions-mobile">
-                        {# Status Badge #}
-                        {% if message.read_at %}
-                            <span style="display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; background: var(--gray-100); color: var(--gray-600); padding: 0.375rem 0.75rem; border-radius: 9999px; font-weight: 600; font-family: 'Lora', serif;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--gray-500);">
-                                    <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
-                                </svg>
-                                Smile created {{ message.sent_at|date('M j') }}
-                            </span>
-                        {% else %}
-                            <span style="display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; background: var(--gray-100); color: var(--gray-600); padding: 0.375rem 0.75rem; border-radius: 9999px; font-weight: 600; font-family: 'Lora', serif;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--gray-500);">
-                                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-                                </svg>
-                                Sent {{ message.sent_at|date('M j') }}
-                            </span>
-                        {% endif %}
-
-                        {# Action Buttons #}
-                        <div style="display: flex; gap: 0.5rem; margin-left: auto;">
-                            {# Preview button hidden for now - users were clicking to increment smile count #}
-                            <button class="message-action-btn preview" onclick="previewMessage('{{ message.message_url }}')" title="Preview" style="display: none;">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                                </svg>
-                            </button>
-                            <button class="message-action-btn delete" onclick="deleteMessage({{ message.id }})" title="Delete">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
                 </div>
-            {% else %}
-                <p style="text-align: center; color: var(--text-gray); padding: 40px 0;">No messages sent yet. Create your first one above!</p>
-            {% endfor %}
+            </div>
+        {% else %}
+            <div class="message-item" style="text-align: center; color: var(--gray-500); padding: 3rem;">
+                <p style="font-family: 'Lora', serif;">No messages sent yet. Create your first one above!</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{# Traits Modal #}
+<div id="traits-modal" class="modal-overlay hidden">
+    <div class="modal" style="max-width: 42rem; max-height: 80vh; overflow-y: auto;">
+        <button class="modal-close" onclick="hideTraitsModal()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+        <div style="margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.5rem;">✨</span>
+                <h3 style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--gray-900);">Still stuck?</h3>
+            </div>
+            <p style="font-family: 'Lora', serif; color: var(--gray-600);">What's one trait that makes this person awesome?</p>
+        </div>
+        <div class="traits-grid">
+            <button class="trait-btn" onclick="selectTrait('leadership')">🎯 Leadership</button>
+            <button class="trait-btn" onclick="selectTrait('empathy')">💙 Empathy</button>
+            <button class="trait-btn" onclick="selectTrait('creativity')">✨ Creativity</button>
+            <button class="trait-btn" onclick="selectTrait('reliability')">⚡ Reliability</button>
+            <button class="trait-btn" onclick="selectTrait('collaboration')">🤝 Collaboration</button>
+            <button class="trait-btn" onclick="selectTrait('positivity')">☀️ Positivity</button>
+            <button class="trait-btn" onclick="selectTrait('mentorship')">🌱 Mentorship</button>
+            <button class="trait-btn" onclick="selectTrait('humor')">😄 Humor</button>
+            <button class="trait-btn" onclick="selectTrait('patience')">🧘 Patience</button>
+            <button class="trait-btn" onclick="selectTrait('innovation')">💡 Innovation</button>
+            <button class="trait-btn" onclick="selectTrait('kindness')">💝 Kindness</button>
+            <button class="trait-btn" onclick="selectTrait('expertise')">🎓 Expertise</button>
+            <button class="trait-btn" onclick="selectTrait('listening')">👂 Listening</button>
+            <button class="trait-btn" onclick="selectTrait('courage')">🦁 Courage</button>
+            <button class="trait-btn" onclick="selectTrait('generosity')">🎁 Generosity</button>
+            <button class="trait-btn" onclick="selectTrait('authenticity')">💎 Authenticity</button>
         </div>
     </div>
+</div>
+
+{# Toast Notification #}
+<div id="toast-notification" class="toast hidden">
+    <div class="toast-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+        </svg>
+    </div>
+    <span style="font-family: 'Poppins', sans-serif; font-weight: 600;">Message sent successfully! 🎉</span>
 </div>
 
 {# Include stat modals from homepage #}
@@ -392,6 +361,90 @@
         localStorage.setItem('myAvatar', '{{ sender.avatar }}');
     }
 })();
+
+// Writing prompts
+const writingPrompts = [
+    "Write something that will make them smile...",
+    "You made my week when you...",
+    "I'll never forget when you...",
+    "Working with you taught me...",
+    "Your support really helped me when...",
+    "I appreciate how you always...",
+    "One thing I admire about you is...",
+    "You inspired me when...",
+    "I'm grateful for the time you..."
+];
+
+// Trait-specific prompts
+const traitPrompts = {
+    leadership: "Tell them about a specific time their leadership made a difference for the team...",
+    empathy: "Tell them about a moment when their empathy helped during a difficult time...",
+    creativity: "Tell them about a creative solution or idea they brought that really stood out...",
+    reliability: "Tell them how their reliability has made an impact - when did it matter most?",
+    collaboration: "Tell them about a favorite project or moment collaborating with them...",
+    positivity: "Tell them about a time their positive energy lifted the team up...",
+    mentorship: "Tell them something important they taught or helped others learn...",
+    humor: "Tell them about a time their sense of humor brightened the day or lightened a tough situation...",
+    patience: "Tell them about a time their patience really made a difference...",
+    innovation: "Tell them about an innovative approach or fresh perspective they brought...",
+    kindness: "Tell them about a time they showed kindness that really meant something...",
+    expertise: "Tell them what aspect of their expertise or skill has been most valuable...",
+    listening: "Tell them about a time they really listened and made someone feel heard...",
+    courage: "Tell them about a time they showed courage that inspired the team...",
+    generosity: "Tell them how they've been generous with their time, knowledge, or support...",
+    authenticity: "Tell them what stands out about how genuine and authentic they are..."
+};
+
+// Prompt cycling state
+let promptClickCount = 0;
+let hasSeenModal = false;
+
+// Handle "Need ideas?" button click
+function handleNeedIdeas() {
+    const textarea = document.getElementById('compose-message');
+
+    // If user has already seen the modal, always show it
+    if (hasSeenModal) {
+        showTraitsModal();
+        return;
+    }
+
+    // Otherwise, cycle through prompts
+    promptClickCount++;
+
+    if (promptClickCount >= 8) {
+        // Show traits modal after 8 clicks
+        showTraitsModal();
+    } else {
+        // Update placeholder with next prompt
+        textarea.placeholder = writingPrompts[promptClickCount % writingPrompts.length];
+    }
+}
+
+// Show traits modal
+function showTraitsModal() {
+    hasSeenModal = true;
+    document.getElementById('traits-modal').classList.remove('hidden');
+}
+
+// Hide traits modal
+function hideTraitsModal() {
+    document.getElementById('traits-modal').classList.add('hidden');
+}
+
+// Select a trait
+function selectTrait(traitId) {
+    const textarea = document.getElementById('compose-message');
+    textarea.placeholder = traitPrompts[traitId];
+    hideTraitsModal();
+}
+
+// Close traits modal when clicking outside
+document.getElementById('traits-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideTraitsModal();
+    }
+});
 
 // User dropdown toggle
 function toggleUserDropdown() {
@@ -416,57 +469,62 @@ function signOut() {
     window.location.href = '/';
 }
 
-// Store form data for preview
-let pendingSmileData = null;
+// Show toast notification
+function showToast() {
+    const toast = document.getElementById('toast-notification');
+    toast.classList.remove('hidden');
+    setTimeout(() => {
+        toast.classList.add('hidden');
+    }, 3000);
+}
 
-// Send form - show preview modal first
-document.getElementById('send-form').addEventListener('submit', function(e) {
+// Send form - no confirmation modal, just send and show toast
+document.getElementById('send-form')?.addEventListener('submit', async function(e) {
     e.preventDefault();
 
     const formData = new FormData(this);
-    pendingSmileData = {
+    const messageData = {
         recipient_name: formData.get('recipient_name'),
         recipient_email: formData.get('recipient_email'),
         message: formData.get('message')
     };
-
-    // Show preview modal with privacy info
-    document.getElementById('preview-name').textContent = pendingSmileData.recipient_name;
-    document.getElementById('preview-name-privacy').textContent = pendingSmileData.recipient_name;
-    document.getElementById('preview-email').textContent = pendingSmileData.recipient_email;
-    document.getElementById('preview-message').textContent = pendingSmileData.message;
-    document.getElementById('preview-modal').classList.remove('hidden');
-});
-
-// Hide preview modal
-function hidePreviewModal() {
-    document.getElementById('preview-modal').classList.add('hidden');
-    pendingSmileData = null;
-}
-
-// Confirm and actually send the smile
-async function confirmSendSmile() {
-    if (!pendingSmileData) return;
 
     try {
         const dashboardUrl = window.location.pathname.split('/').pop();
         const response = await fetch(`/api/dashboard/${dashboardUrl}/send`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(pendingSmileData)
+            body: JSON.stringify(messageData)
         });
 
         const result = await response.json();
 
         if (result.success) {
-            hidePreviewModal();
-            location.reload();
+            // Clear the form immediately
+            document.getElementById('send-form').reset();
+
+            // Increment the messages sent counter with animation
+            const messagesCounter = document.getElementById('dashboard-user-count');
+            const currentCount = parseInt(messagesCounter.dataset.value) || 0;
+            const newCount = currentCount + 1;
+            messagesCounter.textContent = newCount;
+            messagesCounter.dataset.value = newCount;
+            messagesCounter.classList.add('number-pop');
+
+            // Show toast
+            showToast();
+
+            // Tell the next page load to skip the count-from-zero animation
+            sessionStorage.setItem('skipCounterAnimation', 'true');
+
+            // Reload to clean URL (without query params) after brief delay so toast is visible
+            setTimeout(() => {
+                window.location.href = window.location.pathname;
+            }, 500);
         } else {
-            hidePreviewModal();
             if (result.needs_confirmation) {
-                // Show confirmation prompt
                 if (confirm(result.error + '\n\nWould you like to send a confirmation email now?')) {
-                    await requestConfirmation();
+                    await requestConfirmationEmail();
                 }
             } else {
                 alert(result.error || 'Failed to send. Please try again.');
@@ -474,33 +532,11 @@ async function confirmSendSmile() {
         }
     } catch (error) {
         console.error('Send error:', error);
-        hidePreviewModal();
         alert('An error occurred. Please try again.');
     }
-}
+});
 
 // Request email confirmation
-async function requestConfirmation() {
-    try {
-        const dashboardUrl = window.location.pathname.split('/').pop();
-        const response = await fetch(`/api/dashboard/${dashboardUrl}/request-confirmation`, {
-            method: 'POST'
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            alert('Confirmation email sent! Check your inbox to unlock unlimited Smiles.');
-        } else {
-            alert('Failed to send confirmation email. Please try again.');
-        }
-    } catch (error) {
-        console.error('Request confirmation error:', error);
-        alert('An error occurred. Please try again.');
-    }
-}
-
-// Request email confirmation from banner button
 async function requestConfirmationEmail() {
     try {
         const dashboardUrl = window.location.pathname.split('/').pop();
@@ -519,11 +555,6 @@ async function requestConfirmationEmail() {
         console.error('Request confirmation error:', error);
         alert('An error occurred. Please try again.');
     }
-}
-
-// Preview message
-function previewMessage(messageUrl) {
-    window.open(`/s/${messageUrl}`, '_blank');
 }
 
 // Delete message
@@ -548,12 +579,11 @@ async function deleteMessage(id) {
     }
 }
 
-// Copy to clipboard
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        alert('URL copied to clipboard!');
-    });
-}
+// Auto-grow textarea
+document.getElementById('compose-message')?.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+});
 
 // Make company smiles stat clickable
 document.addEventListener('DOMContentLoaded', function() {

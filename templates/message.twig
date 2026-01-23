@@ -12,29 +12,6 @@
                 <div class="logo-underline-line"></div>
             </div>
         </a>
-        <div class="header-stats">
-            <button class="header-stat" onclick="showModal('global-modal')">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                </svg>
-                <span><strong>{{ global_smiles|number_format }}</strong> of 1T smiles</span>
-            </button>
-            <button class="header-stat" onclick="showModal('company-modal')">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                </svg>
-                <span><strong>{{ total_companies }}</strong> companies</span>
-            </button>
-            {% if company %}
-            <button class="header-stat" onclick="showWithinCompanyModal('{{ company }}')">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
-                </svg>
-                <span><strong>{{ company_smiles }}</strong> {{ company_name }} smiles</span>
-            </button>
-            {% endif %}
-            {# User identity and get started button removed from message page #}
-        </div>
     </div>
 </div>
 
@@ -63,7 +40,7 @@
             </div>
         </div>
 
-        {# Made Me Smile Button - OUTSIDE the card #}
+        {# Made Me Smile Button #}
         <div id="smile-button-container" style="margin-top: 2rem; margin-bottom: 3rem; text-align: center;">
             <button id="made-me-smile-btn" class="btn-smile" onclick="recordSmile()">
                 <span class="btn-smile-emoji">☺</span>
@@ -87,185 +64,77 @@
             </p>
         </div>
 
-        {# Stats Card (shown after clicking smile button) - Hidden for now, using celebration instead #}
-        <div id="smile-stats" class="stats-card hidden" style="display: none;">
-            <h3 class="stats-card-title">{{ sender.name }} made you smile, which made your work a little happier</h3>
-            <div class="stats-card-grid">
-                <div class="stats-card-item">
-                    <div class="stats-card-label">Global Smiles</div>
-                    <div class="stats-card-number" id="stats-global-count">{{ global_smiles|number_format }}</div>
-                    <div class="stats-card-subtitle">worldwide</div>
-                </div>
-                <div class="stats-card-item">
-                    <div class="stats-card-label">{% if company %}{{ company_name }}{% else %}Company{% endif %} Smiles</div>
-                    <div class="stats-card-number" id="stats-company-count">{{ company_smiles|default(0) }}</div>
-                    <div class="stats-card-subtitle">{% if company %}from {{ sender.name }}'s org{% else %}company total{% endif %}</div>
-                </div>
-                <div class="stats-card-item">
-                    <div class="stats-card-label">{{ sender.name }}'s Impact</div>
-                    <div class="stats-card-number" id="stats-sender-count">{{ sender_smile_count }}</div>
-                    <div class="stats-card-subtitle">smile{% if sender_smile_count != 1 %}s{% endif %} created</div>
-                </div>
-            </div>
-        </div>
-
-        {# Form card (shown after clicking smile button) #}
+        {# New Message Compose Card (shown after clicking smile button) #}
         <div id="quick-send-section" class="hidden">
-            <div class="message-hero" style="padding: 2rem;">
-                <h3 style="font-family: 'Poppins', sans-serif; font-size: 1.875rem; font-weight: 700; color: var(--gray-900); margin-bottom: 0.25rem;">Now pass it along</h3>
-                <p style="font-family: 'Lora', serif; font-size: 0.9375rem; color: var(--gray-600); margin-bottom: 1.25rem;">Bring a smile to a coworker's face by telling them why you love working with them.</p>
+            <div class="compose-card">
+                <h2 class="pass-it-along-heading">Now pass it along</h2>
 
-                <form id="quick-send-message-form" style="display: flex; flex-direction: column; gap: 0.875rem;">
-                    <div>
-                        <label style="display: block; font-family: 'Lora', serif; font-size: 0.875rem; color: var(--gray-700); margin-bottom: 0.375rem; font-weight: 400;">Recipient's full name</label>
-                        <input type="text" name="recipient_name" class="form-input" placeholder="Jordan Kennedy" required style="background: var(--gray-200);">
+                <form id="quick-send-message-form">
+                    {# Pink bubble with Name and Email inputs #}
+                    <div class="compose-recipient-bubble">
+                        <input type="text" name="recipient_name" placeholder="Full name" class="compose-input" required>
+                        <input type="email" name="recipient_email" placeholder="Email address" class="compose-input" required>
                     </div>
-                    <div>
-                        <label style="display: block; font-family: 'Lora', serif; font-size: 0.875rem; color: var(--gray-700); margin-bottom: 0.375rem; font-weight: 400;">Recipient's email</label>
-                        <input type="email" name="recipient_email" class="form-input" placeholder="jordan@example.com" required style="background: var(--gray-200);">
+
+                    {# Large Message area with emoji #}
+                    <div class="compose-message-area">
+                        <div class="compose-emoji">💛</div>
+                        <textarea name="message" id="message-compose-textarea" class="compose-textarea" placeholder="Write something that will make them smile..." required></textarea>
                     </div>
-                    <div>
-                        <label style="display: block; font-family: 'Lora', serif; font-size: 0.875rem; color: var(--gray-700); margin-bottom: 0.375rem; font-weight: 400;">Your message</label>
-                        <textarea name="message" class="form-textarea" placeholder="Tell them why you appreciate them..." rows="6" required style="background: var(--gray-200);"></textarea>
+
+                    {# Bottom action bar #}
+                    <div class="compose-actions">
+                        <button type="button" onclick="handleNeedIdeasMessage()" class="compose-ideas-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 18h6M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.5-3 5.7V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.3C6.2 13.5 5 11.4 5 9a7 7 0 0 1 7-7z"/>
+                            </svg>
+                            Need ideas?
+                        </button>
+                        <button type="submit" class="compose-send-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                            </svg>
+                            Send message
+                        </button>
                     </div>
-                    <p style="font-family: 'Lora', serif; color: var(--gray-600); font-size: 0.875rem; margin: 0.5rem 0 0.25rem 0;">
-                        We'll send this from {{ message.recipient_name }} ({{ message.recipient_email }})
-                    </p>
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.875rem 1.5rem; font-size: 1.125rem; margin-top: 0.5rem;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-                        </svg>
-                        Send message
-                    </button>
                 </form>
             </div>
         </div>
-
-        {# Treasure Hunt Section - Hidden for now #}
-        <div class="treasure-hunt-card" style="display: none;">
-            <h3>Curious what else {{ sender.name }} said?</h3>
-            <p>{{ sender.name }} sent Smiles to others too. Enter an email to peek at their Smile 👀</p>
-            <div class="lookup-form">
-                <input
-                    type="email"
-                    id="lookup-email"
-                    class="form-input"
-                    placeholder="someone@example.com"
-                    style="flex: 1;"
-                >
-                <button class="btn btn-primary" onclick="lookupMessage()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                    </svg>
-                    Look up
-                </button>
-            </div>
-
-            <div id="lookup-result" class="hidden lookup-result"></div>
-        </div>
-
-        {# Bottom CTA - Hidden for now #}
-        <div class="cta-card" style="display: none;">
-            <h2>What is One Trillion Smiles?</h2>
-            <p>Smiles are heartfelt messages you send that create happiness and make people's day.</p>
-            <button class="btn btn-white btn-lg" onclick="window.location.href='/'">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                Start Spreading Smiles
-            </button>
-        </div>
     </div>
+</div>
 
-    {# Quick Send Confirmation Modal #}
-    <div id="quick-send-confirm-modal" class="modal-overlay hidden">
-        <div class="modal">
-            <button class="modal-close" onclick="hideQuickSendConfirmModal()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-            </button>
-            <div class="modal-header">
-                <div class="modal-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                </div>
-                <div>
-                    <h2 class="modal-title">Confirm Message</h2>
-                    <p class="modal-subtitle">Private message to <span id="confirm-recipient-name-privacy"></span></p>
-                </div>
+{# Traits Modal #}
+<div id="message-traits-modal" class="modal-overlay hidden">
+    <div class="modal" style="max-width: 42rem; max-height: 80vh; overflow-y: auto;">
+        <button class="modal-close" onclick="hideMessageTraitsModal()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+        </button>
+        <div style="margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.5rem;">✨</span>
+                <h3 style="font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--gray-900);">Still stuck?</h3>
             </div>
-            <div style="background: var(--bg-light); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                    <div style="font-size: 32px;">{{ message.recipient_name.split(' ')[0].charAt(0) }}💛</div>
-                    <div>
-                        <div style="font-weight: 600; color: var(--text-dark);">To: <span id="confirm-recipient-name"></span></div>
-                        <div style="font-size: 14px; color: var(--text-gray);"><span id="confirm-recipient-email"></span></div>
-                    </div>
-                </div>
-                <div style="color: var(--text-dark); font-style: italic; line-height: 1.6;">
-                    💛 "<span id="confirm-message"></span>"
-                </div>
-            </div>
-            <div style="display: flex; gap: 12px;">
-                <button class="btn btn-white" style="flex: 1;" onclick="hideQuickSendConfirmModal()">Cancel</button>
-                <button class="btn btn-primary" style="flex: 1;" onclick="confirmQuickSend()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-                    </svg>
-                    Send message
-                </button>
-            </div>
+            <p style="font-family: 'Lora', serif; color: var(--gray-600);">What's one trait that makes this person awesome?</p>
         </div>
-    </div>
-
-    {# Signup Modal (from header button) #}
-    <div id="signup-modal" class="modal-overlay hidden">
-        <div class="modal">
-            <button class="modal-close" onclick="hideSignupModal()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-            </button>
-            <div class="modal-header">
-                <div class="modal-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                </div>
-                <div>
-                    <h2 class="modal-title">Make work a little happier</h2>
-                    <p class="modal-subtitle">Bring a smile to a coworker's face by telling them why you love working with them - it'll make their day and make you a little happier, too.</p>
-                </div>
-            </div>
-            <form id="modal-signup-form">
-                <div class="form-group">
-                    <label class="form-label">Name</label>
-                    <input type="text" name="name" class="form-input" placeholder="Your name" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-input" placeholder="you@example.com" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Choose your avatar</label>
-                    <div class="avatar-grid">
-                        <button type="button" class="avatar-option modal-avatar" data-avatar="😊" onclick="selectModalAvatar(this)">😊</button>
-                        <button type="button" class="avatar-option modal-avatar" data-avatar="😄" onclick="selectModalAvatar(this)">😄</button>
-                        <button type="button" class="avatar-option modal-avatar" data-avatar="🎉" onclick="selectModalAvatar(this)">🎉</button>
-                        <button type="button" class="avatar-option modal-avatar" data-avatar="✨" onclick="selectModalAvatar(this)">✨</button>
-                        <button type="button" class="avatar-option modal-avatar" data-avatar="💛" onclick="selectModalAvatar(this)">💛</button>
-                        <button type="button" class="avatar-option modal-avatar" data-avatar="🌟" onclick="selectModalAvatar(this)">🌟</button>
-                        <button type="button" class="avatar-option modal-avatar" data-avatar="🚀" onclick="selectModalAvatar(this)">🚀</button>
-                        <button type="button" class="avatar-option modal-avatar" data-avatar="🎈" onclick="selectModalAvatar(this)">🎈</button>
-                        <button type="button" class="avatar-option modal-avatar" data-avatar="🌈" onclick="selectModalAvatar(this)">🌈</button>
-                        <button type="button" class="avatar-option modal-avatar" data-avatar="⭐" onclick="selectModalAvatar(this)">⭐</button>
-                    </div>
-                    <input type="hidden" name="avatar" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Start Spreading Smiles</button>
-            </form>
+        <div class="traits-grid">
+            <button class="trait-btn" onclick="selectMessageTrait('leadership')">🎯 Leadership</button>
+            <button class="trait-btn" onclick="selectMessageTrait('empathy')">💙 Empathy</button>
+            <button class="trait-btn" onclick="selectMessageTrait('creativity')">✨ Creativity</button>
+            <button class="trait-btn" onclick="selectMessageTrait('reliability')">⚡ Reliability</button>
+            <button class="trait-btn" onclick="selectMessageTrait('collaboration')">🤝 Collaboration</button>
+            <button class="trait-btn" onclick="selectMessageTrait('positivity')">☀️ Positivity</button>
+            <button class="trait-btn" onclick="selectMessageTrait('mentorship')">🌱 Mentorship</button>
+            <button class="trait-btn" onclick="selectMessageTrait('humor')">😄 Humor</button>
+            <button class="trait-btn" onclick="selectMessageTrait('patience')">🧘 Patience</button>
+            <button class="trait-btn" onclick="selectMessageTrait('innovation')">💡 Innovation</button>
+            <button class="trait-btn" onclick="selectMessageTrait('kindness')">💝 Kindness</button>
+            <button class="trait-btn" onclick="selectMessageTrait('expertise')">🎓 Expertise</button>
+            <button class="trait-btn" onclick="selectMessageTrait('listening')">👂 Listening</button>
+            <button class="trait-btn" onclick="selectMessageTrait('courage')">🦁 Courage</button>
+            <button class="trait-btn" onclick="selectMessageTrait('generosity')">🎁 Generosity</button>
+            <button class="trait-btn" onclick="selectMessageTrait('authenticity')">💎 Authenticity</button>
         </div>
     </div>
 </div>
@@ -277,25 +146,87 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 <script>
-let selectedModalAvatar = null;
 let smileRecorded = false;
 
-// Show/hide signup modal
-function showSignupModal() {
-    document.getElementById('signup-modal').classList.remove('hidden');
+// Writing prompts
+const writingPrompts = [
+    "Write something that will make them smile...",
+    "You made my week when you...",
+    "I'll never forget when you...",
+    "Working with you taught me...",
+    "Your support really helped me when...",
+    "I appreciate how you always...",
+    "One thing I admire about you is...",
+    "You inspired me when...",
+    "I'm grateful for the time you..."
+];
+
+// Trait-specific prompts
+const traitPrompts = {
+    leadership: "Tell them about a specific time their leadership made a difference for the team...",
+    empathy: "Tell them about a moment when their empathy helped during a difficult time...",
+    creativity: "Tell them about a creative solution or idea they brought that really stood out...",
+    reliability: "Tell them how their reliability has made an impact - when did it matter most?",
+    collaboration: "Tell them about a favorite project or moment collaborating with them...",
+    positivity: "Tell them about a time their positive energy lifted the team up...",
+    mentorship: "Tell them something important they taught or helped others learn...",
+    humor: "Tell them about a time their sense of humor brightened the day or lightened a tough situation...",
+    patience: "Tell them about a time their patience really made a difference...",
+    innovation: "Tell them about an innovative approach or fresh perspective they brought...",
+    kindness: "Tell them about a time they showed kindness that really meant something...",
+    expertise: "Tell them what aspect of their expertise or skill has been most valuable...",
+    listening: "Tell them about a time they really listened and made someone feel heard...",
+    courage: "Tell them about a time they showed courage that inspired the team...",
+    generosity: "Tell them how they've been generous with their time, knowledge, or support...",
+    authenticity: "Tell them what stands out about how genuine and authentic they are..."
+};
+
+// Prompt cycling state for message page
+let messagePromptClickCount = 0;
+let messageHasSeenModal = false;
+
+// Handle "Need ideas?" button click on message page
+function handleNeedIdeasMessage() {
+    const textarea = document.getElementById('message-compose-textarea');
+
+    // If user has already seen the modal, always show it
+    if (messageHasSeenModal) {
+        showMessageTraitsModal();
+        return;
+    }
+
+    messagePromptClickCount++;
+
+    if (messagePromptClickCount >= 8) {
+        showMessageTraitsModal();
+    } else {
+        textarea.placeholder = writingPrompts[messagePromptClickCount % writingPrompts.length];
+    }
 }
 
-function hideSignupModal() {
-    document.getElementById('signup-modal').classList.add('hidden');
+// Show/hide traits modal on message page
+function showMessageTraitsModal() {
+    messageHasSeenModal = true;
+    document.getElementById('message-traits-modal').classList.remove('hidden');
 }
 
-// Select avatar in modal signup
-function selectModalAvatar(button) {
-    document.querySelectorAll('.modal-avatar').forEach(opt => opt.classList.remove('selected'));
-    button.classList.add('selected');
-    selectedModalAvatar = button.getAttribute('data-avatar');
-    document.querySelector('#modal-signup-form input[name="avatar"]').value = selectedModalAvatar;
+function hideMessageTraitsModal() {
+    document.getElementById('message-traits-modal').classList.add('hidden');
 }
+
+// Select a trait on message page
+function selectMessageTrait(traitId) {
+    const textarea = document.getElementById('message-compose-textarea');
+    textarea.placeholder = traitPrompts[traitId];
+    hideMessageTraitsModal();
+}
+
+// Close traits modal when clicking outside
+document.getElementById('message-traits-modal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideMessageTraitsModal();
+    }
+});
 
 // Record smile when button is clicked
 async function recordSmile() {
@@ -336,8 +267,8 @@ async function recordSmile() {
             // Animate counter from 0 to company_smiles
             const companySmiles = {{ company_smiles|default(0) }};
             let current = 0;
-            const duration = 2000; // 2 seconds
-            const increment = companySmiles / (duration / 16); // 60fps
+            const duration = 2000;
+            const increment = companySmiles / (duration / 16);
 
             const timer = setInterval(() => {
                 current += increment;
@@ -373,158 +304,54 @@ async function recordSmile() {
     }
 }
 
-let pendingQuickSendData = null;
-
-// Show/hide quick send confirmation modal
-function showQuickSendConfirmModal(recipientName, recipientEmail, message) {
-    document.getElementById('confirm-recipient-name').textContent = recipientName;
-    document.getElementById('confirm-recipient-name-privacy').textContent = recipientName;
-    document.getElementById('confirm-recipient-email').textContent = recipientEmail;
-    document.getElementById('confirm-message').textContent = message;
-    document.getElementById('quick-send-confirm-modal').classList.remove('hidden');
-}
-
-function hideQuickSendConfirmModal() {
-    document.getElementById('quick-send-confirm-modal').classList.add('hidden');
-    pendingQuickSendData = null;
-}
-
-// Confirm and actually send the quick smile
-async function confirmQuickSend() {
-    if (!pendingQuickSendData) return;
-
-    const submitBtn = document.querySelector('#quick-send-message-form button[type="submit"]');
-    const modalBtn = document.querySelector('#quick-send-confirm-modal .btn-primary');
-
-    modalBtn.disabled = true;
-    modalBtn.textContent = 'Sending...';
-
-    try {
-        const response = await fetch('/api/messages/quick-send', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(pendingQuickSendData)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            // Redirect to dashboard with smile_sent flag
-            window.location.href = `/dashboard/${result.dashboard_url}?smile_sent=1&recipient_name=${encodeURIComponent(pendingQuickSendData.recipient_name)}`;
-        } else {
-            hideQuickSendConfirmModal();
-            alert(result.error || 'Failed to send smile. Please try again.');
-            modalBtn.disabled = false;
-            modalBtn.textContent = 'Send Smile';
-        }
-    } catch (error) {
-        console.error('Quick send error:', error);
-        hideQuickSendConfirmModal();
-        alert('An error occurred. Please try again.');
-        modalBtn.disabled = false;
-        modalBtn.textContent = 'Send Smile';
-    }
-}
-
-// Handle form submissions
+// Handle form submission - no confirmation, just send and redirect
 document.addEventListener('DOMContentLoaded', function() {
-    // Quick send form (after clicking smile button)
-    document.getElementById('quick-send-message-form').addEventListener('submit', async function(e) {
+    document.getElementById('quick-send-message-form')?.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const formData = new FormData(this);
-        const recipientName = formData.get('recipient_name');
-        const recipientEmail = formData.get('recipient_email');
-        const message = formData.get('message');
-
-        // Store the data and show confirmation modal
-        pendingQuickSendData = {
+        const messageData = {
             sender_name: '{{ message.recipient_name }}',
             sender_email: '{{ message.recipient_email }}',
-            recipient_name: recipientName,
-            recipient_email: recipientEmail,
-            message: message
+            recipient_name: formData.get('recipient_name'),
+            recipient_email: formData.get('recipient_email'),
+            message: formData.get('message')
         };
 
-        showQuickSendConfirmModal(recipientName, recipientEmail, message);
-    });
-
-    // Modal signup form (from header button)
-    document.getElementById('modal-signup-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const formData = new FormData(this);
-        const data = {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            avatar: formData.get('avatar')
-        };
-
-        if (!data.avatar) {
-            alert('Please select an avatar');
-            return;
-        }
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="animate-spin"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"/></svg> Sending...';
 
         try {
-            const response = await fetch('/api/signup', {
+            const response = await fetch('/api/messages/quick-send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify(messageData)
             });
 
             const result = await response.json();
 
             if (result.success) {
-                if (result.existing) {
-                    alert(result.message);
-                    hideSignupModal();
-                } else {
-                    window.location.href = `/dashboard/${result.dashboard_url}?first_visit=1`;
-                }
+                // Redirect to dashboard with smile_sent flag
+                window.location.href = `/dashboard/${result.dashboard_url}?smile_sent=1`;
             } else {
-                alert(result.error || 'Failed to sign up. Please try again.');
+                alert(result.error || 'Failed to send. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> Send message';
             }
         } catch (error) {
-            console.error('Signup error:', error);
+            console.error('Quick send error:', error);
             alert('An error occurred. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> Send message';
         }
     });
+
+    // Auto-grow textarea
+    document.getElementById('message-compose-textarea')?.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+    });
 });
-
-async function lookupMessage() {
-    const email = document.getElementById('lookup-email').value.trim();
-    if (!email) return;
-
-    try {
-        const response = await fetch('/api/sender/{{ sender.id }}/lookup', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email })
-        });
-
-        const result = await response.json();
-        const resultDiv = document.getElementById('lookup-result');
-
-        if (result.success && result.messages.length > 0) {
-            resultDiv.innerHTML = result.messages.map(msg => `
-                <div style="margin-bottom: 1rem;">
-                    <p style="font-weight: 600; color: var(--orange); font-size: 14px; margin-bottom: 8px;">
-                        Smile to ${email.split('@')[0]}:
-                    </p>
-                    <p style="color: var(--text-dark); font-style: italic;">"${msg.message}"</p>
-                </div>
-            `).join('');
-            resultDiv.classList.remove('hidden');
-        } else {
-            resultDiv.innerHTML = '<p style="color: var(--text-gray); text-align: center;">No Smile found for this email 🤷‍♀️</p>';
-            resultDiv.classList.remove('hidden');
-        }
-    } catch (error) {
-        console.error('Lookup error:', error);
-        alert('An error occurred. Please try again.');
-    }
-}
-
-// User identity removed from message page header
 </script>
 {% endblock %}

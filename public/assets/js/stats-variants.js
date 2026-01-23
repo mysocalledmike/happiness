@@ -99,6 +99,19 @@ function animateDashboardStats() {
 document.addEventListener('DOMContentLoaded', function() {
     // Only run on dashboard pages
     if (window.location.pathname.includes('/dashboard/')) {
-        animateDashboardStats();
+        // Check if we should skip the animation (e.g., after sending a message)
+        if (sessionStorage.getItem('skipCounterAnimation')) {
+            sessionStorage.removeItem('skipCounterAnimation');
+            // Just set the values directly without animation
+            const counters = ['dashboard-user-count', 'dashboard-smiles-count', 'dashboard-company-count', 'dashboard-global-count'];
+            counters.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = (parseInt(el.dataset.value) || 0).toLocaleString();
+                }
+            });
+        } else {
+            animateDashboardStats();
+        }
     }
 });
