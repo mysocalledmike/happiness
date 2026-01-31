@@ -44,7 +44,7 @@
         <div id="smile-button-container" style="margin-top: 2rem; margin-bottom: 3rem; text-align: center;">
             <button id="made-me-smile-btn" class="btn-smile" onclick="recordSmile()">
                 <span class="btn-smile-emoji">☺</span>
-                {{ sender.name }} made me smile
+                Let {{ sender.name }} know you smiled
             </button>
         </div>
 
@@ -234,7 +234,6 @@ async function recordSmile() {
 
     const btn = document.getElementById('made-me-smile-btn');
     btn.disabled = true;
-    btn.textContent = 'Recording...';
 
     try {
         const messageUrl = window.location.pathname.split('/').pop();
@@ -294,13 +293,11 @@ async function recordSmile() {
         } else {
             alert(result.error || 'Failed to record smile');
             btn.disabled = false;
-            btn.innerHTML = '<span style="font-size: 1.875rem; margin-right: 0.75rem;">☺</span>{{ sender.name }} made me smile';
         }
     } catch (error) {
         console.error('Record smile error:', error);
         alert('An error occurred. Please try again.');
         btn.disabled = false;
-        btn.innerHTML = '<span style="font-size: 1.875rem; margin-right: 0.75rem;">☺</span>{{ sender.name }} made me smile';
     }
 }
 
