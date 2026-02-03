@@ -189,6 +189,7 @@
         {% else %}
             {# New Message Compose Card #}
             <div class="compose-card">
+                <h2 class="pass-it-along-heading">Send message</h2>
                 <form id="send-form">
                     {# Pink bubble with Name and Email inputs #}
                     <div class="compose-recipient-bubble">
@@ -259,9 +260,9 @@
                         </span>
                     </div>
                 </div>
-                <div style="display: flex; align-items: flex-start; gap: 1rem;">
-                    <div class="message-emoji">💛</div>
-                    <p class="message-text">"{{ message.message }}"</p>
+                <div class="message-quote-container">
+                    <div class="message-quote-heart">💛</div>
+                    <p class="message-quote-text">"{{ message.message }}"</p>
                 </div>
 
                 {# Mobile Actions - Bottom #}
@@ -412,8 +413,8 @@ function handleNeedIdeas() {
     // Otherwise, cycle through prompts
     promptClickCount++;
 
-    if (promptClickCount >= 8) {
-        // Show traits modal after 8 clicks
+    if (promptClickCount >= 4) {
+        // Show traits modal after 4 clicks
         showTraitsModal();
     } else {
         // Update placeholder with next prompt

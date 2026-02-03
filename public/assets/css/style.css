@@ -155,9 +155,10 @@ h1, h2, h3, h4, h5, h6 {
 /* Message page container */
 .message-page-container {
     width: 100%;
-    max-width: 48rem; /* max-w-3xl = 768px */
+    max-width: 64rem; /* Match dashboard-container width */
     margin: 0 auto;
     padding: 0 1.5rem;
+    padding-bottom: 8rem; /* Space for floating smile button */
 }
 
 /* ========================================
@@ -554,6 +555,140 @@ h1, h2, h3, h4, h5, h6 {
 .btn-lg {
     padding: 1rem 2rem;
     font-size: 1.125rem;
+}
+
+/* Floating smile button container - stays visible at bottom */
+.smile-button-floating {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem 1.5rem 1.5rem;
+    background: linear-gradient(to top, rgba(255, 247, 237, 1) 0%, rgba(255, 247, 237, 0.95) 70%, rgba(255, 247, 237, 0) 100%);
+    text-align: center;
+    z-index: 50;
+}
+
+@media (min-width: 768px) {
+    .smile-button-floating {
+        padding: 1.5rem 1.5rem 2rem;
+    }
+}
+
+/* Message quote container - stacked on mobile, side-by-side on desktop */
+.message-quote-container {
+    display: flex;
+    flex-direction: column; /* Stacked on mobile */
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-top: 0.75rem; /* Reduced from 1.5rem */
+    margin-bottom: 2rem;
+}
+
+.message-quote-heart {
+    font-size: 2.5rem; /* Match compose-emoji size */
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+    .message-quote-heart {
+        font-size: 3rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .message-quote-container {
+        flex-direction: row; /* Side-by-side on desktop */
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+
+/* Message quote text - responsive sizing for mobile readability */
+.message-quote-text {
+    font-family: 'Lora', serif;
+    font-size: 1.25rem; /* Smaller on mobile for readability */
+    line-height: 1.5;
+    color: var(--gray-900);
+    flex: 1;
+    margin: 0;
+    text-align: left;
+}
+
+@media (min-width: 768px) {
+    .message-quote-text {
+        font-size: 2.25rem; /* Original size on desktop */
+        line-height: 1.35;
+    }
+}
+
+/* Celebration box - compact on mobile */
+.celebration-box {
+    background: linear-gradient(to right, #fefce8, #fff7ed);
+    border: 2px solid #fde047;
+    border-radius: 1.5rem;
+    padding: 1.25rem; /* Smaller padding on mobile */
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.celebration-emoji {
+    font-size: 2.5rem; /* Smaller on mobile */
+    margin-bottom: 0.5rem;
+    animation: rotate-smile 0.5s ease-in-out 2;
+}
+
+.celebration-heading {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.125rem; /* Smaller on mobile */
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 0.75rem;
+}
+
+.celebration-count {
+    font-size: 2.25rem; /* Smaller on mobile */
+    font-weight: 700;
+    background: linear-gradient(to right, #ea580c, #db2777);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 0.5rem;
+}
+
+.celebration-text {
+    font-family: 'Lora', serif;
+    font-size: 0.875rem; /* Smaller on mobile */
+    color: var(--gray-700);
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .celebration-box {
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .celebration-emoji {
+        font-size: 4.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .celebration-heading {
+        font-size: 1.875rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .celebration-count {
+        font-size: 3.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .celebration-text {
+        font-size: 1.25rem;
+    }
 }
 
 /* Smile button - large CTA matching prototype (mobile-first) */
@@ -1421,7 +1556,7 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: var(--radius-full);
     font-size: 1rem;
     font-weight: 600;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem; /* Reduced from 1.5rem */
 }
 
 .message-badge-large svg {

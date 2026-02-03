@@ -26,9 +26,9 @@
                 Hey {{ message.recipient_name }}
             </div>
 
-            <div style="display: flex; align-items: flex-start; gap: 1rem; margin-top: 1.5rem; margin-bottom: 2rem;">
-                <div style="font-size: 2rem; line-height: 1; flex-shrink: 0;">💛</div>
-                <p style="font-family: 'Lora', serif; font-size: 2.25rem; line-height: 1.35; color: var(--gray-900); flex: 1; margin: 0; text-align: left;">"{{ message.message }}"</p>
+            <div class="message-quote-container">
+                <div class="message-quote-heart">💛</div>
+                <p class="message-quote-text">"{{ message.message }}"</p>
             </div>
 
             <div style="display: flex; align-items: center; gap: 0.75rem; padding-top: 1.5rem; border-top: 1px solid var(--gray-200);">
@@ -40,26 +40,22 @@
             </div>
         </div>
 
-        {# Made Me Smile Button #}
-        <div id="smile-button-container" style="margin-top: 2rem; margin-bottom: 3rem; text-align: center;">
+        {# Made Me Smile Button - Floating at bottom #}
+        <div id="smile-button-container" class="smile-button-floating">
             <button id="made-me-smile-btn" class="btn-smile" onclick="recordSmile()">
                 <span class="btn-smile-emoji">☺</span>
-                Let {{ sender.name }} know you smiled
+                I smiled!
             </button>
         </div>
 
         {# Celebration Section (shown after clicking smile button) #}
-        <div id="smile-celebration" class="hidden" style="background: linear-gradient(to right, #fefce8, #fff7ed); border: 2px solid #fde047; border-radius: 1.5rem; padding: 2rem; text-align: center; margin-bottom: 2rem;">
-            <div style="font-size: 4.5rem; margin-bottom: 1rem; animation: rotate-smile 0.5s ease-in-out 2;">
-                😊
-            </div>
-            <h2 style="font-family: 'Poppins', sans-serif; font-size: 1.875rem; font-weight: 700; color: var(--gray-900); margin-bottom: 1.5rem;">
+        <div id="smile-celebration" class="hidden celebration-box">
+            <div class="celebration-emoji">😊</div>
+            <h2 class="celebration-heading">
                 You're smiling, which makes {% if company %}{{ company_name }}{% else %}work{% endif %} a happier place!
             </h2>
-            <div style="font-size: 3.75rem; font-weight: 700; background: linear-gradient(to right, #ea580c, #db2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-family: 'Poppins', sans-serif; margin-bottom: 1rem;" id="celebration-count">
-                0
-            </div>
-            <p style="font-family: 'Lora', serif; font-size: 1.25rem; color: var(--gray-700);">
+            <div class="celebration-count" id="celebration-count">0</div>
+            <p class="celebration-text">
                 We've created <span id="celebration-count-text">0</span> smiles at {% if company %}{{ company_name }}{% else %}your company{% endif %} so far! 🎉
             </p>
         </div>
@@ -197,7 +193,7 @@ function handleNeedIdeasMessage() {
 
     messagePromptClickCount++;
 
-    if (messagePromptClickCount >= 8) {
+    if (messagePromptClickCount >= 4) {
         showMessageTraitsModal();
     } else {
         textarea.placeholder = writingPrompts[messagePromptClickCount % writingPrompts.length];
