@@ -486,7 +486,7 @@
 }
 
 .compose-textarea {
-    flex: 1;
+    width: 100%; /* Full width on mobile */
     font-family: 'Lora', serif;
     font-size: 1.5rem;
     line-height: 1.4;
@@ -500,6 +500,8 @@
 
 @media (min-width: 768px) {
     .compose-textarea {
+        width: auto; /* Let flex handle it on desktop */
+        flex: 1;
         font-size: 2rem;
         line-height: 1.5;
     }
