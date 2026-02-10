@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS messages (
     message TEXT NOT NULL,
     message_url TEXT UNIQUE NOT NULL,
     sent_at DATETIME,
-    read_at DATETIME,
+    viewed_at DATETIME,
+    smiled_at DATETIME,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (sender_id) REFERENCES senders (id) ON DELETE CASCADE
 );
@@ -57,7 +58,8 @@ CREATE INDEX IF NOT EXISTS idx_senders_email_confirmed ON senders (email_confirm
 CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON messages (sender_id);
 CREATE INDEX IF NOT EXISTS idx_messages_message_url ON messages (message_url);
 CREATE INDEX IF NOT EXISTS idx_messages_recipient_email ON messages (recipient_email);
-CREATE INDEX IF NOT EXISTS idx_messages_read_at ON messages (read_at);
+CREATE INDEX IF NOT EXISTS idx_messages_viewed_at ON messages (viewed_at);
+CREATE INDEX IF NOT EXISTS idx_messages_smiled_at ON messages (smiled_at);
 CREATE INDEX IF NOT EXISTS idx_messages_sent_at ON messages (sent_at);
 
 CREATE INDEX IF NOT EXISTS idx_email_notifications_sender_id ON email_notifications (sender_id);

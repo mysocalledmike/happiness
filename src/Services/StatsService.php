@@ -60,7 +60,7 @@ class StatsService
             SELECT COUNT(m.id) as smile_count
             FROM messages m
             JOIN senders s ON m.sender_id = s.id
-            WHERE m.read_at IS NOT NULL
+            WHERE m.smiled_at IS NOT NULL
             AND LOWER(SUBSTR(s.email, INSTR(s.email, "@") + 1)) = LOWER(?)
         ', [$company]);
 
@@ -88,7 +88,7 @@ class StatsService
                 s.avatar,
                 COUNT(m.id) as smile_count
             FROM senders s
-            LEFT JOIN messages m ON s.id = m.sender_id AND m.read_at IS NOT NULL
+            LEFT JOIN messages m ON s.id = m.sender_id AND m.smiled_at IS NOT NULL
             WHERE LOWER(SUBSTR(s.email, INSTR(s.email, "@") + 1)) = LOWER(?)
             GROUP BY s.id
             HAVING smile_count > 0
@@ -107,7 +107,7 @@ class StatsService
                 COUNT(m.id) as smile_count
             FROM senders s
             JOIN messages m ON s.id = m.sender_id
-            WHERE m.read_at IS NOT NULL
+            WHERE m.smiled_at IS NOT NULL
             AND LOWER(SUBSTR(s.email, INSTR(s.email, "@") + 1)) NOT IN ("gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "aol.com", "icloud.com")
             GROUP BY company
             ORDER BY smile_count DESC
@@ -129,7 +129,7 @@ class StatsService
                 s.avatar,
                 COUNT(m.id) as smile_count
             FROM senders s
-            LEFT JOIN messages m ON s.id = m.sender_id AND m.read_at IS NOT NULL
+            LEFT JOIN messages m ON s.id = m.sender_id AND m.smiled_at IS NOT NULL
             GROUP BY s.id
             HAVING smile_count > 0
             ORDER BY smile_count DESC, s.name ASC
@@ -144,7 +144,7 @@ class StatsService
         $result = $db->fetchOne('
             SELECT COUNT(*) as count
             FROM messages
-            WHERE sender_id = ? AND read_at IS NOT NULL
+            WHERE sender_id = ? AND smiled_at IS NOT NULL
         ', [$senderId]);
 
         return $result ? (int) $result['count'] : 0;

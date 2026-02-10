@@ -284,7 +284,8 @@ $app->get('/s/{message_url}', function ($request, $response, $args) {
         return $response->withStatus(404);
     }
 
-    // Don't auto-increment smile count anymore - user must click the button
+    // Record that message was viewed (first view only)
+    \App\Services\MessageService::recordView($messageUrl);
 
     $senderSmileCount = \App\Services\StatsService::getSenderSmileCount($messageData['sender_id']);
     $globalSmiles = \App\Services\StatsService::getSmileCount();
@@ -327,8 +328,8 @@ $app->post('/api/messages/{message_url}/smile', function ($request, $response, $
     $messageUrl = $args['message_url'];
 
     try {
-        // Mark as read and increment counters
-        $success = \App\Services\MessageService::markAsRead($messageUrl);
+        // Mark as smiled and increment counters
+        $success = \App\Services\MessageService::markAsSmiled($messageUrl);
 
         if ($success) {
             // Get updated stats

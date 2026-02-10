@@ -14,7 +14,7 @@ class AdminService
             SELECT
                 s.*,
                 COUNT(m.id) as message_count,
-                COUNT(CASE WHEN m.read_at IS NOT NULL THEN 1 END) as smiles_created
+                COUNT(CASE WHEN m.smiled_at IS NOT NULL THEN 1 END) as smiles_created
             FROM senders s
             LEFT JOIN messages m ON s.id = m.sender_id
             GROUP BY s.id

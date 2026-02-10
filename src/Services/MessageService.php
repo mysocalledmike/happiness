@@ -145,24 +145,47 @@ class MessageService
         ', [$senderId, $recipientEmail]);
     }
 
-    public static function markAsRead(string $messageUrl): bool
+    public static function recordView(string $messageUrl): bool
     {
         $db = Database::getInstance();
 
-        $message = $db->fetchOne('SELECT id, read_at FROM messages WHERE message_url = ?', [$messageUrl]);
+        $message = $db->fetchOne('SELECT id, viewed_at FROM messages WHERE message_url = ?', [$messageUrl]);
 
         if (!$message) {
             return false;
         }
 
-        // If already read, don't update
-        if ($message['read_at']) {
+        // If already viewed, don't update
+        if ($message['viewed_at']) {
             return true;
         }
 
-        // Mark as read
+        // Record first view
         $db->update('messages', [
-            'read_at' => date('Y-m-d H:i:s')
+            'viewed_at' => date('Y-m-d H:i:s')
+        ], 'message_url = ?', [$messageUrl]);
+
+        return true;
+    }
+
+    public static function markAsSmiled(string $messageUrl): bool
+    {
+        $db = Database::getInstance();
+
+        $message = $db->fetchOne('SELECT id, smiled_at FROM messages WHERE message_url = ?', [$messageUrl]);
+
+        if (!$message) {
+            return false;
+        }
+
+        // If already smiled, don't update
+        if ($message['smiled_at']) {
+            return true;
+        }
+
+        // Mark as smiled
+        $db->update('messages', [
+            'smiled_at' => date('Y-m-d H:i:s')
         ], 'message_url = ?', [$messageUrl]);
 
         // Increment global smile count
